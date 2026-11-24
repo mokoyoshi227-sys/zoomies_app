@@ -257,7 +257,7 @@ svg.photo.dog{overflow:hidden}
 .pets-foot .count{text-align:center; font-size:13px; font-weight:600; color:var(--muted); min-height:18px}
 
 /* home */
-#home{background:var(--mint); scroll-behavior:smooth}
+#home,#shop{background:var(--mint); scroll-behavior:smooth}
 .topbar{display:flex; align-items:center; gap:8px; padding:calc(var(--sb) + 8px) 18px 0; position:relative; z-index:5}
 .topbar .grow{flex:1}
 .star-btn{position:relative; width:46px; height:46px; border-radius:50%; background:#fff; display:grid; place-items:center; transition:transform .3s var(--spring)}
@@ -272,7 +272,7 @@ svg.photo.dog{overflow:hidden}
 .hero{text-align:center; padding-top:22px}
 .hero .hello{font-size:13px; font-weight:700; color:var(--muted)}
 .hero h1{font-size:34px; line-height:1.08; font-weight:500; margin:6px 24px 0; letter-spacing:-.03em; color:var(--pine); text-wrap:balance}
-#home.active .hero h1{animation:rise .8s var(--ease) both}
+#shop.active .hero h1{animation:rise .8s var(--ease) both}
 /* the user's peeking photos (transparent webp). The flat chest/chin line is the ledge:
    dog 1312×1045, ledge 148px above the bottom → 11.28% of width; cat 1176×872, ledge 104px → 8.84% */
 .peek-photo{display:block; position:relative; z-index:3; margin:0 auto; height:auto; pointer-events:none; user-select:none}
@@ -324,6 +324,291 @@ svg.photo.dog{overflow:hidden}
 .nav button.on{color:var(--pine)}
 .nav .nb{position:absolute; top:7px; right:11px; min-width:16px; height:16px; border-radius:8px; background:var(--orange); color:#fff; font-size:10px; font-weight:800; display:grid; place-items:center; padding:0 3px; transform:scale(0); transition:transform .4s var(--spring)}
 .nav .nb.show{transform:scale(1)}
+
+/* home: pet profile */
+#home{padding-bottom:120px}
+.ph-top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:calc(var(--sb) + 12px) 20px 0}
+.ph-hi{font-size:13px; font-weight:700; color:var(--orange); letter-spacing:.04em; text-transform:uppercase}
+.ph-top > div{min-width:0}
+.ph-top h1{font-size:clamp(16px, 4.9vw, 20px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600; margin:4px 0 0; letter-spacing:-.02em; color:var(--pine)}
+.pet-tabs{display:flex; gap:10px; overflow-x:auto; padding:16px 20px 14px; scrollbar-width:none}
+.pet-tabs::-webkit-scrollbar{display:none}
+.pet-tab{flex:none; display:grid; justify-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--muted); width:64px; transition:transform .3s var(--spring)}
+.pet-tab:active{transform:scale(.92)}
+.pet-tab .pt-img{width:58px; height:58px; border-radius:50%; background:#fff; display:grid; place-items:center; overflow:hidden; box-shadow:0 0 0 3px transparent; transition:box-shadow .3s}
+.pet-tab .pt-img img{width:100%; height:100%; object-fit:cover}
+.pet-tab .pt-img svg{width:44px; height:44px}
+.pet-tab[aria-selected="true"]{color:var(--pine)}
+.pet-tab[aria-selected="true"] .pt-img{box-shadow:0 0 0 3px var(--orange)}
+.pet-tab span:last-child{max-width:64px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pet-tab.add .pt-img{background:transparent; box-shadow:inset 0 0 0 2px var(--leaf); color:var(--pine)}
+.pet-hero{margin:0 16px; background:var(--pine); border-radius:30px; padding:10px; color:#fff; box-shadow:0 16px 34px rgba(15,76,23,.22)}
+#home.active .pet-hero{animation:rise .7s var(--ease) both}
+.pet-photo{position:relative; aspect-ratio:1 / .9; border-radius:22px; overflow:hidden; background:var(--leaf); display:grid; place-items:center}
+.pet-photo > img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover}
+.pet-photo .ph-art{width:58%; display:grid; place-items:center}
+.pet-photo .ph-art svg{width:100%; height:auto; max-width:none}
+.pet-photo .ph-note{position:absolute; left:14px; top:14px; background:rgba(255,255,255,.85); color:var(--pine); font-size:12px; font-weight:700; border-radius:12px; padding:6px 10px}
+.cam-btn{position:absolute; right:12px; bottom:12px; height:44px; border-radius:22px; background:#fff; color:var(--pine); display:flex; align-items:center; gap:8px; padding:0 16px 0 12px; font-weight:700; font-size:13.5px; box-shadow:0 8px 20px rgba(0,0,0,.18); transition:transform .3s var(--spring)}
+.cam-btn:active{transform:scale(.93)}
+.cam-btn.busy{opacity:.7; pointer-events:none}
+.pet-meta{display:flex; align-items:center; gap:12px; padding:14px 8px 6px 10px}
+.pet-meta div{flex:1; min-width:0}
+.pet-meta h2{font-family:var(--f-logo); font-weight:600; font-size:30px; margin:0; line-height:1.1; overflow-wrap:anywhere}
+.pet-meta p{margin:4px 0 0; color:#C6E8BF; font-size:13px; font-weight:600}
+.pet-meta .circle-btn{background:rgba(255,255,255,.12); color:#fff; box-shadow:none}
+.pet-facts{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:14px 16px 0}
+.fact{background:#fff; border-radius:20px; padding:12px 14px; text-align:left; display:grid; gap:4px; transition:transform .3s var(--spring)}
+.fact:active{transform:scale(.96)}
+.fact small{font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.fact b{font-size:16px; font-weight:700; color:var(--ink); overflow-wrap:anywhere}
+.fact b.unset{color:var(--orange); font-size:14px}
+.recs-h{display:flex; align-items:center; justify-content:space-between; padding:22px 16px 6px 20px}
+.recs-h h3{font-size:19px; font-weight:600; margin:0; color:var(--pine); letter-spacing:-.02em}
+.recs-h .textlink{padding:8px 6px; font-size:13px}
+.pet-recs{display:flex; gap:10px; overflow-x:auto; padding:4px 16px 8px; scrollbar-width:none}
+.pet-recs::-webkit-scrollbar{display:none}
+.pet-recs .card{flex:none; width:150px}
+/* share corner on the pet photo */
+.ph-share{position:absolute; right:12px; top:12px; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,.92); color:var(--pine); display:grid; place-items:center; box-shadow:0 8px 20px rgba(0,0,0,.18); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); transition:transform .35s var(--spring)}
+.ph-share:active{transform:scale(.86)}
+#home.active .ph-share{animation:popIn .7s var(--spring) .35s both}
+/* pet card (share preview, incoming link, friend) */
+.pcard{position:relative; overflow:hidden; background:var(--pine); color:#fff; border-radius:28px; padding:24px 18px 16px; text-align:center}
+.pcard::before{content:""; position:absolute; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle, rgba(168,224,158,.22), transparent 70%); top:-110px; left:50%; transform:translateX(-50%); pointer-events:none}
+.pc-av{position:relative; width:112px; height:112px; border-radius:50%; margin:0 auto; overflow:hidden; background:var(--leaf); display:grid; place-items:center; box-shadow:0 0 0 4px rgba(255,255,255,.95), 0 12px 26px rgba(0,0,0,.25); animation:popIn .7s var(--spring) .1s both}
+.pc-av img{width:100%; height:100%; object-fit:cover}
+.pc-av svg{width:84px; height:84px}
+.pcard h3{font-family:var(--f-logo); font-weight:600; font-size:30px; margin:14px 0 2px; overflow-wrap:anywhere}
+.pc-own{font-size:12.5px; color:#C6E8BF; font-weight:600}
+.pc-tags{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin-top:12px}
+.pc-tags span{background:rgba(255,255,255,.13); border-radius:12px; padding:5px 10px; font-size:12px; font-weight:700}
+.pc-since{display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; font-size:12.5px; font-weight:600; color:#FFD9BF}
+.pc-since svg{color:var(--orange); fill:var(--orange); width:16px; height:16px}
+.pc-brand{margin-top:14px; font-family:var(--f-logo); font-weight:700; font-size:15px; color:var(--leaf); opacity:.85}
+.sh-note{font-size:13px; line-height:1.55; color:var(--muted); margin:12px 4px 14px; text-align:center}
+.sh-note b{color:var(--pine)}
+.sh-btns{display:grid; gap:10px}
+.sh-main{gap:10px}
+.sh-main:not(:disabled) .spin{display:none}
+.sh-main:disabled{opacity:.75}
+.sh-row{display:flex; gap:10px}
+.sh-opt{flex:1; height:50px; border-radius:25px; background:#fff; color:var(--pine); display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; font-size:14px; transition:transform .3s var(--spring), opacity .3s}
+.sh-opt:active{transform:scale(.95)}
+.sh-opt:disabled{opacity:.5}
+.btn-plain svg,.btn-ghost svg{flex:none}
+.btn-ghost{gap:10px}
+.mini-av{width:28px; height:28px; border-radius:50%; overflow:hidden; display:grid; place-items:center; background:var(--mint)}
+.mini-av img{width:100%; height:100%; object-fit:cover}
+.mini-av svg{width:24px; height:24px}
+/* friends row */
+.fr-row{display:flex; gap:10px; overflow-x:auto; padding:4px 4px 6px; margin:0 -4px; scrollbar-width:none}
+.fr-row::-webkit-scrollbar{display:none}
+.fr{flex:none; width:74px; display:grid; justify-items:center; gap:4px; text-align:center; transition:transform .3s var(--spring)}
+.fr:active{transform:scale(.92)}
+.fr:not(.fr-add){animation:rise .55s var(--ease) both; animation-delay:calc(var(--i) * 50ms)}
+.fr-av{width:62px; height:62px; border-radius:50%; background:#fff; display:grid; place-items:center; overflow:hidden; box-shadow:0 0 0 3px #fff, 0 8px 16px rgba(15,76,23,.14)}
+.fr-av img{width:100%; height:100%; object-fit:cover}
+.fr-av svg{width:46px; height:46px}
+.fr-add .fr-av{background:transparent; box-shadow:inset 0 0 0 2px var(--leaf); color:var(--pine)}
+.fr-add .fr-av svg{width:22px; height:22px}
+.fr b{font-size:12px; font-weight:700; color:var(--ink); max-width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fr em{font-style:normal; font-size:10.5px; color:var(--muted); max-width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:-3px}
+.fr-hint{font-size:12.5px; color:var(--muted); margin:4px 4px 0; line-height:1.5}
+/* home header: bell + avatar */
+.ph-btns{display:flex; align-items:center; gap:8px; flex:none}
+.ph-btns .circle-btn{width:44px; height:44px}
+/* QR code + typed code in the share sheet */
+.qr-box{display:flex; align-items:center; gap:14px; background:#fff; border-radius:22px; padding:12px; margin-top:12px; animation:rise .5s var(--ease) .08s both}
+.qr-img{width:112px; height:112px; flex:none; padding:8px; border-radius:14px; background:#fff; box-shadow:inset 0 0 0 2px var(--mint)}
+.qr-img svg{display:block; width:100%; height:100%}
+.qr-img svg path,.qr-img svg rect[fill="black"],.qr-img svg rect:not([fill="white"]){fill:var(--ink)}
+.qr-tx{display:grid; gap:4px; min-width:0}
+.qr-tx b{font-size:15px; color:var(--pine)}
+.qr-tx span{font-size:12.5px; color:var(--muted); line-height:1.45}
+.qr-tx code{font-family:var(--f-ui); font-weight:800; font-size:16px; letter-spacing:.08em; color:var(--ink); background:var(--mint); border-radius:10px; padding:5px 10px; justify-self:start; margin-top:2px; user-select:all}
+.code-add{display:flex; gap:8px; background:#fff; border-radius:18px; padding:6px 6px 6px 14px; margin-top:10px; border:2px solid transparent; transition:border-color .25s}
+.code-add:focus-within{border-color:var(--pine)}
+.code-add.bad{border-color:var(--danger); animation:shake .4s ease}
+.code-add input{flex:1; min-width:0; border:0; outline:0; background:transparent; font:inherit; font-size:15px; font-weight:700; letter-spacing:.06em; color:var(--ink); text-transform:uppercase}
+.code-add input::placeholder{text-transform:none; letter-spacing:0; font-weight:500; color:#8EA88B}
+.code-add button{height:40px; border-radius:12px; padding:0 16px; background:var(--pine); color:#fff; font-weight:700; font-size:13px; transition:transform .3s var(--spring)}
+.code-add button:active{transform:scale(.92)}
+/* friend requests waiting for an answer */
+.fr-reqs{display:grid; gap:8px; margin-bottom:12px}
+.fr-req{display:flex; align-items:center; gap:10px; background:#fff; border-radius:18px; padding:8px 8px 8px 10px; box-shadow:inset 0 0 0 2px #FFD0DE; cursor:pointer; animation:rise .5s var(--ease) both; animation-delay:calc(var(--i) * 60ms); transition:transform .35s var(--ease), opacity .3s}
+.fr-req .tx{flex:1; min-width:0; display:grid; gap:2px}
+.fr-req b{font-size:14px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fr-req em{font-style:normal; font-size:11.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.fr-av.sm{width:44px; height:44px; box-shadow:none; flex:none}
+.fr-av.sm svg{width:34px; height:34px}
+.fr-yes,.fr-no{width:40px; height:40px; border-radius:50%; display:grid; place-items:center; flex:none; transition:transform .3s var(--spring)}
+.fr-yes{background:var(--pine); color:#fff}
+.fr-yes svg{width:18px; height:18px}
+.fr-no{background:var(--mint); color:var(--muted)}
+.fr-yes:active,.fr-no:active{transform:scale(.85)}
+.fr-req.yes{transform:scale(1.03); opacity:0; transition-duration:.28s}
+.fr-req.no{transform:translateX(60px); opacity:0}
+.fr.pending .fr-av{opacity:.55; box-shadow:0 0 0 3px #fff, 0 0 0 5px var(--leaf-soft)}
+.fr.pending em{color:var(--orange)}
+.sh-row .btn{flex:1}
+/* health log */
+.hl{margin:22px 16px 0}
+.hl-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:0 4px 10px}
+.hl-h h3{font-size:19px; font-weight:600; margin:0; color:var(--pine); letter-spacing:-.02em}
+.hl-h span{font-size:12px; font-weight:700; color:var(--muted)}
+.qi{width:38px; height:38px; border-radius:13px; display:grid; place-items:center; flex:none}
+.qi svg{width:20px; height:20px}
+.hl-quick{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
+.hl-quick button{background:#fff; border-radius:18px; padding:10px 4px 9px; display:grid; justify-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--pine); transition:transform .3s var(--spring)}
+.hl-quick button:active{transform:scale(.93)}
+.hl-quick .plus{position:relative}
+.hl-quick .plus::after{content:"+"; position:absolute; right:-5px; top:-5px; width:16px; height:16px; border-radius:50%; background:var(--pine); color:#fff; font-size:12px; line-height:16px; text-align:center; font-weight:800}
+.vac-note{display:flex; align-items:center; gap:10px; margin-top:10px; background:#fff; border-radius:16px; padding:10px 12px; font-size:13px; font-weight:600; color:var(--ink)}
+.vac-note b{font-weight:800}
+.vac-note.late{background:#FFF1EC; color:var(--danger)}
+.hl-card{background:#fff; border-radius:24px; padding:12px; margin-top:10px}
+/* Өдөр / Сар / Жил: one pill slides under the labels */
+.seg3{position:relative; display:grid; grid-template-columns:repeat(3,1fr); background:var(--mint); border-radius:14px; padding:4px; gap:4px}
+.seg3 .ind{position:absolute; top:4px; left:4px; bottom:4px; width:calc((100% - 16px) / 3); border-radius:10px; background:var(--pine); box-shadow:0 6px 14px rgba(15,76,23,.25); transition:transform .55s var(--spring)}
+.seg3 button{position:relative; z-index:1; height:34px; border-radius:10px; font-weight:700; font-size:13px; color:var(--muted); transition:color .35s ease, transform .3s var(--spring)}
+.seg3 button:active{transform:scale(.94)}
+.seg3 button[aria-pressed="true"]{color:#fff}
+.per b{display:inline-block}
+.per b.slide-l{animation:perL .45s var(--ease) both}
+.per b.slide-r{animation:perR .45s var(--ease) both}
+@keyframes perL{from{transform:translateX(-26px); opacity:0}}
+@keyframes perR{from{transform:translateX(26px); opacity:0}}
+.hl-stats.swap .st-tile{animation:tileSwap .5s var(--ease) both; animation-delay:calc(var(--i) * 45ms)}
+@keyframes tileSwap{from{transform:translateY(8px) scale(.97); opacity:.35}}
+.hl-card .enter{animation:rise .55s var(--ease) both}
+.per{display:flex; align-items:center; justify-content:space-between; margin:10px 0 8px}
+.per b{font-size:15px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums}
+.per button{width:36px; height:36px; border-radius:50%; background:var(--mint); color:var(--pine); display:grid; place-items:center; font-size:18px; font-weight:800}
+.per button:disabled{opacity:.3; cursor:default}
+.per .today{width:auto; padding:0 12px; border-radius:18px; font-size:12px}
+.hl-stats{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.st-tile{background:var(--mint); border-radius:16px; padding:10px 12px; display:grid; gap:2px; text-align:left}
+.st-tile .st-top{display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+.st-tile .st-top i{width:8px; height:8px; border-radius:50%; flex:none}
+.st-tile b{font-size:20px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.st-tile small{font-size:11.5px; color:var(--muted); line-height:1.4; font-weight:500; overflow-wrap:anywhere}
+.st-foot{font-size:11.5px; color:var(--muted); margin:8px 2px 0; font-weight:600}
+.chart{margin-top:14px}
+/* metric chips: outlined, with one filled pill that slides and resizes to the chosen chip */
+.chart-m{position:relative; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-bottom:8px; scroll-behavior:smooth}
+.chart-m::-webkit-scrollbar{display:none}
+.chart-m .ind{position:absolute; left:0; top:0; height:30px; border-radius:15px; background:var(--pine); transition:transform .55s var(--spring), width .55s var(--spring)}
+.chart-m button{position:relative; z-index:1; flex:none; height:30px; border-radius:15px; padding:0 12px; font-size:12px; font-weight:700; background:transparent; box-shadow:inset 0 0 0 1.5px var(--leaf-soft); color:var(--pine); transition:color .35s ease, box-shadow .35s, transform .3s var(--spring)}
+.chart-m button:active{transform:scale(.94)}
+.chart-m button[aria-pressed="true"]{color:#fff; box-shadow:inset 0 0 0 1.5px transparent}
+.chart .bar{transform-box:fill-box; transform-origin:50% 100%; transition:opacity .25s}
+.chart.grow .bar{animation:barUp .7s var(--spring) both; animation-delay:calc(var(--i) * var(--step, 14ms))}
+@keyframes barUp{from{transform:scaleY(0)}}
+.readout b{display:inline-block}
+.readout{font-size:13px; font-weight:600; color:var(--muted); min-height:20px; font-variant-numeric:tabular-nums}
+.readout b{color:var(--ink); font-weight:800}
+.chart svg{display:block; width:100%; height:auto; touch-action:pan-y}
+.chart svg text{font-family:var(--f-ui); font-size:9px; fill:#6B8A6E; font-variant-numeric:tabular-nums}
+.chart .hit{fill:transparent; cursor:pointer}
+.chart .col.on .bar{opacity:1}
+.chart .col.dim .bar{opacity:.35}
+.chart .guide{stroke:var(--ink); stroke-width:1; opacity:0}
+.chart .col.on .guide{opacity:.12}
+.hl-list{display:grid; gap:6px; margin-top:12px}
+.hl-row{display:flex; align-items:center; gap:10px; background:var(--mint); border-radius:16px; padding:8px 10px; text-align:left; width:100%}
+.hl-row .qi{width:34px; height:34px; border-radius:11px}
+.hl-row .tx{display:grid; gap:2px; min-width:0}
+.hl-row b{font-size:13px; font-weight:700; color:var(--ink); overflow-wrap:anywhere}
+.hl-row em{font-style:normal; font-size:11.5px; color:var(--muted); overflow-wrap:anywhere}
+.hl-empty{font-size:13px; color:var(--muted); text-align:center; padding:10px 0 4px}
+.hl-more{justify-self:center; font-size:13px; font-weight:700; color:var(--pine); padding:8px 12px}
+/* memo */
+.memo-add{display:flex; gap:8px; background:#fff; border-radius:18px; padding:6px 6px 6px 14px; border:2px solid transparent; transition:border-color .25s}
+.memo-add:focus-within{border-color:var(--pine)}
+.memo-add input{flex:1; min-width:0; border:0; outline:0; background:transparent; font:inherit; font-size:14px; font-weight:500; color:var(--ink)}
+.memo-add input::placeholder{color:#8EA88B}
+.memo-add button{width:40px; height:40px; border-radius:12px; background:var(--pine); color:#fff; display:grid; place-items:center; flex:none; transition:transform .3s var(--spring)}
+.memo-add button:active{transform:scale(.88)}
+.memo-add button.spin svg{animation:addSpin .55s var(--spring)}
+@keyframes addSpin{from{transform:rotate(-90deg) scale(.6)}}
+#memoCnt b{display:inline-block; font-weight:800}
+/* filter: outlined chips, one pill slides under the chosen one */
+.memo-f{position:relative; display:flex; gap:6px; margin:10px 0 8px}
+.memo-f .ind{position:absolute; left:0; top:0; height:32px; border-radius:16px; background:var(--pine); transition:transform .55s var(--spring), width .55s var(--spring)}
+.memo-f button{position:relative; z-index:1; height:32px; border-radius:16px; padding:0 12px; font-size:12px; font-weight:700; background:transparent; box-shadow:inset 0 0 0 1.5px var(--leaf-soft); color:var(--pine); transition:color .35s, box-shadow .35s, transform .3s var(--spring)}
+.memo-f button:active{transform:scale(.94)}
+.memo-f button[aria-pressed="true"]{color:#fff; box-shadow:inset 0 0 0 1.5px transparent}
+.memo-list{list-style:none; margin:0; padding:0; display:grid; gap:6px}
+.memo-it{display:flex; align-items:flex-start; gap:10px; background:#fff; border-radius:16px; padding:10px 6px 10px 10px; transition:background .4s}
+.memo-it.done{background:rgba(255,255,255,.6)}
+/* checkbox: fills, pops, and the tick draws itself */
+.memo-it .chk{position:relative; width:28px; height:28px; border-radius:9px; flex:none; display:grid; place-items:center; box-shadow:inset 0 0 0 2px var(--leaf); color:#fff; background:transparent; transition:background .3s ease, box-shadow .3s ease}
+.memo-it .chk svg path{stroke-dasharray:22; stroke-dashoffset:22; transition:stroke-dashoffset .3s var(--ease)}
+.memo-it .chk[aria-pressed="true"]{background:var(--pine); box-shadow:inset 0 0 0 2px var(--pine)}
+.memo-it .chk[aria-pressed="true"] svg path{stroke-dashoffset:0; transition-delay:.08s}
+.memo-it .chk.pop{animation:chkPop .5s var(--spring)}
+@keyframes chkPop{0%{transform:scale(1)}35%{transform:scale(.78)}70%{transform:scale(1.14)}100%{transform:scale(1)}}
+.memo-it .chk.pop::after{content:""; position:absolute; inset:-3px; border-radius:12px; border:2px solid var(--leaf); animation:chkRing .55s ease-out forwards; pointer-events:none}
+@keyframes chkRing{from{transform:scale(.7); opacity:1}to{transform:scale(1.55); opacity:0}}
+.memo-it .mt{flex:1; min-width:0; padding-top:3px}
+.memo-it p{margin:0; font-size:14px; line-height:1.4; color:var(--ink); overflow-wrap:anywhere; white-space:pre-wrap; transition:color .4s}
+/* strike-through draws left to right on every line of the note */
+.memo-it p span{background:linear-gradient(currentColor, currentColor) 0 58% / 0 1.5px no-repeat; -webkit-box-decoration-break:clone; box-decoration-break:clone; transition:background-size .45s var(--ease)}
+.memo-it.done p{color:var(--muted)}
+.memo-it.done p span{background-size:100% 1.5px}
+.memo-it em{display:block; font-style:normal; font-size:11px; color:var(--muted); margin-top:3px}
+.memo-it .x{width:32px; height:32px; border-radius:10px; display:grid; place-items:center; color:var(--muted); flex:none; transition:background .25s, color .25s, transform .3s var(--spring)}
+.memo-it .x:active{transform:scale(.85)}
+.memo-it .x.sure{background:#FFF1EC; color:var(--danger); animation:armShake .4s ease}
+@keyframes armShake{20%{transform:rotate(-14deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(4deg)}}
+/* 24-hour time field + iPhone-style wheel picker */
+.tbtn{width:100%; height:52px; border-radius:16px; background:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 12px 0 10px; border:2px solid transparent; transition:border-color .3s, box-shadow .3s}
+.tbtn[aria-expanded="true"]{border-color:var(--pine); box-shadow:0 0 0 5px rgba(168,224,158,.45)}
+.tbtn .tpill{background:var(--mint); color:var(--ink); border-radius:10px; padding:6px 12px; font-size:17px; font-weight:700; letter-spacing:.03em; font-variant-numeric:tabular-nums; transition:background .3s, color .3s}
+.tbtn[aria-expanded="true"] .tpill{background:var(--pine); color:#fff}
+.tbtn .chev{display:grid; color:var(--muted); transition:transform .45s var(--spring)}
+.tbtn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.twrap{display:grid; grid-template-rows:0fr; opacity:0; margin-top:-14px; transition:grid-template-rows .5s var(--ease), opacity .35s ease, margin-top .5s var(--ease)}
+.twrap.open{grid-template-rows:1fr; opacity:1; margin-top:0}
+.twrap > div{overflow:hidden; min-height:0}
+.tpanel{background:#fff; border-radius:20px; padding:10px 12px 6px; transform:scale(.97); transition:transform .5s var(--spring)}
+.twrap.open .tpanel{transform:none}
+.wheels{position:relative; display:flex; justify-content:center; align-items:center; gap:2px; height:180px;
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 32%, #000 68%, transparent 100%); mask-image:linear-gradient(to bottom, transparent 0, #000 32%, #000 68%, transparent 100%)}
+.wheels .wband{position:absolute; left:0; right:0; top:72px; height:36px; border-radius:11px; background:var(--mint); pointer-events:none; transition:box-shadow .2s}
+.wheels:has(.wheel:focus-visible) .wband{box-shadow:inset 0 0 0 2px var(--orange)}
+.wheel{position:relative; z-index:1; width:76px; height:180px; overflow-y:scroll; scroll-snap-type:y mandatory; scrollbar-width:none; overscroll-behavior:contain; outline:none; border-radius:11px; touch-action:pan-y}
+.wheel::-webkit-scrollbar{display:none}
+.wheel:focus-visible{box-shadow:none}
+.wpad{height:72px}
+.wi{height:36px; display:grid; place-items:center; scroll-snap-align:center; font-size:22px; font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums; cursor:pointer; user-select:none; -webkit-user-select:none; backface-visibility:hidden}
+.wi.on{font-weight:700}
+.wi.off{color:#B4C6B1}
+.wheel.yr{width:82px} .wheel.mo{width:118px} .wheel.dy{width:60px}
+.wheel.mo .wi{font-size:20px}
+.field.bad .tbtn{border-color:var(--danger); background:#FFF5F2}
+.wheels .colon{position:relative; z-index:1; font-size:22px; font-weight:700; color:var(--ink); padding-bottom:3px}
+.tfoot{display:flex; justify-content:space-between; padding:4px 0 0}
+.tfoot button{font-size:13px; font-weight:700; color:var(--pine); padding:8px 12px; border-radius:10px; transition:background .2s}
+.tfoot button:active{background:var(--mint)}
+.tf-left{display:flex; gap:2px}
+#bClear{color:var(--muted)}
+.tbtn .tpill.empty{background:transparent; color:#8EA88B; font-weight:600; font-size:15px; letter-spacing:0; padding-left:6px}
+/* pet edit sheet */
+.pe-types{display:flex; flex-wrap:wrap; gap:8px}
+.pe-types button,.pe-seg button{height:40px; border-radius:20px; background:#fff; display:flex; align-items:center; gap:6px; padding:0 14px 0 8px; font-weight:700; font-size:13px; color:var(--pine); transition:background .25s, color .25s}
+.pe-types svg{width:28px; height:28px}
+.pe-seg{display:flex; gap:8px}
+.pe-seg button{padding:0 18px}
+.pe-types button[aria-pressed="true"],.pe-seg button[aria-pressed="true"]{background:var(--pine); color:#fff}
+.pe-form{display:grid; gap:14px}
+.pe-form .field input{background:#fff}
+/* columns line up at the top: a field with a (hidden) error line must not stretch its neighbour */
+.pe-row{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start}
+.pe-row .field{align-content:start}
+.btn-plain{background:var(--orange); color:#fff; box-shadow:0 10px 24px rgba(242,107,18,.35)}
+.btn-danger{background:transparent; color:var(--danger); box-shadow:inset 0 0 0 2px #F3C6BA; height:52px}
 
 /* sheets */
 .scrim{position:absolute; inset:0; background:rgba(6,30,9,.45); opacity:0; pointer-events:none; transition:opacity .4s ease; z-index:60; backdrop-filter:blur(2px)}
@@ -442,12 +727,23 @@ svg.photo.dog{overflow:hidden}
 
 .prof{display:flex; align-items:center; gap:14px; background:#fff; border-radius:22px; padding:14px}
 .prof .avatar{width:60px; height:60px; font-size:24px; box-shadow:none}
+/* user photo in any avatar */
+.avatar{overflow:hidden}
+.avatar img{width:100%; height:100%; border-radius:50%; object-fit:cover; display:block}
+.av-edit{position:relative; flex:none; border-radius:50%; transition:transform .3s var(--spring)}
+.av-edit:active{transform:scale(.93)}
+.av-edit .avatar{width:68px; height:68px}
+.av-edit .av-cam{position:absolute; right:-4px; bottom:-4px; width:28px; height:28px; border-radius:50%; background:var(--orange); color:#fff; display:grid; place-items:center; border:3px solid #fff}
+.av-edit .av-cam svg{width:14px; height:14px}
+.av-edit.busy{opacity:.6; pointer-events:none}
+.prof .av-rm{display:inline-block; margin-top:6px; padding:4px 0; font-size:12px; font-weight:700; color:var(--danger)}
 .prof b{font-size:18px; display:block}
 .prof span{font-size:13px; color:var(--muted); display:block; margin-top:2px; overflow-wrap:anywhere}
 .lbl{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:18px 0 10px}
 .mypets{display:flex; flex-wrap:wrap; gap:8px}
 .mypets span{display:flex; align-items:center; gap:6px; background:#fff; border-radius:20px; padding:4px 12px 4px 4px; font-weight:700; font-size:13px}
 .mypets svg{width:30px; height:30px; background:var(--mint); border-radius:50%}
+.mypets img{width:30px; height:30px; border-radius:50%; object-fit:cover}
 .pts{display:flex; align-items:center; gap:12px; background:var(--pine); color:#fff; border-radius:20px; padding:14px 16px; font-size:13px; line-height:1.45}
 .pts b{font-size:26px; display:flex; align-items:center; gap:4px}
 .catlist{display:grid; gap:8px}
@@ -570,8 +866,27 @@ svg.photo.dog{overflow:hidden}
     </div>
   </section>
 
-  <!-- 4. Home -->
-  <section class="screen" id="home" aria-label="Нүүр">
+  <!-- 4. Home: the user's pet profile -->
+  <section class="screen" id="home" aria-label="Миний тэжээвэр">
+    <div class="ph-top">
+      <div><div class="ph-hi" id="phHi"></div><h1>Таны тэжээвэр амьтад</h1></div>
+      <span class="ph-btns"><button class="circle-btn bell-btn" id="homeBell" aria-label="Мэдэгдэл"><span data-i="bell"></span><span class="nbadge" id="homeBadge">0</span></button>
+      <button class="avatar" id="homeAvatar" aria-label="Профайл">Б</button></span>
+    </div>
+    <div class="pet-tabs" id="petTabs" role="tablist" aria-label="Тэжээвэр амьтад"></div>
+    <div class="pet-hero" id="petHero"></div>
+    <div class="pet-facts" id="petFacts"></div>
+    <section class="hl" id="friends" aria-label="Найзууд"></section>
+    <section class="hl" id="health" aria-label="Эрүүл мэндийн хөтлөл"></section>
+    <section class="hl" id="memo" aria-label="Тэмдэглэл"></section>
+    <div class="recs-h"><h3 id="recsTitle"></h3><button class="textlink" id="recsAll"><b>Бүгдийг үзэх</b></button></div>
+    <div class="pet-recs" id="petRecs"></div>
+    <input type="file" id="petPhotoIn" accept="image/*" hidden>
+    <input type="file" id="userPhotoIn" accept="image/*" hidden>
+  </section>
+
+  <!-- 5. Shop (the former home screen) -->
+  <section class="screen" id="shop" aria-label="Дэлгүүр">
     <div class="topbar">
       <button class="circle-btn" id="menuBtn" aria-label="Ангилал" data-i="menu"></button>
       <button class="circle-btn" id="searchBtn" aria-label="Хайх" data-i="search"></button>
@@ -584,8 +899,7 @@ svg.photo.dog{overflow:hidden}
     <div class="hero">
       <img class="peek-photo dogp" src="home-dog.webp" alt="Самбар дээгүүр шагайж буй алтан ретривер нохой">
       <div class="panel">
-        <div class="hello" id="hello"></div>
-        <h1 class="panel-title">Тэжээвэр амьтны тань<br>дуртай бүхэн</h1>
+        <h1 class="panel-title">Тэжээвэр амьтны тань<br>дуртай бүхэн энд бий</h1>
         <button class="btn btn-orange" id="exploreBtn">Бүтээгдэхүүн үзэх <span class="arr" data-i="arrow"></span></button>
       </div>
     </div>
@@ -603,7 +917,7 @@ svg.photo.dog{overflow:hidden}
     </div>
   </section>
 
-  <!-- 5. Done -->
+  <!-- 6. Done -->
   <section class="screen" id="done" aria-label="Захиалга баталгаажлаа">
     <div class="confetti" id="confetti"></div>
     <div class="mark" id="markDone"></div>
@@ -615,8 +929,8 @@ svg.photo.dog{overflow:hidden}
 
   <nav class="nav hide" id="nav" aria-label="Үндсэн цэс">
     <span class="ind" id="navInd"></span>
-    <button class="on" data-nav="home" aria-label="Нүүр" data-i="home"></button>
-    <button data-nav="cart" aria-label="Сагс"><span data-i="cart"></span><span class="nb" id="navBadge">0</span></button>
+    <button class="on" data-nav="home" aria-label="Миний тэжээвэр" data-i="home"></button>
+    <button data-nav="shop" aria-label="Дэлгүүр" data-i="shop"></button>
     <button data-nav="profile" aria-label="Профайл" data-i="user"></button>
   </nav>
 
@@ -625,6 +939,10 @@ svg.photo.dog{overflow:hidden}
   <div class="toast" id="toast" role="status"><span data-i="star"></span><span id="toastText"></span></div>
 </main>
 
+<!-- Supabase client (accounts + cloud data). Pinned version with an integrity hash; the app still runs on local data if it fails to load. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
+<!-- QR codes for friend links (20 KB) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -647,6 +965,19 @@ const ICON = {
   cart: S('<path d="M3 4h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.2"/><circle cx="9.5" cy="19.5" r="1.2"/><circle cx="17" cy="19.5" r="1.2"/>', 22, 1.9),
   home: S('<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>', 22),
   user: S('<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', 22),
+  shop: S('<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5.5 11.5V20h13v-8.5"/><path d="M10 20v-4.5h4V20"/>', 22),
+  camera: S('<path d="M4 8h3l1.6-2.5h6.8L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>', 20),
+  edit: S('<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>', 20),
+  food: S('<path d="M3 11h18a9 7 0 0 1-18 0z"/><path d="M8 7.5c0-1.5 1-2 1-3.5M12 7.5c0-1.5 1-2 1-3.5M16 7.5c0-1.5 1-2 1-3.5"/>'),
+  walk: S('<circle cx="13.5" cy="4" r="2"/><path d="M8 21l3-7 3 3v4M7 12l3-4h3.5l2.5 4 3 1M11 14l-.5-4"/>'),
+  pill: S('<path d="M10.5 3.5a4.95 4.95 0 0 1 7 7l-7 7a4.95 4.95 0 0 1-7-7z"/><path d="M7 7l7 7"/>'),
+  chev: S('<path d="M6 9l6 6 6-6"/>', 18, 2.4),
+  share: S('<path d="M12 3.5v11M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/>', 20, 2.2),
+  link: S('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>', 20),
+  image: S('<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/>', 20),
+  copy: S('<rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V6a2.5 2.5 0 0 0-2.5-2.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 6 15.5h2.5"/>', 20),
+  heart: S('<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>', 20),
+  syringe: S('<path d="M18 2l4 4M20 4l-3.5 3.5M16.5 7.5L8 16l-3.5 1 1-3.5L14 5zM12.5 6.5l5 5M10 10l1.5 1.5M7.5 12.5L9 14M5.5 18.5L2 22"/>'),
   plus: S('<path d="M12 5v14M5 12h14"/>', 18, 2.4),
   minus: S('<path d="M5 12h14"/>', 18, 2.4),
   close: S('<path d="M6 6l12 12M18 6L6 18"/>', 18, 2.4),
@@ -802,7 +1133,13 @@ const st = { user:null, pets:new Set(), cart:new Map(), points:4, filter:'all', 
 // The password itself is never stored, only a salted SHA-256 hash so "Нэвтрэх" can check it.
 const KEY = 'zoomies.account.v1';
 st.pw = null; st.signedIn = false; st.notes = []; st.orders = 0;
-const save = () => { if (!st.user) return; try { localStorage.setItem(KEY, JSON.stringify({ user:st.user, pets:[...st.pets], cart:[...st.cart], points:st.points, pw:st.pw, signedIn:st.signedIn, notes:st.notes, orders:st.orders })); } catch (_) {} };
+// pet profiles: one per animal the user owns; photo is a resized JPEG data URL kept on this device
+st.profiles = []; st.cur = null;
+// returns false when the browser refused to store (e.g. storage full), so a new photo can be rolled back
+st.delQ = [];     // pets deleted while offline, removed from the server on the next connection
+st.delItems = []; // health log entries / memos deleted while offline: [{ t:'health_logs'|'memos', id }]
+st.fr = { reqs:[], cards:{} }; // friend requests touching my pets + a card per other pet (copy of the server)
+const save = () => { if (!st.user) return true; try { localStorage.setItem(KEY, JSON.stringify({ user:st.user, pets:[...st.pets], cart:[...st.cart], points:st.points, pw:st.pw, signedIn:st.signedIn, notes:st.notes, orders:st.orders, profiles:st.profiles, cur:st.cur, delQ:st.delQ, delItems:st.delItems, fr:st.fr })); return true; } catch (_) { return false; } };
 const loadSaved = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (_) { return null; } };
 const hashPw = async (pw, salt) => {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ':' + pw)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
@@ -816,8 +1153,205 @@ const restore = s => {
   st.points = Number.isFinite(s.points) ? s.points : 4;
   st.notes = Array.isArray(s.notes) ? s.notes : [];
   st.orders = Number.isFinite(s.orders) ? s.orders : 0;
+  st.profiles = (Array.isArray(s.profiles) ? s.profiles : []).filter(p => p && petBy(p.k));
+  st.cur = s.cur || null;
+  st.delQ = Array.isArray(s.delQ) ? s.delQ : [];
+  st.delItems = Array.isArray(s.delItems) ? s.delItems : [];
+  st.fr = s.fr && Array.isArray(s.fr.reqs) ? s.fr : { reqs:[], cards:{} };
+  syncProfiles();
 };
-const enterApp = () => { if (st.pets.size) { st.filter = 'all'; renderHome(); go('home'); } else { st.editPets = false; openPets(); } };
+// a brand-new account on this device: nothing carried over
+const resetLocal = () => { st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0; st.profiles = []; st.cur = null; st.delQ = []; st.delItems = []; st.fr = { reqs:[], cards:{} }; st.pw = null; };
+/* ---------- pet profiles ---------- */
+// ids are UUIDs made on the phone, so a new pet has its final server id from the start (works offline too)
+const uuid = () => crypto.randomUUID ? crypto.randomUUID() : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
+const isUUID = s => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s || '');
+const newProfile = k => ({ id:uuid(), k, name:petBy(k).n, photo:'', sex:'', birth:'', breed:'', weight:'' });
+// every chosen animal type gets a profile; profiles of types the user unticked are removed (returned so the server copy can go too)
+const syncProfiles = () => {
+  st.pets.forEach(k => { if (!st.profiles.some(p => p.k === k)) st.profiles.push(newProfile(k)); });
+  const gone = st.profiles.filter(p => !st.pets.has(p.k));
+  st.profiles = st.profiles.filter(p => st.pets.has(p.k));
+  if (!st.profiles.some(p => p.id === st.cur)) st.cur = st.profiles[0]?.id || null;
+  return gone;
+};
+const curPet = () => st.profiles.find(p => p.id === st.cur) || st.profiles[0];
+
+/* ---------- cloud (Supabase) ----------
+   The phone keeps a full copy (instant start, works offline); the server is the shared truth.
+   Every change is saved locally first, flagged dirty, then pushed; anything that failed is pushed again
+   on the next start, when the phone comes back online, or when the app returns to the foreground. */
+const SB_URL = 'https://wwmwubwphslhjlstdgcn.supabase.co';
+const SB_KEY = 'sb_publishable_JMYBtktz0O-tLJpoYH-mQQ_dgDtACaL'; // publishable key: meant to be public; the database rules guard the data
+const sb = window.supabase && window.supabase.createClient
+  ? window.supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, storageKey:'zoomies.auth' } })
+  : null;
+const PHOTO_URL = path => `${SB_URL}/storage/v1/object/public/pet-photos/${path}`;
+const cloudOn = () => !!(sb && st.user && st.user.id && st.signedIn);
+const toBlob = dataUrl => fetch(dataUrl).then(r => r.blob());
+const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
+const petRow = p => ({ id:p.id, kind:p.k, name:p.name, sex:p.sex || null, birth:p.birth || null, breed:p.breed || null, weight:p.weight ? Number(p.weight) : null, photo_path:p.photoPath || null });
+const fromRow = r => ({ id:r.id, k:r.kind, name:r.name, sex:r.sex || '', birth:r.birth || '', breed:r.breed || '', weight:r.weight != null ? String(+r.weight) : '',
+  photoPath:r.photo_path || '', photo:r.photo_path ? PHOTO_URL(r.photo_path) : '', code:r.share_code, cloud:true, dirty:false });
+let queue = Promise.resolve(); // one server write at a time, in order
+const enqueue = job => (queue = queue.then(job).catch(err => { console.warn('cloud', err); return false; }));
+const pushPet = p => {
+  p.dirty = true; save();
+  if (!cloudOn()) return Promise.resolve(false);
+  return enqueue(async () => {
+    if (!st.profiles.includes(p)) return false;          // deleted meanwhile
+    if (p.photo && p.photo.startsWith('data:')) {          // a new photo: upload it under a fresh random name
+      const path = `${st.user.id}/${uuid()}.jpg`;
+      const up = await sb.storage.from('pet-photos').upload(path, await toBlob(p.photo), { contentType:'image/jpeg' });
+      if (up.error) throw up.error;
+      const old = p.photoPath; p.photoPath = path; p.photo = PHOTO_URL(path);
+      if (old) sb.storage.from('pet-photos').remove([old]);
+    }
+    const { data, error } = await sb.from('pets').upsert(petRow(p)).select('share_code').single();
+    if (error) throw error;
+    p.code = data.share_code; p.cloud = true; p.dirty = false; save();
+    if ([...(p.logs || []), ...(p.memos || [])].some(x => x.dirty || !x.synced)) { (p.logs || []).concat(p.memos || []).forEach(x => { if (!x.synced) x.dirty = true; }); pushItems(); }
+    return true;
+  });
+};
+const removePetCloud = p => {
+  if (!p.cloud) return;
+  if (!cloudOn()) { st.delQ.push(p.id); save(); return; }
+  enqueue(async () => {
+    const { error } = await sb.from('pets').delete().eq('id', p.id);
+    if (error) { st.delQ.push(p.id); save(); throw error; }
+    if (p.photoPath) sb.storage.from('pet-photos').remove([p.photoPath]);
+  });
+};
+const pushAvatar = () => cloudOn() && enqueue(async () => {
+  const old = st.user.avatarPath || '';
+  let path = null;
+  if (st.user.photo) {
+    path = `${st.user.id}/${uuid()}.jpg`;
+    const up = await sb.storage.from('avatars').upload(path, await toBlob(st.user.photo), { contentType:'image/jpeg' });
+    if (up.error) throw up.error;
+  }
+  const { error } = await sb.from('profiles').update({ avatar_path:path }).eq('id', st.user.id);
+  if (error) throw error;
+  st.user.avatarPath = path || ''; st.user.avatarDirty = false; save();
+  if (old && old !== path) sb.storage.from('avatars').remove([old]);
+});
+// pull the server copy and merge it with the phone's copy
+let lastLoad = 0;
+const cloudLoad = async () => {
+  if (!cloudOn()) return false;
+  lastLoad = Date.now();
+  const uid = st.user.id;
+  for (const id of st.delQ.splice(0)) { const { error } = await sb.from('pets').delete().eq('id', id); if (error) { st.delQ.push(id); throw error; } }
+  const [prof, pets] = await Promise.all([
+    sb.from('profiles').select('name, phone, avatar_path').eq('id', uid).maybeSingle(),
+    sb.from('pets').select('id, kind, name, sex, birth, breed, weight, photo_path, share_code').order('created_at')
+  ]);
+  if (prof.error) throw prof.error;
+  if (pets.error) throw pets.error;
+  if (prof.data) {
+    st.user.name = prof.data.name; if (prof.data.phone) st.user.phone = prof.data.phone;
+    const ap = prof.data.avatar_path || '';
+    if (st.user.avatarDirty) pushAvatar();                                    // changed here while offline
+    else if (ap && ap !== st.user.avatarPath) {                                // changed on another phone
+      const dl = await sb.storage.from('avatars').download(ap);
+      if (!dl.error) { st.user.photo = await blobToDataURL(dl.data); st.user.avatarPath = ap; }
+    } else if (!ap && st.user.avatarPath) { delete st.user.photo; st.user.avatarPath = ''; }
+    else if (!ap && st.user.photo && !st.user.avatarPath) pushAvatar();      // photo from before the server existed
+  }
+  const byId = new Map(pets.data.map(r => [r.id, r])), next = [], toPush = [];
+  st.profiles.forEach(p => {
+    const r = byId.get(p.id); byId.delete(p.id);
+    if (r && !p.dirty) { Object.assign(p, fromRow(r)); next.push(p); }       // server copy wins
+    else if (r || !p.cloud) {                                                // local change not sent yet, or never uploaded
+      if (!isUUID(p.id)) { const old = p.id; p.id = uuid(); if (st.cur === old) st.cur = p.id; }
+      next.push(p); toPush.push(p);
+    }
+    // else: uploaded before but no longer on the server = deleted on another phone
+  });
+  byId.forEach(r => next.push({ ...fromRow(r), logs:[], memos:[], friends:[] })); // added on another phone
+  st.profiles = next;
+  st.pets = new Set(next.map(p => p.k));
+  if (!next.some(p => p.id === st.cur)) st.cur = next[0]?.id || null;
+  save();
+  toPush.forEach(pushPet);
+  await loadItems();
+  await loadFriends().catch(err => console.warn('friends', err));
+  startRealtime();
+  return true;
+};
+
+/* health log entries and memos on the server (phase 3). Same pattern as pets: each item is saved on the phone
+   first and flagged dirty; pushItems() sends dirty items in batches and deletes queued ones. Items that were
+   synced before but are gone from the server were deleted on another phone and are dropped here too. */
+const logToRow = (p, x) => ({ id:x.id, pet_id:p.id, type:x.type, log_date:x.date, log_time:x.time || null,
+  amount_g:x.type === 'food' ? +x.amount : null, minutes:x.type === 'walk' ? +x.minutes : null, km:x.type === 'walk' ? (+x.km || 0) : null,
+  name:x.name || null, dose:x.type === 'med' ? (x.dose || null) : null, due:x.type === 'vaccine' ? (x.due || null) : null, note:x.note || null });
+const logFrom = r => ({ id:r.id, type:r.type, date:r.log_date, time:r.log_time ? r.log_time.slice(0, 5) : '', note:r.note || '',
+  amount:r.amount_g != null ? r.amount_g : undefined, minutes:r.minutes != null ? r.minutes : undefined, km:r.km != null ? +r.km : 0,
+  name:r.name || '', dose:r.dose || '', due:r.due || '', synced:true, dirty:false });
+const memoRow = (p, x) => ({ id:x.id, pet_id:p.id, body:x.text, done:!!x.done, done_date:x.done && x.doneDate ? x.doneDate : null, added_on:x.date, created_at:new Date(x.at || Date.now()).toISOString() });
+const memoFrom = r => ({ id:r.id, text:r.body, done:r.done, doneDate:r.done_date || '', date:r.added_on, at:Date.parse(r.created_at) || Date.now(), synced:true, dirty:false });
+const touch = x => { x.dirty = true; return x; };
+const dropItem = (t, x) => { if (x.synced) st.delItems.push({ t, id:x.id }); };
+const pushItems = () => cloudOn() && enqueue(async () => {
+  const dels = st.delItems.splice(0);
+  for (const t of ['health_logs', 'memos']) {
+    const ids = dels.filter(d => d.t === t).map(d => d.id);
+    if (ids.length) { const { error } = await sb.from(t).delete().in('id', ids); if (error) { st.delItems.push(...dels.filter(d => d.t === t)); save(); throw error; } }
+  }
+  for (const p of st.profiles) {
+    if (!p.cloud) continue; // its pet goes up first; pushPet calls back here when done
+    for (const [t, list, toRow] of [['health_logs', p.logs || [], logToRow], ['memos', p.memos || [], memoRow]]) {
+      const dirty = list.filter(x => x.dirty); if (!dirty.length) continue;
+      dirty.forEach(x => { if (!isUUID(x.id)) x.id = uuid(); });
+      const { error } = await sb.from(t).upsert(dirty.map(x => toRow(p, x)));
+      if (error) throw error;
+      dirty.forEach(x => { x.dirty = false; x.synced = true; });
+    }
+  }
+  save();
+});
+// read every row (Supabase returns at most 1000 per request)
+const fetchAll = async t => {
+  const out = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await sb.from(t).select('*').order('id').range(from, from + 999);
+    if (error) throw error;
+    out.push(...data); if (data.length < 1000) return out;
+  }
+};
+const mergeItems = (local, rows, from) => {
+  const byId = new Map(rows.map(r => [r.id, r])), out = [];
+  (local || []).forEach(x => {
+    const r = byId.get(x.id); byId.delete(x.id);
+    if (r && !x.dirty) out.push(from(r));                                   // server copy wins
+    else if (r || !x.synced) { if (!isUUID(x.id)) x.id = uuid(); x.dirty = true; out.push(x); } // local change, or from before the server
+    // else: synced before, gone from the server = deleted on another phone
+  });
+  byId.forEach(r => out.push(from(r)));                                     // added on another phone
+  return out;
+};
+const loadItems = async () => {
+  if (!cloudOn()) return;
+  await pushItems(); // queued deletes and edits first, so they don't come back from the server
+  const [logs, memos] = await Promise.all([fetchAll('health_logs'), fetchAll('memos')]);
+  const gone = new Set(st.delItems.map(d => d.id));
+  st.profiles.forEach(p => {
+    if (!p.cloud) { (p.logs || []).forEach(touch); (p.memos || []).forEach(touch); return; }
+    p.logs = mergeItems(p.logs, logs.filter(r => r.pet_id === p.id && !gone.has(r.id)), logFrom);
+    p.memos = mergeItems(p.memos, memos.filter(r => r.pet_id === p.id && !gone.has(r.id)), memoFrom);
+  });
+  save();
+  pushItems();
+};
+// keep in step: retry after coming back online, refresh when the app returns to the foreground
+window.addEventListener('online', () => { if (cloudOn()) cloudLoad().then(() => st.profiles.length && renderHome()).catch(() => {}); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && cloudOn() && Date.now() - lastLoad > 60000 && !st.sheet)
+    cloudLoad().then(() => { if (st.profiles.length && curTab()) renderHome(); }).catch(() => {});
+});
+const enterApp = () => { if (st.pets.size) { st.filter = 'all'; renderHome(); go('home'); if (pendingShare) setTimeout(showIncoming, 800); } else { st.editPets = false; openPets(); } };
 
 /* ---------- navigation ---------- */
 const go = (id, back = false) => {
@@ -833,8 +1367,11 @@ const go = (id, back = false) => {
   nxt.scrollTop = 0;
   nxt.classList.add('active');
   $('#sbar').classList.toggle('light', id === 'done');
-  $('#nav').classList.toggle('hide', id !== 'home');
+  $('#nav').classList.toggle('hide', !TABS.includes(id));
+  if (TABS.includes(id)) setNav(id);
 };
+const TABS = ['home', 'shop'];
+const curTab = () => { const a = document.querySelector('.screen.active'); return a && TABS.includes(a.id) ? a.id : 'home'; };
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => go(b.dataset.back, true));
 
 /* ---------- welcome ---------- */
@@ -866,16 +1403,47 @@ $('#suForm').addEventListener('submit', e => {
   });
   if (firstBad) { firstBad.focus(); return; }
   const btn = $('#suBtn'); btn.disabled = true; btn.innerHTML = 'Шалгаж байна… <span class="spin" style="margin-left:10px"></span>';
+  const resetBtn = () => { btn.disabled = false; btn.innerHTML = 'Үргэлжлүүлэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn); };
+  if (sb) { cloudSignUp(resetBtn); return; }
   setTimeout(async () => {
     st.user = { name: $('#in-name').value.trim(), email: $('#in-email').value.trim(), phone: $('#in-phone').value.trim() };
     const salt = newSalt(), hash = await hashPw($('#in-pass').value, salt);
     st.pw = hash ? { salt, hash } : null; st.signedIn = true;
-    st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0;
+    st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0; st.profiles = []; st.cur = null;
     $('#in-pass').value = ''; save();
     btn.disabled = false; btn.innerHTML = 'Үргэлжлүүлэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn);
     st.editPets = false; openPets();
   }, 800);
 });
+// sign-up on the server. If this phone already holds data for the same email (from before the server),
+// it is kept and uploaded, so nobody loses their pets when the app moves online.
+const cloudSignUp = async resetBtn => {
+  const name = $('#in-name').value.trim(), email = $('#in-email').value.trim(), phone = $('#in-phone').value.trim(), password = $('#in-pass').value;
+  let res;
+  try { res = await sb.auth.signUp({ email, password, options:{ data:{ name, phone } } }); }
+  catch (_) { resetBtn(); toast('Интернэт холболтоо шалгаад дахин оролдоно уу.'); return; }
+  resetBtn();
+  const { data, error } = res;
+  if (error) {
+    const m = (error.code || '') + ' ' + (error.message || '');
+    if (/already|exists|registered/i.test(m)) return fieldErr('f-email', 'Энэ имэйлээр бүртгэл байна. Доорх "Нэвтрэх" дээр дарна уу.');
+    if (/password/i.test(m)) return fieldErr('f-pass', 'Нууц үг хэт энгийн байна. Илүү урт, үсэг тоо холилдсон нууц үг оруулна уу.');
+    if (/email/i.test(m) && /invalid/i.test(m)) return fieldErr('f-email', 'Имэйл хаяг буруу байна.');
+    if (/rate|too many|429/i.test(m)) return toast('Хэт олон оролдлого боллоо. Хэдэн минутын дараа дахин оролдоно уу.');
+    return toast('Бүртгэл үүсгэж чадсангүй: ' + (error.message || 'алдаа'));
+  }
+  if (!data.session) { // email confirmation is switched on in Supabase
+    $('#in-pass').value = ''; $('#in-lemail').value = email; go('login');
+    setTimeout(() => toast(`${email} хаяг руу баталгаажуулах холбоос илгээлээ. Түүн дээр дараад нэвтэрнэ үү.`), 500);
+    return;
+  }
+  const local = loadSaved(), same = local && local.user && (local.user.email || '').toLowerCase() === email.toLowerCase();
+  if (same) restore(local); else resetLocal();
+  st.user = { ...(same ? st.user : {}), id:data.user.id, name, email, phone };
+  st.signedIn = true; $('#in-pass').value = ''; save();
+  if (st.profiles.length) { try { await cloudLoad(); } catch (_) {} enterApp(); setTimeout(() => toast(`Тавтай морил, ${name}! Таны мэдээллийг серверт хадгаллаа.`), 700); }
+  else { st.editPets = false; openPets(); }
+};
 
 /* ---------- pets ---------- */
 const openPets = () => {
@@ -905,17 +1473,1025 @@ $('#petsBack').onclick = () => st.editPets ? go('home', true) : go('signup', tru
 $('#petsBtn').onclick = () => {
   const first = !st.editPets;
   if (!st.pets.has(st.filter)) st.filter = 'all';
-  save(); renderHome(); go('home', !first);
-  setTimeout(() => toast(first ? `Тавтай морил, ${st.user.name}! Эхний захиалгад 10% хөнгөлөлт.` : 'Тэжээвэр амьтдыг шинэчиллээ.'), 700);
+  syncProfiles().forEach(removePetCloud); save();
+  st.profiles.filter(p => !p.cloud || p.dirty).forEach(pushPet);
+  renderHome(); go('home', !first);
+  setTimeout(() => toast(first ? `Тавтай морил, ${st.user.name}! Тэжээвэр амьтныхаа зургийг оруулаарай.` : 'Тэжээвэр амьтдыг шинэчиллээ.'), 700);
+  if (first && pendingShare) setTimeout(showIncoming, 1200);
 };
 
-/* ---------- home ---------- */
+/* ---------- home (pet profile) + shop ---------- */
 const renderHome = () => {
-  $('#avatarBtn').textContent = st.user.name[0].toUpperCase();
-  $('#hello').textContent = `Сайн уу, ${st.user.name}`;
+  renderAvatars();
+  $('#phHi').textContent = `Сайн уу, ${st.user.name}`;
+  renderPetHome();
   renderChips(); renderGrid(); renderCartUI(false);
   if (!st.notes.length) seedNotes();
   renderBell(st.notes.some(n => !n.read));
+};
+// the user's own photo, or the first letter of their name
+const avatarHTML = () => st.user.photo ? `<img src="${st.user.photo}" alt="">` : esc(st.user.name[0].toUpperCase());
+const renderAvatars = () => document.querySelectorAll('#avatarBtn, #homeAvatar, #sheet .avatar').forEach(el => el.innerHTML = avatarHTML());
+// "2 нас 3 сар" from a yyyy-mm-dd birth date
+const ageText = birth => {
+  if (!birth) return '';
+  const b = new Date(birth + 'T00:00:00'), n = new Date();
+  if (isNaN(b) || b > n) return '';
+  let m = (n.getFullYear() - b.getFullYear()) * 12 + n.getMonth() - b.getMonth();
+  if (n.getDate() < b.getDate()) m--;
+  const y = Math.floor(m / 12), r = m % 12;
+  if (!y && !r) return '1 сар хүрээгүй';
+  return [y ? `${y} нас` : '', r ? `${r} сар` : ''].filter(Boolean).join(' ');
+};
+const petPic = (p, cls = '') => p.photo ? `<img src="${p.photo}" alt="${esc(p.name)}"${cls ? ` class="${cls}"` : ''}>` : petBy(p.k).svg;
+const renderPetHome = () => {
+  const p = curPet(); if (!p) return;
+  $('#petTabs').innerHTML = st.profiles.map(x => `<button class="pet-tab" role="tab" data-pid="${x.id}" aria-selected="${x.id === p.id}"><span class="pt-img">${petPic(x)}</span><span>${esc(x.name)}</span></button>`).join('') +
+    `<button class="pet-tab add" id="addPet" aria-label="Тэжээвэр нэмэх"><span class="pt-img">${ICON.plus}</span><span>Нэмэх</span></button>`;
+  $('#petHero').innerHTML = `<div class="pet-photo">
+      ${p.photo ? `<img src="${p.photo}" alt="${esc(p.name)}-ийн зураг">` : `<span class="ph-art">${petBy(p.k).svg}</span><span class="ph-note">Зураг хараахан оруулаагүй</span>`}
+      <button class="ph-share" id="petShare" aria-label="${esc(p.name)}-г хуваалцах">${ICON.share}</button>
+      <button class="cam-btn" id="camBtn">${ICON.camera}${p.photo ? 'Зураг солих' : 'Зураг оруулах'}</button>
+    </div>
+    <div class="pet-meta"><div><h2>${esc(p.name)}</h2></div><button class="circle-btn" id="petEdit" aria-label="${esc(p.name)}-ийн мэдээлэл засах">${ICON.edit}</button></div>`;
+  const fact = (label, val) => `<button class="fact" data-edit><small>${label}</small><b class="${val ? '' : 'unset'}">${val ? esc(val) : '+ Нэмэх'}</b></button>`;
+  $('#petFacts').innerHTML = fact('Нас', ageText(p.birth)) + fact('Хүйс', p.sex) + fact('Үүлдэр', p.breed) + fact('Жин', p.weight ? `${p.weight} кг` : '');
+  const recs = PRODUCTS.filter(x => x.pets.includes(p.k));
+  $('#recsTitle').textContent = `${p.name}-д зориулсан`;
+  $('#petRecs').innerHTML = recs.length ? recs.map((x, i) => `<article class="card" style="--i:${i}" data-id="${x.id}" tabindex="0" aria-label="${esc(x.n)}, ${fmt(x.price)}">
+    ${x.isNew ? '<span class="tag">Шинэ</span>' : ''}<button class="add" aria-label="${esc(x.n)} сагсанд нэмэх">${ICON.plus}</button>
+    <div class="art">${pic(x)}</div><div class="nm">${esc(x.n)}</div><div class="pr">${fmt(x.price)}</div></article>`).join('')
+    : `<p style="color:var(--muted);font-size:13px;margin:4px 4px 0">Одоогоор бараа алга.</p>`;
+  renderFriends(); renderHealth(); renderMemo();
+};
+$('#petTabs').addEventListener('click', e => {
+  if (e.target.closest('#addPet')) { openPetEdit(null); return; }
+  const t = e.target.closest('.pet-tab'); if (!t) return;
+  st.cur = t.dataset.pid; save(); renderPetHome();
+});
+$('#petHero').addEventListener('click', e => {
+  if (e.target.closest('#camBtn')) $('#petPhotoIn').click();
+  else if (e.target.closest('#petShare')) openShare(curPet());
+  else if (e.target.closest('#petEdit')) openPetEdit(curPet().id);
+});
+$('#petFacts').addEventListener('click', e => { if (e.target.closest('[data-edit]')) openPetEdit(curPet().id); });
+$('#petRecs').addEventListener('click', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  if (e.target.closest('.add')) { addToCart(card.dataset.id, 1); toast(`${prodBy(card.dataset.id).n} сагсанд нэмэгдлээ.`); return; }
+  openProduct(card.dataset.id);
+});
+$('#petRecs').addEventListener('keydown', e => { const c = e.target.closest('.card'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(c.dataset.id); } });
+$('#recsAll').onclick = () => {
+  st.filter = curPet().k; renderChips(); renderGrid(); go('shop');
+  setTimeout(() => $('#exploreBtn').click(), 450);
+};
+$('#homeAvatar').onclick = () => openProfile();
+
+/* photo upload: shrink to at most 720px on the long side and store as JPEG so it fits in device storage */
+const shrinkImage = (file, max = 720) => new Promise((res, rej) => {
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => {
+    const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', .82));
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('bad image')); };
+  img.src = url;
+});
+$('#petPhotoIn').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  const p = curPet(); if (!f || !p) return;
+  if (!/^image\//.test(f.type)) { toast('Зөвхөн зураг оруулна уу.'); return; }
+  $('#camBtn')?.classList.add('busy');
+  try {
+    const old = p.photo; p.photo = await shrinkImage(f);
+    if (!save()) { p.photo = old; save(); toast('Утасны санах ой дүүрсэн тул зургийг хадгалж чадсангүй.'); }
+    else { toast(`${p.name}-ийн зураг шинэчлэгдлээ.`); pushPet(p); }
+  } catch (_) { toast('Энэ зургийг уншиж чадсангүй. Өөр зураг сонгоно уу.'); }
+  renderPetHome();
+});
+
+// the user's own profile photo: small (320px) since it only shows in round avatars
+$('#userPhotoIn').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f || !st.user) return;
+  if (!/^image\//.test(f.type)) { toast('Зөвхөн зураг оруулна уу.'); return; }
+  $('#userPhotoBtn')?.classList.add('busy');
+  try {
+    const old = st.user.photo; st.user.photo = await shrinkImage(f, 320);
+    if (!save()) { if (old) st.user.photo = old; else delete st.user.photo; save(); toast('Утасны санах ой дүүрсэн тул зургийг хадгалж чадсангүй.'); }
+    else { toast('Профайл зураг шинэчлэгдлээ.'); st.user.avatarDirty = true; save(); pushAvatar(); }
+  } catch (_) { toast('Энэ зургийг уншиж чадсангүй. Өөр зураг сонгоно уу.'); }
+  renderAvatars();
+  if (st.sheet === 'profile') { const y = body.scrollTop; openProfile(); body.scrollTop = y; }
+});
+
+/* ---------- health log ----------
+   Every entry stores a local calendar date 'YYYY-MM-DD' and time 'HH:MM' as typed, never a timestamp,
+   so totals never shift with time zones. Periods are compared as date strings (ISO sorts correctly).
+   Averages divide by the days of the period that have already happened (today included),
+   so the current month or year is not diluted by days still to come. */
+const HT = {
+  food:    { n:'Хооллолт',     i:'food',    c:'#D9560A', bg:'#FFE9DA', unit:'г',    m:'Хоол (г)' },
+  walk:    { n:'Салхилуулалт', i:'walk',    c:'#2E7D32', bg:'#DDF3D8', unit:'мин',  m:'Алхалт (мин)' },
+  med:     { n:'Эм тариа',     i:'pill',    c:'#1F6FA8', bg:'#E1F1FB', unit:'удаа', m:'Эм (удаа)' },
+  vaccine: { n:'Вакцин',       i:'syringe', c:'#6B4FB8', bg:'#ECE6FA', unit:'удаа', m:'Вакцин (удаа)' }
+};
+const HKEYS = Object.keys(HT);
+const pad2 = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const todayStr = () => ymd(new Date());
+const nowHM = () => { const d = new Date(); return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
+const parts = s => s.split('-').map(Number);
+const dayNo = s => { const [y, m, d] = parts(s); return Date.UTC(y, m - 1, d) / 864e5; }; // whole days, DST-proof
+const daysIn = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate(); // m is 1-12
+const num = (v, max = 1) => Number(v).toLocaleString('en-US', { maximumFractionDigits:max });
+const MON = m => `${m}-р сар`;
+const prettyDate = s => { const [y, m, d] = parts(s); return `${y}.${pad2(m)}.${pad2(d)}`; };
+st.hp = { mode:'day', anchor:null, metric:'food', all:false };
+const memoF = { f:'all' };
+
+const periodOf = (mode, a) => {
+  const [y, m] = parts(a);
+  if (mode === 'day') return { from:a, to:a, label:prettyDate(a) };
+  if (mode === 'month') return { from:`${y}-${pad2(m)}-01`, to:`${y}-${pad2(m)}-${pad2(daysIn(y, m))}`, label:`${y} оны ${MON(m)}` };
+  return { from:`${y}-01-01`, to:`${y}-12-31`, label:`${y} он` };
+};
+const shiftAnchor = (mode, a, step) => {
+  let [y, m, d] = parts(a);
+  if (mode === 'day') { const t = new Date(Date.UTC(y, m - 1, d + step)); return `${t.getUTCFullYear()}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`; }
+  if (mode === 'month') { m += step; while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; } return `${y}-${pad2(m)}-01`; }
+  return `${y + step}-01-01`;
+};
+// numbers for one period; pure function of the logs so it can be checked in isolation
+const healthStats = (logs, from, to, today) => {
+  const inP = logs.filter(l => l.date >= from && l.date <= to);
+  const end = to < today ? to : today;
+  const elapsed = from > today ? 0 : dayNo(end) - dayNo(from) + 1;
+  const s = { inP, elapsed, days:new Set(inP.map(l => l.date)).size };
+  const of = k => inP.filter(l => l.type === k);
+  const f = of('food'), w = of('walk'), md = of('med'), v = of('vaccine');
+  s.food = { count:f.length, g:f.reduce((a, l) => a + (+l.amount || 0), 0), days:new Set(f.map(l => l.date)).size };
+  s.walk = { count:w.length, min:w.reduce((a, l) => a + (+l.minutes || 0), 0), km:w.reduce((a, l) => a + (+l.km || 0), 0) };
+  s.med = { count:md.length, names:[...new Set(md.map(l => l.name))] };
+  s.vaccine = { count:v.length, names:[...new Set(v.map(l => l.name))] };
+  s.food.avg = elapsed ? s.food.g / elapsed : 0;
+  s.walk.avg = elapsed ? s.walk.min / elapsed : 0;
+  s.walk.km = Math.round(s.walk.km * 100) / 100; // avoid 0.1+0.2 float noise
+  return s;
+};
+const metricVal = (l, k) => k === 'food' ? (+l.amount || 0) : k === 'walk' ? (+l.minutes || 0) : 1;
+// vaccine due dates: a due date counts as done once the same vaccine is logged on/after the previous shot
+const vaccineDue = (logs, today) => {
+  const v = logs.filter(l => l.type === 'vaccine' && l.due);
+  const open = v.filter(l => !logs.some(x => x.type === 'vaccine' && x.id !== l.id && x.name.toLowerCase() === l.name.toLowerCase() && x.date > l.date));
+  const late = open.filter(l => l.due < today).sort((a, b) => a.due < b.due ? -1 : 1)[0];
+  const next = open.filter(l => l.due >= today).sort((a, b) => a.due < b.due ? -1 : 1)[0];
+  return { late, next };
+};
+const logTitle = l => {
+  if (l.type === 'food') return `${num(l.amount, 0)} г${l.name ? ' · ' + esc(l.name) : ''}`;
+  if (l.type === 'walk') return `${num(l.minutes, 0)} мин${+l.km ? ' · ' + num(l.km, 2) + ' км' : ''}`;
+  if (l.type === 'med') return `${esc(l.name)}${l.dose ? ' · ' + esc(l.dose) : ''}`;
+  return `${esc(l.name)}${l.due ? ' · дараагийнх ' + prettyDate(l.due) : ''}`;
+};
+const logRow = l => { const t = HT[l.type]; return `<button class="hl-row" data-log="${l.id}"><span class="qi" style="color:${t.c};background:${t.bg}">${ICON[t.i]}</span>
+  <span class="tx"><b>${t.n} · ${logTitle(l)}</b><em>${prettyDate(l.date)} ${l.time || ''}${l.note ? ' · ' + esc(l.note) : ''}</em></span></button>`; };
+
+const renderHealth = () => {
+  const p = curPet(); if (!p) return;
+  p.logs = p.logs || [];
+  const today = todayStr(), hp = st.hp;
+  if (!hp.anchor) hp.anchor = today;
+  const per = periodOf(hp.mode, hp.anchor), s = healthStats(p.logs, per.from, per.to, today);
+  const atNow = per.to >= today;
+  const due = vaccineDue(p.logs, today);
+  const dueNote = due.late ? `<div class="vac-note late"><span class="qi" style="color:var(--danger);background:#FFE0D6">${ICON.syringe}</span><span><b>${esc(due.late.name)}</b> вакцины хугацаа ${dayNo(today) - dayNo(due.late.due)} хоног хэтэрсэн (${prettyDate(due.late.due)})</span></div>`
+    : due.next ? `<div class="vac-note"><span class="qi" style="color:${HT.vaccine.c};background:${HT.vaccine.bg}">${ICON.syringe}</span><span>Дараагийн вакцин: <b>${esc(due.next.name)}</b> · ${prettyDate(due.next.due)} (${due.next.due === today ? 'өнөөдөр' : (dayNo(due.next.due) - dayNo(today)) + ' хоногийн дараа'})</span></div>` : '';
+  const many = hp.mode !== 'day';
+  // the big number carries its value in data-n so it can count up from the previous one
+  const tile = (k, i, val, unit, sub) => `<div class="st-tile" style="--i:${i}"><span class="st-top"><i style="background:${HT[k].c}"></i>${HT[k].n}</span><b data-k="${k}" data-n="${val}" data-u="${unit}">${num(val, 0)} ${unit}</b><small>${sub}</small></div>`;
+  const nums = { food:s.food.g, walk:s.walk.min, med:s.med.count, vaccine:s.vaccine.count };
+  const tiles = tile('food', 0, nums.food, 'г', `${s.food.count} удаа${many && s.elapsed ? ` · өдөрт дунджаар ${num(s.food.avg, s.food.avg < 10 ? 1 : 0)} г` : ''}`) +
+    tile('walk', 1, nums.walk, 'мин', `${s.walk.count} удаа${s.walk.km ? ` · ${num(s.walk.km, 2)} км` : ''}${many && s.elapsed ? ` · өдөрт ${num(s.walk.avg, 1)} мин` : ''}`) +
+    tile('med', 2, nums.med, 'удаа', s.med.names.length ? s.med.names.map(esc).join(', ') : 'Бүртгэл алга') +
+    tile('vaccine', 3, nums.vaccine, 'удаа', s.vaccine.names.length ? s.vaccine.names.map(esc).join(', ') : 'Бүртгэл алга');
+  const prev = hp.shown; // what was on screen before this render
+  const periodChanged = !prev || prev.mode !== hp.mode || prev.from !== per.from;
+  const list = [...s.inP].sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+  const shown = hp.all ? list : list.slice(0, 6);
+  $('#health').innerHTML = `<div class="hl-h"><h3>Эрүүл мэндийн хөтлөл</h3><span>${p.logs.length} бүртгэл</span></div>
+    <div class="hl-quick">${HKEYS.map(k => `<button data-add="${k}" aria-label="${HT[k].n} бүртгэх"><span class="qi plus" style="color:${HT[k].c};background:${HT[k].bg}">${ICON[HT[k].i]}</span>${HT[k].n}</button>`).join('')}</div>
+    ${dueNote}
+    <div class="hl-card">
+      <div class="seg3" role="group" aria-label="Хугацаа"><span class="ind" aria-hidden="true"></span>${[['day', 'Өдөр'], ['month', 'Сар'], ['year', 'Жил']].map(([m, n]) => `<button data-mode="${m}" aria-pressed="${hp.mode === m}">${n}</button>`).join('')}</div>
+      <div class="per"><button data-step="-1" aria-label="Өмнөх">‹</button><b>${per.label}</b>
+        ${atNow ? '<button data-step="1" disabled aria-label="Дараах">›</button>' : `<span style="display:flex;gap:6px"><button class="today" data-today>Өнөөдөр</button><button data-step="1" aria-label="Дараах">›</button></span>`}</div>
+      <div class="hl-stats${periodChanged && prev ? ' swap' : ''}">${tiles}</div>
+      ${many ? `<div class="st-foot">${s.elapsed ? `${s.elapsed} өдрөөс ${s.days} өдөр бүртгэлтэй` : 'Энэ хугацаа хараахан эхлээгүй'}</div>` : ''}
+      ${many ? chartHTML(p.logs, hp, per, today) : ''}
+      ${many ? '' : `<div class="hl-list">${shown.length ? shown.map(logRow).join('') : '<div class="hl-empty">Энэ өдөр бүртгэл алга. Дээрх товчоор нэмээрэй.</div>'}
+        ${list.length > shown.length ? `<button class="hl-more" data-all>Бүгдийг харах (${list.length})</button>` : ''}</div>`}
+    </div>`;
+  paintChartReadout();
+  animateHealth(prev, { mode:hp.mode, metric:hp.metric, from:per.from, nums, step:hp.lastStep || 0 }, periodChanged);
+  hp.shown = { mode:hp.mode, metric:hp.metric, from:per.from, nums }; hp.lastStep = 0;
+};
+const MODES = ['day', 'month', 'year'];
+// slide a pill from the previous choice to the new one: place it at the old spot with no transition, then let it spring
+const slidePill = (ind, from, to) => {
+  if (!ind) return;
+  ind.style.transition = 'none'; from(); void ind.offsetWidth; ind.style.transition = ''; to();
+};
+const countUp = (el, a, b) => {
+  const u = el.dataset.u, d = 520, t0 = performance.now(), ease = x => 1 - Math.pow(1 - x, 3);
+  const tick = t => { const x = Math.min(1, (t - t0) / d), v = a + (b - a) * ease(x); el.textContent = `${num(x < 1 ? Math.round(v) : b, 0)} ${u}`; if (x < 1 && el.isConnected) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+};
+const animateHealth = (prev, now, periodChanged) => {
+  const H = $('#health');
+  // Өдөр / Сар / Жил pill
+  const seg = H.querySelector('.seg3 .ind'), at = m => `translateX(calc(${MODES.indexOf(m)} * (100% + 4px)))`;
+  slidePill(seg, () => seg.style.transform = at(prev && !reduce ? prev.mode : now.mode), () => seg.style.transform = at(now.mode));
+  // metric chips pill: follows the chosen chip's position and width, and the row scrolls it into view
+  const row = H.querySelector('.chart-m');
+  if (row) {
+    const ind = row.querySelector('.ind'), place = k => { const b = row.querySelector(`[data-metric="${k}"]`); ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`; };
+    const from = prev && prev.mode !== 'day' && !reduce ? prev.metric : now.metric;
+    if (prev && prev.mode !== 'day') { row.style.scrollBehavior = 'auto'; row.scrollLeft = prev.scroll || 0; row.style.scrollBehavior = ''; }
+    slidePill(ind, () => place(from), () => place(now.metric));
+    const b = row.querySelector(`[data-metric="${now.metric}"]`);
+    row.scrollTo({ left: b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2, behavior: reduce ? 'auto' : 'smooth' });
+    row.addEventListener('scroll', () => { st.hp.shown && (st.hp.shown.scroll = row.scrollLeft); }, { passive:true });
+    // bars grow from the baseline whenever the chart content changes
+    const chart = H.querySelector('.chart');
+    if (!reduce && (!prev || periodChanged || prev.metric !== now.metric)) {
+      chart.style.setProperty('--step', now.mode === 'month' ? '12ms' : '30ms');
+      chart.classList.add('grow');
+    }
+    if (!prev || prev.mode === 'day') chart.classList.add('enter');
+  }
+  // period label slides in from the side you stepped toward
+  if (now.step && !reduce) H.querySelector('.per b').classList.add(now.step > 0 ? 'slide-r' : 'slide-l');
+  // numbers count from what was shown to the new value
+  if (prev && !reduce) H.querySelectorAll('.st-tile b[data-n]').forEach(el => { const a = prev.nums[el.dataset.k], b = +el.dataset.n; if (a !== b) countUp(el, a, b); });
+};
+// one series at a time (single hue), so no legend: the metric chips name it
+const chartHTML = (logs, hp, per, today) => {
+  const k = hp.metric, [y, m] = parts(per.from);
+  const n = hp.mode === 'month' ? daysIn(y, m) : 12;
+  const vals = Array(n).fill(0);
+  logs.forEach(l => {
+    if (l.type !== k || l.date < per.from || l.date > per.to) return;
+    const [, lm, ld] = parts(l.date); vals[hp.mode === 'month' ? ld - 1 : lm - 1] += metricVal(l, k);
+  });
+  const W = 320, H = 132, L = 30, R = 8, T = 10, B = 18, ch = H - T - B, cw = (W - L - R) / n;
+  const max = Math.max(...vals), top = max ? niceMax(max) : (k === 'food' ? 100 : k === 'walk' ? 30 : 2);
+  const bw = Math.max(2, cw - 2);
+  const cols = vals.map((v, i) => {
+    const x = L + i * cw + (cw - bw) / 2, h = v ? Math.max(2, v / top * ch) : 0, yb = T + ch;
+    const r = Math.min(4, bw / 2, h);
+    const bar = h ? `<path class="bar" style="--i:${i}" fill="${HT[k].c}" d="M${x} ${yb}V${yb - h + r}Q${x} ${yb - h} ${x + r} ${yb - h}H${x + bw - r}Q${x + bw} ${yb - h} ${x + bw} ${yb - h + r}V${yb}Z"/>` : '';
+    return `<g class="col" data-b="${i}" data-v="${v}"><line class="guide" x1="${x + bw / 2}" x2="${x + bw / 2}" y1="${T}" y2="${yb}"/>${bar}<rect class="hit" x="${L + i * cw}" y="${T}" width="${cw}" height="${ch + B}"/></g>`;
+  }).join('');
+  const ticks = hp.mode === 'month' ? [1, 5, 10, 15, 20, 25, n] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const xl = ticks.map(t => `<text x="${L + (t - 1) * cw + cw / 2}" y="${H - 4}" text-anchor="middle">${t}</text>`).join('');
+  const total = vals.reduce((a, b) => a + b, 0);
+  st.chart = { vals, k, mode:hp.mode, y, m, total };
+  return `<div class="chart"><div class="chart-m" role="group" aria-label="Үзүүлэлт"><span class="ind" aria-hidden="true"></span>${HKEYS.map(x => `<button data-metric="${x}" aria-pressed="${x === k}">${HT[x].m}</button>`).join('')}</div>
+    <div class="readout" id="readout" aria-live="polite"></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${HT[k].m}, ${hp.mode === 'month' ? 'өдөр бүрээр' : 'сар бүрээр'}">
+      <line x1="${L}" x2="${W}" y1="${T}" y2="${T}" stroke="#E2EEDF"/><line x1="${L}" x2="${W}" y1="${T + ch / 2}" y2="${T + ch / 2}" stroke="#E2EEDF"/><line x1="${L}" x2="${W}" y1="${T + ch}" y2="${T + ch}" stroke="#C9DCC5"/>
+      <text x="${L - 4}" y="${T + 3}" text-anchor="end">${num(top, 0)}</text><text x="${L - 4}" y="${T + ch / 2 + 3}" text-anchor="end">${num(top / 2, 1)}</text><text x="${L - 4}" y="${T + ch + 3}" text-anchor="end">0</text>
+      ${cols}${xl}</svg></div>`;
+};
+const niceMax = v => { const p = Math.pow(10, Math.floor(Math.log10(v))); return [1, 2, 2.5, 5, 10].map(s => s * p).find(x => x >= v); };
+const paintChartReadout = (i = null) => {
+  const r = $('#readout'), c = st.chart; if (!r || !c) return;
+  const u = HT[c.k].unit;
+  document.querySelectorAll('#health .col').forEach(g => { g.classList.toggle('on', +g.dataset.b === i); g.classList.toggle('dim', i !== null && +g.dataset.b !== i); });
+  if (i === null) { r.innerHTML = `Нийт: <b>${num(c.total, 2)} ${u}</b> · баганыг дарж харна`; return; }
+  const when = c.mode === 'month' ? `${MON(c.m)}ын ${i + 1}` : `${c.y} оны ${MON(i + 1)}`;
+  r.innerHTML = `${when}: <b>${num(c.vals[i], 2)} ${u}</b>`;
+};
+$('#health').addEventListener('click', e => {
+  const t = e.target, hp = st.hp;
+  const add = t.closest('[data-add]'); if (add) { openLog(add.dataset.add); return; }
+  const mode = t.closest('[data-mode]'); if (mode) { hp.mode = mode.dataset.mode; hp.all = false; renderHealth(); return; }
+  const step = t.closest('[data-step]'); if (step && !step.disabled) { hp.anchor = shiftAnchor(hp.mode, hp.anchor, +step.dataset.step); if (hp.anchor > todayStr()) hp.anchor = todayStr(); hp.all = false; hp.lastStep = +step.dataset.step; renderHealth(); return; }
+  if (t.closest('[data-today]')) { hp.anchor = todayStr(); hp.all = false; hp.lastStep = 1; renderHealth(); return; }
+  const met = t.closest('[data-metric]'); if (met) { hp.metric = met.dataset.metric; renderHealth(); return; }
+  if (t.closest('[data-all]')) { hp.all = true; renderHealth(); return; }
+  const row = t.closest('[data-log]'); if (row) { openLog(null, row.dataset.log); return; }
+  const col = t.closest('.col'); if (col) paintChartReadout(+col.dataset.b);
+});
+$('#health').addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const col = e.target.closest('.col'); if (col) paintChartReadout(+col.dataset.b); });
+$('#health').addEventListener('pointerleave', () => paintChartReadout(null));
+
+/* iPhone-style wheel: endless (the list repeats and quietly re-centres after each stop), snaps to rows,
+   items tilt away from the centre like a drum. Tap a row or use ↑/↓ to move. */
+const ROW = 36, REP = 7;
+// n rows with values 0..n-1; loop=false for a plain list (the year wheel)
+const timeWheel = (el, n, val, onChange, label = pad2, loop = true) => {
+  const rep = loop ? REP : 1;
+  el.innerHTML = '<div class="wpad"></div>' + Array.from({ length:n * rep }, (_, i) => `<div class="wi" data-i="${i}" data-v="${i % n}">${label(i % n)}</div>`).join('') + '<div class="wpad"></div>';
+  const items = el.querySelectorAll('.wi'), mid = loop ? Math.floor(REP / 2) * n : 0;
+  let cur = val, timer = 0, raf = 0, last = -1;
+  const go = (i, smooth) => el.scrollTo({ top:i * ROW, behavior: smooth && !reduce ? 'smooth' : 'auto' });
+  const paint = () => {
+    raf = 0;
+    const c = el.scrollTop / ROW, lo = Math.max(0, Math.floor(c) - 4), hi = Math.min(items.length - 1, Math.ceil(c) + 4);
+    for (let i = lo; i <= hi; i++) {
+      const d = Math.max(-3, Math.min(3, i - c)), it = items[i];
+      it.style.transform = `perspective(420px) rotateX(${-d * 24}deg) scale(${1 - Math.abs(d) * .05})`;
+      it.style.opacity = String(Math.max(.15, 1 - Math.abs(d) * .3));
+      it.classList.toggle('on', Math.abs(d) < .5);
+    }
+    const idx = Math.round(c);
+    if (idx !== last) { if (last >= 0 && navigator.vibrate) try { navigator.vibrate(4); } catch (_) {} last = idx; }
+  };
+  const settle = () => {
+    const idx = Math.round(el.scrollTop / ROW), v = ((idx % n) + n) % n;
+    if (idx !== mid + v) el.scrollTop = (mid + v) * ROW; // same value, middle copy: invisible jump keeps it endless
+    el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuetext', label(v));
+    if (v !== cur) { cur = v; onChange(v); }
+  };
+  el.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(paint); clearTimeout(timer); timer = setTimeout(settle, 120); }, { passive:true });
+  el.addEventListener('click', e => { const it = e.target.closest('.wi'); if (it) go(+it.dataset.i, true); });
+  el.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault(); go(Math.round(el.scrollTop / ROW) + (e.key === 'ArrowDown' ? 1 : -1), true);
+  });
+  const set = (v, smooth) => { if (v !== cur) { cur = v; onChange(v); } go(mid + v, smooth); paint(); };
+  // grey out values that can't be picked right now (31 in February, future dates)
+  const off = test => items.forEach(it => it.classList.toggle('off', test(+it.dataset.v)));
+  go(mid + val, false); el.setAttribute('aria-valuenow', val); el.setAttribute('aria-valuetext', label(val)); paint();
+  return { set, paint, off };
+};
+
+/* Он / Сар / Өдөр date picker, shared by the log form and the pet form.
+   Never later than today; a day that doesn't exist in the month (31 in February, 29 in a non-leap year)
+   or lies in the future is greyed and rolls back on its own. An optional date starts empty and gets its
+   value the moment the wheels open (like iPhone); a "clear" button can empty it again. */
+const dateFieldHTML = (key, fid, label, value, empty = '') => `<div class="field" id="${fid}"><label for="${key}-btn">${label}</label>
+  <button type="button" class="tbtn" id="${key}-btn" aria-expanded="false" aria-controls="${key}-wrap"><span class="tpill${value ? '' : ' empty'}" id="${key}-txt">${value ? prettyDate(value) : empty}</span><span class="chev">${ICON.chev}</span></button>
+  <input type="hidden" id="${key}" value="${value || ''}"><div class="err">Өнөөдөр эсвэл өмнөх өдөр сонгоно уу.</div></div>`;
+const datePanelHTML = (key, left) => `<div class="twrap" id="${key}-wrap"><div><div class="tpanel">
+  <div class="wheels"><span class="wband"></span><div class="wheel yr" id="${key}-y" tabindex="0" role="spinbutton" aria-label="Он"></div><div class="wheel mo" id="${key}-m" tabindex="0" role="spinbutton" aria-label="Сар"></div><div class="wheel dy" id="${key}-d" tabindex="0" role="spinbutton" aria-label="Өдөр"></div></div>
+  <div class="tfoot"><span class="tf-left">${left}</span><button type="button" data-done>Болсон</button></div></div></div></div>`;
+const dateWheels = (key, fid, start, { back = 30, empty = '' } = {}) => {
+  const [ty] = parts(todayStr()), Y0 = ty - back;
+  let [yy, mo, dd] = parts(start || todayStr()), picked = !!start;
+  if (yy < Y0) yy = Y0;
+  const show = () => {
+    $('#' + fid).classList.remove('bad');
+    if (!picked) return;
+    const s = `${yy}-${pad2(mo)}-${pad2(dd)}`, t = $('#' + key + '-txt');
+    $('#' + key).value = s; t.textContent = prettyDate(s); t.classList.remove('empty');
+  };
+  const fix = (touch = true) => {
+    const [cy, cm, cd] = parts(todayStr());
+    if (yy === cy && mo > cm) { wM.set(cm - 1, true); return; }      // set() calls back into fix
+    const maxD = yy === cy && mo === cm ? cd : daysIn(yy, mo);
+    if (dd > maxD) { wD.set(maxD - 1, true); return; }
+    wM.off(i => yy === cy && i + 1 > cm);
+    wD.off(i => i + 1 > maxD);
+    if (touch) picked = true;
+    show();
+  };
+  const wY = timeWheel($('#' + key + '-y'), ty - Y0 + 1, yy - Y0, v => { yy = Y0 + v; fix(); }, i => String(Y0 + i), false);
+  const wM = timeWheel($('#' + key + '-m'), 12, mo - 1, v => { mo = v + 1; fix(); }, i => `${i + 1}-р сар`);
+  const wD = timeWheel($('#' + key + '-d'), 31, dd - 1, v => { dd = v + 1; fix(); }, i => String(i + 1));
+  fix(false);
+  return {
+    wrap:$('#' + key + '-wrap'), btn:$('#' + key + '-btn'), wheels:[wY, wM, wD],
+    onOpen:() => { if (!picked) { picked = true; show(); } },
+    today:() => { const [y, m, d] = parts(todayStr()); wY.set(y - Y0, true); wM.set(m - 1, true); wD.set(d - 1, true); picked = true; show(); },
+    clear:() => { picked = false; $('#' + key).value = ''; const t = $('#' + key + '-txt'); t.textContent = empty; t.classList.add('empty'); }
+  };
+};
+// pickers that open under their fields; opening one closes the others; [data-done] closes
+const bindPickers = list => {
+  const open = (it, on) => list.forEach(x => {
+    const show = x === it && on;
+    x.wrap.classList.toggle('open', show); x.wrap.inert = !show; x.btn.setAttribute('aria-expanded', show);
+    if (show) { x.onOpen && x.onOpen(); x.wheels.forEach(w => w.paint()); setTimeout(() => x.wrap.isConnected && x.wrap.scrollIntoView({ block:'nearest', behavior: reduce ? 'auto' : 'smooth' }), 280); }
+  });
+  list.forEach(x => {
+    x.wrap.inert = true;
+    x.btn.onclick = () => open(x, !x.wrap.classList.contains('open'));
+    const d = x.wrap.querySelector('[data-done]'); if (d) d.onclick = () => { open(x, false); x.btn.focus(); };
+  });
+  return open;
+};
+
+/* add / edit one log entry */
+const openLog = (type, id) => {
+  const p = curPet(); p.logs = p.logs || [];
+  const old = id ? p.logs.find(l => l.id === id) : null;
+  let k = old ? old.type : type;
+  const d = old || { date: st.hp.mode === 'day' ? st.hp.anchor || todayStr() : todayStr(), time:nowHM() };
+  const t0 = /^\d{2}:\d{2}$/.test(d.time || '') ? d.time : nowHM();
+  const d0 = /^\d{4}-\d{2}-\d{2}$/.test(d.date || '') && d.date <= todayStr() ? d.date : todayStr();
+  const fld = (id, label, attrs, val, err) => `<div class="field" id="f-${id}"><label for="lg-${id}">${label}</label><input id="lg-${id}" ${attrs} value="${esc(String(val ?? ''))}"><div class="err">${err || ''}</div></div>`;
+  const typeFields = () => ({
+    food: `<div class="pe-row">${fld('amount', 'Хэмжээ (г)', 'inputmode="numeric" maxlength="5" placeholder="150"', old && old.type === 'food' ? old.amount : '', '1-ээс их тоо оруулна уу.')}${fld('name', 'Хоол (заавал биш)', 'maxlength="30" placeholder="Хуурай хоол"', old && old.type === 'food' ? old.name : '')}</div>`,
+    walk: `<div class="pe-row">${fld('minutes', 'Хугацаа (мин)', 'inputmode="numeric" maxlength="4" placeholder="30"', old && old.type === 'walk' ? old.minutes : '', '1-ээс их тоо оруулна уу.')}${fld('km', 'Зай (км, заавал биш)', 'inputmode="decimal" maxlength="5" placeholder="2.5"', old && old.type === 'walk' && +old.km ? old.km : '', 'Тоо оруулна уу.')}</div>`,
+    med: `${fld('name', 'Эм, тарианы нэр', 'maxlength="40" placeholder="Жишээ: Шимэгчийн эм"', old && old.type === 'med' ? old.name : '', 'Нэрийг оруулна уу.')}${fld('dose', 'Тун (заавал биш)', 'maxlength="30" placeholder="1 шахмал"', old && old.type === 'med' ? old.dose : '')}`,
+    vaccine: `${fld('name', 'Вакцины нэр', 'maxlength="40" placeholder="Жишээ: Галзуу өвчний вакцин"', old && old.type === 'vaccine' ? old.name : '', 'Нэрийг оруулна уу.')}${fld('due', 'Дараагийн тариа (заавал биш)', 'type="date"', old && old.type === 'vaccine' ? old.due : '', 'Тарьсан өдрөөс хойш байх ёстой.')}`
+  })[k];
+  openSheet('log', sheetHead(old ? 'Бүртгэл засах' : `${p.name} · бүртгэл нэмэх`) + `<form class="pe-form" id="lgForm" novalidate>
+    <div class="pe-types" id="lgTypes">${HKEYS.map(x => `<button type="button" data-k="${x}" aria-pressed="${x === k}"><span class="qi" style="width:28px;height:28px;border-radius:9px;color:${HT[x].c};background:${HT[x].bg}">${ICON[HT[x].i]}</span>${HT[x].n}</button>`).join('')}</div>
+    <div class="pe-row">
+      ${dateFieldHTML('lg-date', 'f-date', 'Огноо', d0)}
+      <div class="field"><label for="lg-time-btn">Цаг</label><button type="button" class="tbtn" id="lg-time-btn" aria-expanded="false" aria-controls="twrap"><span class="tpill" id="lg-time-txt">${t0}</span><span class="chev">${ICON.chev}</span></button><input type="hidden" id="lg-time" value="${t0}"></div></div>
+    ${datePanelHTML('lg-date', '<button type="button" id="dToday">Өнөөдөр</button>')}
+    <div class="twrap" id="twrap"><div><div class="tpanel">
+      <div class="wheels"><span class="wband"></span><div class="wheel" id="whH" tabindex="0" role="spinbutton" aria-label="Цаг" aria-valuemin="0" aria-valuemax="23"></div><span class="colon">:</span><div class="wheel" id="whM" tabindex="0" role="spinbutton" aria-label="Минут" aria-valuemin="0" aria-valuemax="59"></div></div>
+      <div class="tfoot"><span class="tf-left"><button type="button" id="tNow">Одоо</button></span><button type="button" data-done>Болсон</button></div>
+    </div></div></div>
+    <div id="lgFields">${typeFields()}</div>
+    ${fld('note', 'Тайлбар (заавал биш)', 'maxlength="80" placeholder="Жишээ: сайн идсэн"', old ? old.note : '')}
+    <button class="btn btn-plain" type="submit">${old ? 'Хадгалах' : 'Бүртгэх'}</button>
+    ${old ? '<button class="btn btn-danger" type="button" id="lgDel">Энэ бүртгэлийг устгах</button>' : ''}
+  </form>`);
+  const bindNum = () => {
+    ['amount', 'minutes'].forEach(f => $('#lg-' + f)?.addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, ''); }));
+    $('#lg-km')?.addEventListener('input', e => { e.target.value = e.target.value.replace(',', '.').replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1'); });
+  };
+  bindNum();
+  // time: 24-hour wheels that open under the field
+  let [hh, mm] = t0.split(':').map(Number);
+  const showT = () => { const t = `${pad2(hh)}:${pad2(mm)}`; $('#lg-time').value = t; $('#lg-time-txt').textContent = t; };
+  const wH = timeWheel($('#whH'), 24, hh, v => { hh = v; showT(); });
+  const wM = timeWheel($('#whM'), 60, mm, v => { mm = v; showT(); });
+  // date: shared Он / Сар / Өдөр wheels; the date and time panels open under the row, one at a time
+  const dp = dateWheels('lg-date', 'f-date', d0);
+  bindPickers([dp, { wrap:$('#twrap'), btn:$('#lg-time-btn'), wheels:[wH, wM] }]);
+  $('#tNow').onclick = () => { const [h, m] = nowHM().split(':').map(Number); wH.set(h, true); wM.set(m, true); };
+  $('#dToday').onclick = () => dp.today();
+  $('#lgTypes').onclick = e => { const b = e.target.closest('[data-k]'); if (!b || b.dataset.k === k) return; k = b.dataset.k; $('#lgTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#lgFields').innerHTML = typeFields(); bindNum(); };
+  $('#lgForm').addEventListener('input', e => e.target.closest('.field')?.classList.remove('bad'));
+  const bad = id => { const f = $('#f-' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); ($('#lg-' + id + '-btn') || $('#lg-' + id)).focus(); return false; };
+  $('#lgForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = id => ($('#lg-' + id)?.value || '').trim();
+    const date = v('date');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > todayStr()) return bad('date');
+    const rec = { id: old ? old.id : uuid(), type:k, date, time:v('time'), note:v('note'), dirty:true, synced: old ? !!old.synced : false };
+    if (k === 'food') { const a = parseInt(v('amount'), 10); if (!(a > 0)) return bad('amount'); rec.amount = a; rec.name = v('name'); }
+    if (k === 'walk') { const m = parseInt(v('minutes'), 10); if (!(m > 0)) return bad('minutes'); const km = v('km'); if (km && !(parseFloat(km) >= 0)) return bad('km'); rec.minutes = m; rec.km = km ? Math.round(parseFloat(km) * 100) / 100 : 0; }
+    if (k === 'med') { if (!v('name')) return bad('name'); rec.name = v('name'); rec.dose = v('dose'); }
+    if (k === 'vaccine') { if (!v('name')) return bad('name'); const due = v('due'); if (due && due <= date) return bad('due'); rec.name = v('name'); rec.due = due; }
+    const before = p.logs.slice();
+    if (old) p.logs[p.logs.indexOf(old)] = rec; else p.logs.push(rec);
+    if (!save()) { p.logs = before; toast('Утасны санах ой дүүрсэн тул хадгалж чадсангүй.'); return; }
+    pushItems();
+    closeSheet(); renderHealth(); toast(old ? 'Бүртгэл шинэчлэгдлээ.' : `${HT[k].n} бүртгэгдлээ.`);
+  });
+  $('#lgDel') && ($('#lgDel').onclick = e => {
+    const b = e.currentTarget;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = 'Дахин дарж устгана'; return; }
+    p.logs = p.logs.filter(l => l.id !== old.id); dropItem('health_logs', old); save(); pushItems(); closeSheet(); renderHealth(); toast('Бүртгэл устгагдлаа.');
+  });
+};
+
+/* ---------- memo: notes per pet that can be ticked off ---------- */
+/* Motion: the header, input and filter row are built once per pet and then only updated, so the input keeps
+   focus and the filter pill can slide. The list re-renders with FLIP: items that stay glide from their old
+   spot to the new one, new ones fade and scale in, and leaving ones slide out and close their gap first. */
+const SPRINGY = 'cubic-bezier(.34,1.3,.64,1)';
+const memoItem = x => `<li class="memo-it${x.done ? ' done' : ''}" data-id="${x.id}"><button class="chk" data-chk="${x.id}" aria-pressed="${!!x.done}" aria-label="${x.done ? 'Чагтыг болиулах' : 'Чагтлах'}">${ICON.check}</button>
+  <div class="mt"><p><span>${esc(x.text)}</span></p><em>${prettyDate(x.date)} нэмсэн${x.done && x.doneDate ? ' · ' + prettyDate(x.doneDate) + ' чагталсан' : ''}</em></div>
+  <button class="x" data-del="${x.id}" aria-label="Устгах">${ICON.close}</button></li>`;
+const collapseOut = li => {
+  const h = li.offsetHeight;
+  li.style.overflow = 'hidden';
+  return li.animate([
+    { transform:'translateX(0)', opacity:1, height:h + 'px', marginTop:'0px' },
+    { transform:'translateX(48px)', opacity:0, height:h + 'px', marginTop:'0px', offset:.45 },
+    { transform:'translateX(48px)', opacity:0, height:'0px', marginTop:'-6px', paddingTop:'0px', paddingBottom:'0px' }
+  ], { duration:480, easing:'cubic-bezier(.4,0,.2,1)', fill:'forwards' }).finished.catch(() => {});
+};
+const renderMemo = (anim = {}) => {
+  const p = curPet(); if (!p) return;
+  p.memos = p.memos || [];
+  const M = $('#memo'), motion = !reduce && anim.flip;
+  const open = p.memos.filter(x => !x.done).length, done = p.memos.length - open;
+  const list = p.memos.filter(x => memoF.f === 'all' || (memoF.f === 'open' ? !x.done : x.done))
+    .sort((a, b) => (a.done - b.done) || (b.at - a.at));
+  const ids = new Set(list.map(x => x.id));
+  // shell: once per pet
+  if (M.dataset.pet !== p.id) {
+    M.dataset.pet = p.id; memoF.counts = null; memoF.shownF = null;
+    M.innerHTML = `<div class="hl-h"><h3>Тэмдэглэл</h3><span id="memoCnt"></span></div>
+      <form class="memo-add" id="memoForm"><input id="memoIn" maxlength="200" placeholder="Жишээ: Баасан гарагт малын эмчид үзүүлэх" aria-label="Шинэ тэмдэглэл"><button type="submit" id="memoAddBtn" aria-label="Тэмдэглэл нэмэх">${ICON.plus}</button></form>
+      <div class="memo-f" id="memoF" role="group" aria-label="Шүүлтүүр"><span class="ind" aria-hidden="true"></span></div>
+      <ul class="memo-list" id="memoList"></ul><div class="hl-empty" id="memoEmpty" hidden></div>`;
+    $('#memoForm').onsubmit = e => {
+      e.preventDefault();
+      const inp = $('#memoIn'), text = inp.value.trim();
+      if (!text) { inp.closest('.memo-add').animate([{ transform:'translateX(0)' }, { transform:'translateX(-6px)' }, { transform:'translateX(6px)' }, { transform:'translateX(-3px)' }, { transform:'translateX(0)' }], { duration:reduce ? 0 : 320 }); inp.focus(); return; }
+      const q = curPet();
+      q.memos.push({ id:uuid(), text, done:false, at:Date.now(), date:todayStr(), dirty:true });
+      if (!save()) { q.memos.pop(); toast('Утасны санах ой дүүрсэн тул хадгалж чадсангүй.'); return; }
+      pushItems();
+      if (memoF.f === 'done') memoF.f = 'all';
+      inp.value = ''; inp.focus();
+      const b = $('#memoAddBtn'); b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin');
+      renderMemo({ flip:true });
+    };
+  }
+  // counts in the header bump when they change
+  const cnt = $('#memoCnt'), prevC = memoF.counts;
+  cnt.innerHTML = `<b>${open}</b> хийх · <b>${done}</b> чагталсан`;
+  if (prevC && !reduce) [[0, open, prevC[0]], [1, done, prevC[1]]].forEach(([i, now, was]) => { if (now !== was) cnt.querySelectorAll('b')[i].classList.add('bump'); });
+  memoF.counts = [open, done];
+  // filter row with a sliding pill
+  const F = $('#memoF');
+  F.hidden = !p.memos.length;
+  F.querySelectorAll('button').forEach(b => b.remove());
+  F.insertAdjacentHTML('beforeend', [['all', 'Бүгд', p.memos.length], ['open', 'Хийх', open], ['done', 'Чагталсан', done]].map(([f, n, c]) => `<button data-f="${f}" aria-pressed="${memoF.f === f}">${n} <b>${c}</b></button>`).join(''));
+  if (!F.hidden) {
+    const ind = F.querySelector('.ind'), place = f => { const b = F.querySelector(`[data-f="${f}"]`); ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`; };
+    slidePill(ind, () => place(memoF.shownF && !reduce ? memoF.shownF : memoF.f), () => place(memoF.f));
+    memoF.shownF = memoF.f;
+  }
+  // leaving items close up first (header and pill already moved), then the list is rebuilt
+  if (motion && !anim.left) {
+    const leaving = [...M.querySelectorAll('.memo-it')].filter(li => !ids.has(li.dataset.id));
+    if (leaving.length) { Promise.all(leaving.map(collapseOut)).then(() => renderMemo({ ...anim, left:true })); return; }
+  }
+  // list with FLIP
+  const L = $('#memoList'), before = new Map();
+  if (motion) L.querySelectorAll('.memo-it').forEach(li => before.set(li.dataset.id, li.getBoundingClientRect().top));
+  L.innerHTML = list.map(memoItem).join('');
+  const em = $('#memoEmpty'); em.hidden = !(p.memos.length && !list.length); em.textContent = 'Энэ шүүлтүүрт тэмдэглэл алга.';
+  if (!motion) return;
+  let k = 0;
+  L.querySelectorAll('.memo-it').forEach(li => {
+    const was = before.get(li.dataset.id);
+    if (was === undefined) {
+      li.animate([{ opacity:0, transform:'translateY(-10px) scale(.94)' }, { opacity:1, transform:'none' }], { duration:520, easing:SPRINGY, delay:anim.stagger ? k++ * 40 : 0, fill:'backwards' });
+    } else {
+      const dy = was - li.getBoundingClientRect().top;
+      if (Math.abs(dy) > 1) li.animate([{ transform:`translateY(${dy}px)` }, { transform:'none' }], { duration:560, easing:SPRINGY });
+    }
+  });
+};
+$('#memo').addEventListener('click', e => {
+  const p = curPet(), t = e.target;
+  const f = t.closest('[data-f]'); if (f) { if (memoF.f !== f.dataset.f) { memoF.f = f.dataset.f; renderMemo({ flip:true, stagger:true }); } return; }
+  const c = t.closest('[data-chk]');
+  if (c) {
+    const x = p.memos.find(m => m.id === c.dataset.chk); x.done = !x.done; x.doneDate = x.done ? todayStr() : ''; touch(x); save(); pushItems();
+    // animate in place first (box pops, tick draws, line strikes through), then let the item glide to its new spot
+    const li = c.closest('.memo-it'); li.classList.toggle('done', x.done); c.setAttribute('aria-pressed', x.done);
+    c.classList.remove('pop'); void c.offsetWidth; if (x.done) c.classList.add('pop');
+    clearTimeout(memoF.t); memoF.t = setTimeout(() => renderMemo({ flip:true }), reduce ? 0 : 520);
+    return;
+  }
+  const d = t.closest('[data-del]');
+  if (d) {
+    // first tap arms (the × turns red and wiggles), second tap deletes
+    if (!d.classList.contains('sure')) { d.classList.add('sure'); d.setAttribute('aria-label', 'Дахин дарж устгана'); setTimeout(() => d.isConnected && d.classList.remove('sure'), 2500); return; }
+    const gone = p.memos.find(m => m.id === d.dataset.del); if (gone) dropItem('memos', gone);
+    p.memos = p.memos.filter(m => m.id !== d.dataset.del); save(); pushItems(); renderMemo({ flip:true });
+  }
+});
+
+/* ---------- share a pet + friends ----------
+   There is no server: a share link carries the pet itself in the part after '#' (never sent to any server),
+   as base64url JSON plus a 128px JPEG thumbnail. Opening the link shows the pet and lets the viewer's pet
+   add it as a friend; the app then offers to send their pet's link back so both sides have each other.
+   Friends are snapshots kept on this device and refresh whenever a newer link from that pet is opened. */
+const SHARE_BASE = () => location.origin + location.pathname;
+const b64u = bytes => { let s = ''; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const unb64 = str => { const s = str.replace(/-/g, '+').replace(/_/g, '/'); return s + '='.repeat((4 - s.length % 4) % 4); };
+const snapOf = p => ({ id:p.id, n:p.name, k:p.k, s:p.sex, b:p.birth, br:p.breed, w:p.weight, o:st.user.name });
+// square, centre-cropped thumbnail for links and friend lists
+const thumbOf = (src, size = 128) => new Promise(res => {
+  if (!src) return res('');
+  const img = new Image();
+  if (/^https?:/.test(src)) img.crossOrigin = 'anonymous'; // server photos: needed so the canvas can export them
+  img.onload = () => {
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const s = Math.min(img.naturalWidth, img.naturalHeight);
+    c.getContext('2d').drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+    res(c.toDataURL('image/jpeg', .72));
+  };
+  img.onerror = () => res('');
+  img.src = src;
+});
+const shareLink = async (p, toId) => {
+  if (sb && p.code) return `${SHARE_BASE()}#p=${p.code}`; // on the server: short link, the card is fetched by code
+  const d = snapOf(p); if (toId) d.fr = toId;
+  const th = await thumbOf(p.photo);
+  return `${SHARE_BASE()}#pet=${b64u(new TextEncoder().encode(JSON.stringify(d)))}${th ? '.' + th.split(',')[1].replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '') : ''}`;
+};
+// everything from a link is untrusted: keep only known fields, short strings, and a real JPEG for the photo
+const cleanSnap = (j, th) => {
+  if (!j || typeof j !== 'object') return null;
+  const str = (v, n) => String(v ?? '').trim().slice(0, n);
+  const d = { id:str(j.id, 40), n:str(j.n, 24), k:str(j.k, 10), s:str(j.s, 2), b:str(j.b, 10), br:str(j.br, 30), w:str(j.w, 6), o:str(j.o, 30), fr:str(j.fr, 40) };
+  if (!/^[\w-]{3,40}$/.test(d.id) || !d.n || !petBy(d.k)) return null;
+  if (!['Эр', 'Эм'].includes(d.s)) d.s = '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d.b)) d.b = '';
+  if (!/^\d{1,3}(\.\d{1,2})?$/.test(d.w)) d.w = '';
+  if (d.fr && !/^[\w-]{3,40}$/.test(d.fr)) d.fr = '';
+  d.ph = th && /^[A-Za-z0-9_-]{100,30000}$/.test(th) ? 'data:image/jpeg;base64,' + unb64(th) : '';
+  return d;
+};
+// two link kinds: the short server link #p=CODE (fits in a QR code), and the older self-contained #pet=… link
+const CODE_RE = /^[A-HJ-NP-Z2-9]{10}$/;
+const parseShare = hash => {
+  const s = /^#p=([A-Za-z0-9]{10})$/.exec(hash || '');
+  if (s) return CODE_RE.test(s[1].toUpperCase()) ? { code:s[1].toUpperCase() } : null;
+  const m = /^#pet=([A-Za-z0-9_-]{10,2000})(?:\.([A-Za-z0-9_-]+))?$/.exec(hash || '');
+  if (!m) return null;
+  try { return cleanSnap(JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(unb64(m[1])), c => c.charCodeAt(0)))), m[2]); } catch (_) { return null; }
+};
+let pendingShare = parseShare(location.hash);
+if (/^#(pet|p)=/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+window.addEventListener('hashchange', () => {
+  const d = parseShare(location.hash); if (!d) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  pendingShare = d; if (st.user && st.signedIn) showIncoming(); else setTimeout(showIncoming, 300);
+});
+
+const friendPic = f => f.ph ? `<img src="${f.ph}" alt="">` : petBy(f.k).svg;
+const pcardHTML = (d, pic, foot = '') => `<div class="pcard"><div class="pc-av">${pic}</div><h3>${esc(d.n)}</h3>
+  ${d.o ? `<div class="pc-own">${esc(d.o)}-ийн тэжээвэр</div>` : ''}
+  <div class="pc-tags">${[petBy(d.k).n, d.s, ageText(d.b), d.br, d.w ? d.w + ' кг' : ''].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join('')}</div>
+  ${foot}<div class="pc-brand">Zoomies</div></div>`;
+
+/* the image card: 1080×1350, made on the phone with a canvas */
+const PET_IMG = { dog:'dog.png', cat:'cat2.webp', bird:'bird.webp', fish:'fish.webp', rabbit:'rabbit.webp', hamster:'hamster.png' };
+const loadImg = src => new Promise(res => { const i = new Image(); if (/^https?:/.test(src)) i.crossOrigin = 'anonymous'; i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+const cardImage = async p => {
+  try { await Promise.all([document.fonts.load('600 110px Fredoka'), document.fonts.load('600 42px Montserrat')]); } catch (_) {}
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; const g = c.getContext('2d');
+  g.fillStyle = '#0F4C17'; g.fillRect(0, 0, 1080, 1350);
+  const X = 60, Y = 60, W = 960, H = 800, R = 56;
+  // rounded rectangle path (works on browsers without ctx.roundRect)
+  const rr = (x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
+  g.save(); rr(X, Y, W, H, R); g.clip();
+  g.fillStyle = '#A8E09E'; g.fillRect(X, Y, W, H);
+  const img = await loadImg(p.photo || PET_IMG[p.k]);
+  if (img) {
+    if (p.photo) { const s = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s; g.drawImage(img, X + (W - w) / 2, Y + (H - h) / 2, w, h); }
+    else { const s = Math.min(W * .7 / img.naturalWidth, H * .75 / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s; g.drawImage(img, X + (W - w) / 2, Y + (H - h) / 2, w, h); }
+  }
+  g.restore();
+  const fit = (text, font, max) => { g.font = font; let t = text; while (g.measureText(t).width > max && t.length > 1) t = t.slice(0, -2) + '…'; return t; };
+  // QR code to befriend the pet, bottom-right, when the pet has a server code
+  const link = sb && p.code ? `${SHARE_BASE()}#p=${p.code}` : '', q = link && qrOf(link), tw = q ? 680 : 940;
+  if (q) {
+    const n = q.getModuleCount(), box = 230, cell = Math.floor((box - 24) / n), size = cell * n, ox = 790 + (box - size) / 2, oy = 885 + (box - size) / 2;
+    g.fillStyle = '#fff'; rr(790, 885, box, box, 28); g.fill();
+    g.fillStyle = '#0E2E12';
+    for (let r = 0; r < n; r++) for (let c2 = 0; c2 < n; c2++) if (q.isDark(r, c2)) g.fillRect(ox + c2 * cell, oy + r * cell, cell, cell);
+  }
+  g.fillStyle = '#fff'; g.fillText(fit(p.name, '600 108px Fredoka, Montserrat, sans-serif', tw), 80, 990);
+  g.fillStyle = '#C6E8BF'; g.fillText(fit([petBy(p.k).n, p.sex, ageText(p.birth), p.breed].filter(Boolean).join(' · '), '600 40px Montserrat, sans-serif', tw), 82, 1060);
+  g.fillStyle = '#A8E09E'; g.font = '700 30px Montserrat, sans-serif'; g.fillText(`${st.user.name}-ийн тэжээвэр`, 82, 1115);
+  g.fillStyle = '#F26B12'; rr(60, 1190, 960, 100, 50); g.fill();
+  g.fillStyle = '#fff'; g.font = '600 54px Fredoka, Montserrat, sans-serif'; g.fillText('Zoomies', 110, 1259);
+  g.font = '700 34px Montserrat, sans-serif'; g.textAlign = 'right'; g.fillText('Найз болъё!', 980, 1253);
+  return new Promise(res => c.toBlob(res, 'image/jpeg', .9));
+};
+
+const copyText = async t => { try { await navigator.clipboard.writeText(t); return true; } catch (_) { return false; } };
+// QR codes (error correction M survives a scratched screen or a slightly blurry photo)
+const qrOf = text => { if (!window.qrcode) return null; try { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q; } catch (_) { return null; } };
+const qrSVG = text => { const q = qrOf(text); return q ? q.createSvgTag({ cellSize:4, margin:0, scalable:true, alt:'QR код' }) : ''; };
+const prettyCode = c => c ? c.slice(0, 4) + '-' + c.slice(4) : '';
+const openShare = (p, to = null) => {
+  const canShare = !!navigator.share, online = cloudOn() && p.code;
+  if (online) to = null; // with the server there is nothing to send back: the other side gets a request instead
+  openSheet('share', sheetHead(to ? 'Хариу илгээх' : 'Хуваалцах') + pcardHTML(snapOf(p), petPic(p)) +
+    (online ? `<div class="qr-box"><div class="qr-img">${qrSVG(`${SHARE_BASE()}#p=${p.code}`)}</div>
+        <div class="qr-tx"><b>QR уншуулах</b><span>Найз тань утасныхаа камераар уншуулаад "Найзын хүсэлт илгээх" дарна.</span><code>${prettyCode(p.code)}</code></div></div>
+      <form class="code-add" id="codeForm" novalidate><input id="codeIn" maxlength="11" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Найзын код: XXXX-XXXXXX" aria-label="Найзын код"><button type="submit">Илгээх</button></form>` : '') +
+    `<p class="sh-note">${to
+      ? `<b>${esc(to.n)}</b>-ийн эзэнд <b>${esc(p.name)}</b>-ийн холбоосыг илгээгээрэй. Тэд нээгээд "Найз болох" дарвал хоёулаа бие биеийнхээ найзын жагсаалтад орно.`
+      : online ? `Холбоос эсвэл QR кодыг нээсэн хүн найзын хүсэлт илгээнэ. Та зөвшөөрвөл <b>${esc(p.name)}</b> найзтай болно. Таны утас, имэйл хуваалцагдахгүй.`
+      : `Холбоосыг нээсэн хүн "Найз болох" дарвал <b>${esc(p.name)}</b> тэдний тэжээвэртэй найз болно. Таны утас, имэйл хуваалцагдахгүй.`}</p>
+    <div class="sh-btns">
+      <button class="btn btn-plain sh-main" id="shLink" disabled>${canShare ? ICON.share + 'Холбоос илгээх' : ICON.copy + 'Холбоос хуулах'}<span class="spin" aria-hidden="true"></span></button>
+      <div class="sh-row">
+        <button class="sh-opt" id="shImg" disabled>${ICON.image}<span>Зураг болгох</span></button>
+        ${canShare ? `<button class="sh-opt" id="shCopy" disabled>${ICON.copy}<span>Хуулах</span></button>` : ''}
+      </div>
+    </div>`);
+  // build the link and the image right away so the share sheet can open on the tap itself
+  let link = '', blob = null;
+  const ready = () => body.querySelectorAll('#shLink, #shImg, #shCopy').forEach(b => { if ((b.id !== 'shImg' || blob) && link) b.disabled = false; });
+  shareLink(p, to && to.id).then(l => { link = l; ready(); });
+  cardImage(p).then(b => { blob = b; ready(); }).catch(() => {});
+  const text = to ? `${p.name} таны ${to.n}-тэй найз болохыг хүсэж байна!` : `${p.name}-тэй Zoomies дээр найз болоорой!`;
+  $('#shLink').onclick = async () => {
+    if (canShare) { try { await navigator.share({ title:`${p.name} · Zoomies`, text, url:link }); } catch (_) {} return; }
+    toast(await copyText(link) ? 'Холбоос хуулагдлаа. Найздаа илгээгээрэй.' : 'Хуулж чадсангүй.');
+  };
+  $('#shCopy') && ($('#shCopy').onclick = async () => toast(await copyText(link) ? 'Холбоос хуулагдлаа.' : 'Хуулж чадсангүй.'));
+  $('#shImg').onclick = async () => {
+    const file = new File([blob], `${p.name.replace(/[^\wЀ-ӿ-]+/g, '-') || 'pet'}-zoomies.jpg`, { type:'image/jpeg' });
+    if (navigator.canShare && navigator.canShare({ files:[file] })) { try { await navigator.share({ files:[file], text:`${text} ${link}` }); } catch (_) {} return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('Зураг татагдлаа.');
+  };
+  // typing a friend's code works like scanning their QR
+  const ci = $('#codeIn');
+  if (ci) {
+    ci.addEventListener('input', () => { const v = ci.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10); ci.value = v.length > 4 ? v.slice(0, 4) + '-' + v.slice(4) : v; ci.closest('form').classList.remove('bad'); });
+    $('#codeForm').onsubmit = async e => {
+      e.preventDefault();
+      const code = ci.value.replace(/-/g, '');
+      if (!CODE_RE.test(code)) { const f = ci.closest('form'); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); ci.focus(); return; }
+      if (code === p.code) { toast('Энэ бол таны өөрийн тэжээврийн код.'); return; }
+      pendingShare = { code }; closeSheet(); setTimeout(showIncoming, 250);
+    };
+  }
+};
+
+/* someone opened a shared link */
+const cardToSnap = c => ({ id:c.id, n:c.name, k:c.kind, s:c.sex || '', b:c.birth || '', br:c.breed || '', w:c.weight != null ? String(+c.weight) : '', o:c.owner_name || '', ph:c.photo_path ? PHOTO_URL(c.photo_path) : '' });
+// the live request between one of my pets and another pet, if any
+const relation = (mine, other) => (st.fr.reqs || []).find(r => (r.from_pet === mine && r.to_pet === other) || (r.from_pet === other && r.to_pet === mine));
+const showIncomingCode = async code => {
+  if (!sb) { toast('Сервертэй холбогдож чадсангүй. Интернэтээ шалгаад холбоосыг дахин нээнэ үү.'); return; }
+  const { data, error } = await sb.rpc('pet_card_by_code', { code });
+  if (error) { toast('Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.'); return; }
+  if (!data || !data.length) { pendingShare = null; toast('Энэ код эсвэл холбоос олдсонгүй.'); return; }
+  const d = cardToSnap(data[0]);
+  if (!(cloudOn() && st.profiles.length)) {
+    openSheet('incoming', sheetHead('Тэжээвэр амьтан') + pcardHTML(d, friendPic(d)) +
+      `<p class="sh-note">${esc(d.n)}-тэй найз болохын тулд бүртгэл үүсгээд эсвэл нэвтрээд тэжээвэр амьтнаа нэмээрэй.</p>
+       <button class="btn btn-plain" data-close>Бүртгүүлээд найз болох</button>`);
+    return; // keep pendingShare: it opens again after sign-in
+  }
+  pendingShare = null;
+  if (st.profiles.some(x => x.id === d.id)) { openSheet('incoming', sheetHead('Таны тэжээвэр') + pcardHTML(d, friendPic(d)) + '<p class="sh-note">Энэ бол таны өөрийн тэжээврийн код. Найздаа илгээгээрэй!</p>'); return; }
+  let mine = curPet();
+  const draw = () => {
+    const r = relation(mine.id, d.id), incoming = r && r.status === 'pending' && r.to_pet === mine.id;
+    const label = !r ? `${ICON.heart}Найзын хүсэлт илгээх` : r.status === 'accepted' ? `${ICON.heart}Аль хэдийн найзууд` : incoming ? `${ICON.heart}Хүсэлтийг зөвшөөрөх` : 'Хүсэлт илгээгдсэн · хүлээгдэж байна';
+    openSheet('incoming', sheetHead('Найз болох уу?') + pcardHTML(d, friendPic(d)) +
+      (st.profiles.length > 1 ? `<div class="field"><label>Аль тэжээвэр тань найз болох вэ?</label><div class="pe-types" id="inMine">${st.profiles.map(x => `<button type="button" data-pid="${x.id}" aria-pressed="${x.id === mine.id}"><span class="mini-av">${petPic(x)}</span>${esc(x.name)}</button>`).join('')}</div></div>` : '') +
+      `<button class="btn btn-plain" id="inAdd"${r && !incoming ? ' disabled' : ''}>${label}</button>`);
+    $('#inMine') && ($('#inMine').onclick = e => { const b = e.target.closest('[data-pid]'); if (!b) return; mine = st.profiles.find(x => x.id === b.dataset.pid); draw(); body.querySelectorAll(':scope > *').forEach(x => x.style.animation = 'none'); });
+    $('#inAdd').onclick = async () => {
+      const b = $('#inAdd'); b.disabled = true; b.innerHTML = 'Илгээж байна… <span class="spin"></span>';
+      if (!mine.cloud) await pushPet(mine);                                   // the pet must exist on the server first
+      const res = await Promise.resolve(sb.rpc('send_friend_request', { my_pet:mine.id, code })).catch(err => ({ error:err })); // the query builder is awaitable but has no .catch
+      if (res.error) { toast('Илгээж чадсангүй. Дахин оролдоно уу.'); draw(); return; }
+      await loadFriends().catch(() => {});
+      st.cur = mine.id; save(); closeSheet(); if (curTab() !== 'home') go('home'); renderPetHome();
+      const msg = { sent:`Хүсэлт илгээлээ! ${d.n}-ийн эзэн зөвшөөрөхөд найзууд болно.`, accepted:`${mine.name} ба ${d.n} найзууд боллоо!`, pending:'Хүсэлт аль хэдийн илгээгдсэн байна.', already:'Та хоёр аль хэдийн найзууд.', self:'Энэ бол таны өөрийн тэжээвэр.', not_found:'Тэжээвэр олдсонгүй.' }[res.data];
+      toast(msg || 'Болсон.');
+      setTimeout(() => $('#friends')?.scrollIntoView({ block:'center', behavior: reduce ? 'auto' : 'smooth' }), 300);
+    };
+  };
+  draw();
+};
+const showIncoming = () => {
+  const d = pendingShare; if (!d) return;
+  if (d.code) return showIncomingCode(d.code);
+  const signed = !!(st.user && st.signedIn && st.profiles.length);
+  if (!signed) {
+    openSheet('incoming', sheetHead('Тэжээвэр амьтан') + pcardHTML(d, friendPic(d)) +
+      `<p class="sh-note">${esc(d.n)}-тэй найз болохын тулд бүртгэл үүсгээд эсвэл нэвтрээд тэжээвэр амьтнаа нэмээрэй.</p>
+       <button class="btn btn-plain" data-close>Бүртгүүлээд найз болох</button>`);
+    return; // keep pendingShare: it opens again after sign-in
+  }
+  pendingShare = null;
+  if (st.profiles.some(x => x.id === d.id)) { openSheet('incoming', sheetHead('Таны тэжээвэр') + pcardHTML(d, friendPic(d)) + '<p class="sh-note">Энэ бол таны өөрийн тэжээврийн холбоос. Найздаа илгээгээрэй!</p>'); return; }
+  let mine = st.profiles.find(x => x.id === d.fr) || curPet();
+  const isReq = !!st.profiles.find(x => x.id === d.fr);
+  const already = () => (mine.friends || []).some(f => f.id === d.id);
+  const draw = () => {
+    openSheet('incoming', sheetHead(isReq ? 'Найзын хүсэлт' : 'Найз болох уу?') + pcardHTML(d, friendPic(d)) +
+      (st.profiles.length > 1 ? `<div class="field"><label>Аль тэжээвэр тань найз болох вэ?</label><div class="pe-types" id="inMine">${st.profiles.map(x => `<button type="button" data-pid="${x.id}" aria-pressed="${x.id === mine.id}"><span class="mini-av">${petPic(x)}</span>${esc(x.name)}</button>`).join('')}</div></div>` : '') +
+      `<button class="btn btn-plain" id="inAdd">${ICON.heart}${already() ? 'Мэдээллийг шинэчлэх' : `${esc(mine.name)} + ${esc(d.n)} найз болох`}</button>`);
+    $('#inMine') && ($('#inMine').onclick = e => { const b = e.target.closest('[data-pid]'); if (!b) return; mine = st.profiles.find(x => x.id === b.dataset.pid); draw(); body.querySelectorAll(':scope > *').forEach(x => x.style.animation = 'none'); });
+    $('#inAdd').onclick = () => {
+      mine.friends = mine.friends || [];
+      const was = mine.friends.find(f => f.id === d.id), rec = { id:d.id, n:d.n, k:d.k, s:d.s, b:d.b, br:d.br, w:d.w, o:d.o, ph:d.ph, since: was ? was.since : todayStr() };
+      if (was) Object.assign(was, rec); else mine.friends.unshift(rec);
+      if (!save()) { if (!was) mine.friends.shift(); toast('Утасны санах ой дүүрсэн тул хадгалж чадсангүй.'); return; }
+      st.cur = mine.id; save(); closeSheet(); if (curTab() !== 'home') go('home'); renderPetHome();
+      $('#friends')?.scrollIntoView({ block:'center', behavior: reduce ? 'auto' : 'smooth' });
+      toast(was ? `${d.n}-ийн мэдээлэл шинэчлэгдлээ.` : `${mine.name} ба ${d.n} найзууд боллоо!`);
+      // a fresh friendship from a plain link: offer to send ours back so they can add us too
+      if (!was && !isReq) setTimeout(() => openShare(mine, d), 900);
+    };
+  };
+  draw();
+};
+
+/* ---------- friends on the server ----------
+   st.fr holds every live request that touches one of my pets plus a card for each other pet.
+   It is re-read on start, after every action, and whenever Realtime reports a change, so a request
+   or an unfriend on the other phone shows up here within a second. */
+const loadFriends = async (notify = false) => {
+  if (!cloudOn()) return false;
+  const { data, error } = await sb.from('friend_requests').select('id, from_pet, to_pet, status, created_at, responded_at').in('status', ['pending', 'accepted']);
+  if (error) throw error;
+  const mine = new Set(st.profiles.map(p => p.id));
+  const others = [...new Set(data.flatMap(r => [r.from_pet, r.to_pet]).filter(id => !mine.has(id)))];
+  const cards = {};
+  if (others.length) { const c = await sb.rpc('pet_cards', { ids:others }); if (c.error) throw c.error; c.data.forEach(x => cards[x.id] = x); }
+  const before = new Map((st.fr.reqs || []).map(r => [r.id, r.status])), first = !st.fr.loaded;
+  st.fr = { reqs:data, cards, loaded:true };
+  // a request answered, cancelled or answered on another phone leaves the bell
+  const pendingIds = new Set(data.filter(r => r.status === 'pending').map(r => 'fr-' + r.id));
+  const n0 = st.notes.length; st.notes = st.notes.filter(n => !(n.id || '').startsWith('fr-') || pendingIds.has(n.id));
+  if (st.notes.length !== n0) renderBell(false);
+  data.forEach(r => {
+    const inc = mine.has(r.to_pet), other = cards[inc ? r.from_pet : r.to_pet], my = st.profiles.find(p => p.id === (inc ? r.to_pet : r.from_pet));
+    if (!other || !my) return;
+    if (r.status === 'pending' && inc && !before.has(r.id) && !st.notes.some(n => n.id === 'fr-' + r.id)) {
+      addNote({ id:'fr-' + r.id, type:'friend', t:'Найзын хүсэлт', b:`${other.name} (${other.owner_name}) ${my.name}-тэй найз болохыг хүсэж байна.`, action:'freq:' + r.id }, !first);
+      if (notify) toast(`🐾 ${other.name}-ээс ${my.name}-д найзын хүсэлт ирлээ!`);
+    }
+    if (r.status === 'accepted' && !inc && before.get(r.id) === 'pending') {
+      addNote({ id:'fa-' + r.id, type:'friend', t:'Найзууд боллоо', b:`${other.name} таны ${my.name}-ийн хүсэлтийг зөвшөөрлөө.`, action:'fpet:' + my.id + ':' + other.id });
+      if (notify) toast(`🎉 ${my.name} ба ${other.name} найзууд боллоо!`);
+    }
+  });
+  save();
+  return true;
+};
+const friendsOf = petId => {
+  const out = { friends:[], incoming:[], outgoing:[] };
+  (st.fr.reqs || []).forEach(r => {
+    if (r.from_pet !== petId && r.to_pet !== petId) return;
+    const card = st.fr.cards[r.from_pet === petId ? r.to_pet : r.from_pet]; if (!card) return;
+    const it = { req:r, f:cardToSnap(card) };
+    if (r.status === 'accepted') out.friends.push(it); else if (r.to_pet === petId) out.incoming.push(it); else out.outgoing.push(it);
+  });
+  out.friends.sort((a, b) => (b.req.responded_at || '').localeCompare(a.req.responded_at || ''));
+  return out;
+};
+const refreshFriendsUI = () => { if ($('#home.active')) renderFriends(); };
+let rtChan = null, rtT = 0;
+const startRealtime = () => {
+  if (!cloudOn() || rtChan) return;
+  rtChan = sb.channel('friend-requests')
+    .on('postgres_changes', { event:'*', schema:'public', table:'friend_requests' }, () => {
+      clearTimeout(rtT); rtT = setTimeout(() => loadFriends(true).then(refreshFriendsUI).catch(() => {}), 250);
+    })
+    .subscribe();
+};
+const stopRealtime = () => { if (rtChan) { sb.removeChannel(rtChan); rtChan = null; } };
+const respondReq = async (reqId, accept) => {
+  const r = (st.fr.reqs || []).find(x => x.id === reqId); if (!r) return;
+  const res = await Promise.resolve(sb.rpc('respond_friend_request', { req:reqId, accept })).catch(err => ({ error:err }));
+  if (res.error || res.data === false) { toast('Хариулж чадсангүй. Дахин оролдоно уу.'); return; }
+  const other = cardToSnap(st.fr.cards[r.from_pet] || {}), my = st.profiles.find(p => p.id === r.to_pet);
+  st.notes = st.notes.filter(n => n.id !== 'fr-' + reqId); renderBell(false);
+  await loadFriends().catch(() => {});
+  refreshFriendsUI();
+  toast(accept ? `${my ? my.name : ''} ба ${other.n} найзууд боллоо!` : 'Хүсэлтээс татгалзлаа.');
+};
+const removeReq = async reqId => {
+  const { error } = await sb.from('friend_requests').delete().eq('id', reqId);
+  if (error) { toast('Хасаж чадсангүй. Дахин оролдоно уу.'); return false; }
+  await loadFriends().catch(() => {}); refreshFriendsUI(); return true;
+};
+// a request card in the bell or on the page: accept or decline
+const openRequest = reqId => {
+  const r = (st.fr.reqs || []).find(x => x.id === reqId);
+  if (!r || r.status !== 'pending') { toast('Энэ хүсэлт хүчингүй болсон байна.'); return; }
+  const f = cardToSnap(st.fr.cards[r.from_pet] || {}), my = st.profiles.find(p => p.id === r.to_pet);
+  if (!my || !f.id) return;
+  openSheet('request', sheetHead('Найзын хүсэлт') + pcardHTML(f, friendPic(f), `<div class="pc-since">${ICON.heart}<span>${esc(my.name)}-тэй найз болохыг хүсэж байна</span></div>`) +
+    `<div class="sh-row" style="margin-top:14px"><button class="btn btn-ghost" id="rqNo">Татгалзах</button><button class="btn btn-plain" id="rqYes">${ICON.heart}Зөвшөөрөх</button></div>`);
+  $('#rqYes').onclick = () => { closeSheet(); st.cur = my.id; save(); renderPetHome(); respondReq(reqId, true); };
+  $('#rqNo').onclick = () => { closeSheet(); respondReq(reqId, false); };
+};
+const openFriendCloud = reqId => {
+  const p = curPet(), it = [...friendsOf(p.id).friends, ...friendsOf(p.id).outgoing].find(x => x.req.id === reqId); if (!it) return;
+  const { req, f } = it, pending = req.status === 'pending';
+  openSheet('friend', sheetHead(pending ? 'Хүсэлт илгээсэн' : 'Найз') + pcardHTML(f, friendPic(f),
+      `<div class="pc-since">${ICON.heart}<span>${pending ? `${esc(p.name)}-ийн хүсэлт хариу хүлээж байна` : `${esc(p.name)}-тэй ${prettyDate((req.responded_at || req.created_at).slice(0, 10))}-нөөс хойш найз`}</span></div>`) +
+    `<button class="btn btn-danger" id="frDel">${pending ? 'Хүсэлтээ цуцлах' : 'Найзаас хасах'}</button>`);
+  $('#frDel').onclick = async e => {
+    const b = e.currentTarget;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = pending ? 'Дахин дарж цуцална' : `Дахин дарж ${f.n}-г хасна`; return; }
+    b.disabled = true;
+    if (await removeReq(req.id)) { closeSheet(); toast(pending ? 'Хүсэлтийг цуцаллаа.' : `${f.n} найзуудаас хасагдлаа. Тэдний талаас ч мөн хасагдсан.`); }
+    else b.disabled = false;
+  };
+};
+
+/* friends row on the pet page */
+const renderFriends = () => {
+  const p = curPet(); if (!p) return;
+  if (cloudOn()) {
+    const { friends, incoming, outgoing } = friendsOf(p.id);
+    $('#friends').innerHTML = `<div class="hl-h"><h3>Найзууд</h3><span>${friends.length ? friends.length + ' найз' : ''}</span></div>
+      ${incoming.length ? `<div class="fr-reqs">${incoming.map(({ req, f }, i) => `<div class="fr-req" data-req="${req.id}" style="--i:${i}">
+          <span class="fr-av sm">${friendPic(f)}</span><span class="tx"><b>${esc(f.n)}</b><em>${esc(f.o)} · найз болохыг хүсэж байна</em></span>
+          <button class="fr-no" data-decline aria-label="${esc(f.n)}-ийн хүсэлтээс татгалзах">${ICON.close}</button><button class="fr-yes" data-accept aria-label="${esc(f.n)}-ийн хүсэлтийг зөвшөөрөх">${ICON.check}</button></div>`).join('')}</div>` : ''}
+      <div class="fr-row">
+        <button class="fr fr-add" id="frAdd" aria-label="Найз нэмэх"><span class="fr-av">${ICON.plus}</span><b>Нэмэх</b></button>
+        ${friends.map(({ req, f }, i) => `<button class="fr" data-rid="${req.id}" style="--i:${i}"><span class="fr-av">${friendPic(f)}</span><b>${esc(f.n)}</b><em>${esc(f.o || petBy(f.k).n)}</em></button>`).join('')}
+        ${outgoing.map(({ req, f }, i) => `<button class="fr pending" data-rid="${req.id}" style="--i:${friends.length + i}"><span class="fr-av">${friendPic(f)}</span><b>${esc(f.n)}</b><em>Хүлээгдэж буй</em></button>`).join('')}
+      </div>
+      ${friends.length || incoming.length || outgoing.length ? '' : `<p class="fr-hint">${esc(p.name)}-ийн QR код эсвэл холбоосыг найздаа илгээгээд найз болоорой.</p>`}`;
+    return;
+  }
+  const fs = p.friends || [];
+  $('#friends').innerHTML = `<div class="hl-h"><h3>Найзууд</h3><span>${fs.length ? fs.length + ' найз' : ''}</span></div>
+    <div class="fr-row">
+      <button class="fr fr-add" id="frAdd" aria-label="Найз нэмэх"><span class="fr-av">${ICON.plus}</span><b>Нэмэх</b></button>
+      ${fs.map((f, i) => `<button class="fr" data-fid="${f.id}" style="--i:${i}"><span class="fr-av">${friendPic(f)}</span><b>${esc(f.n)}</b><em>${esc(f.o || petBy(f.k).n)}</em></button>`).join('')}
+    </div>
+    ${fs.length ? '' : `<p class="fr-hint">${esc(p.name)}-ийн холбоосыг найздаа илгээгээд тэдний тэжээвэртэй найз болоорой.</p>`}`;
+};
+$('#friends').addEventListener('click', e => {
+  if (e.target.closest('#frAdd')) { openShare(curPet()); return; }
+  const rq = e.target.closest('.fr-req');
+  if (rq) {
+    if (e.target.closest('[data-accept], [data-decline]')) {
+      const accept = !!e.target.closest('[data-accept]');
+      rq.classList.add(accept ? 'yes' : 'no'); // slide away right away, the server answer follows
+      setTimeout(() => respondReq(rq.dataset.req, accept), reduce ? 0 : 280);
+    } else openRequest(rq.dataset.req);
+    return;
+  }
+  const r = e.target.closest('[data-rid]'); if (r) { openFriendCloud(r.dataset.rid); return; }
+  const b = e.target.closest('[data-fid]'); if (b) openFriend(b.dataset.fid);
+});
+const openFriend = fid => {
+  const p = curPet(), f = (p.friends || []).find(x => x.id === fid); if (!f) return;
+  openSheet('friend', sheetHead('Найз') + pcardHTML(f, friendPic(f), `<div class="pc-since">${ICON.heart}<span>${esc(p.name)}-тэй ${prettyDate(f.since)}-нөөс хойш найз</span></div>`) +
+    `<button class="btn btn-ghost" id="frBack">${ICON.share}<span>${esc(p.name)}-ийн холбоосыг илгээх</span></button>
+     <button class="btn btn-danger" id="frDel">Найзаас хасах</button>`);
+  $('#frBack').onclick = () => { closeSheet(); setTimeout(() => openShare(p, f), 250); };
+  $('#frDel').onclick = e => {
+    const b = e.currentTarget;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = `Дахин дарж ${f.n}-г хасна`; return; }
+    p.friends = p.friends.filter(x => x.id !== fid); save(); closeSheet(); renderFriends(); toast(`${f.n} найзуудаас хасагдлаа.`);
+  };
+};
+
+/* add / edit a pet */
+const openPetEdit = id => {
+  const p = id ? st.profiles.find(x => x.id === id) : null;
+  const d = p ? { ...p } : { k:[...st.pets][0] || 'dog', name:'', sex:'', birth:'', breed:'', weight:'' };
+  const today = new Date().toISOString().slice(0, 10);
+  openSheet('pet', sheetHead(p ? 'Мэдээлэл засах' : 'Тэжээвэр нэмэх') + `<form class="pe-form" id="peForm" novalidate>
+    <div class="field" id="f-pname"><label for="pe-name">Нэр</label><input id="pe-name" maxlength="24" placeholder="Жишээ: Хоггий" value="${esc(p ? p.name : '')}"><div class="err">Нэрийг нь оруулна уу.</div></div>
+    <div class="field"><label>Төрөл</label><div class="pe-types" id="peTypes">${PETS.map(x => `<button type="button" data-k="${x.k}" aria-pressed="${x.k === d.k}">${x.svg}${x.n}</button>`).join('')}</div></div>
+    <div class="field"><label>Хүйс</label><div class="pe-seg" id="peSex">${['Эр', 'Эм'].map(s => `<button type="button" data-s="${s}" aria-pressed="${d.sex === s}">${s}</button>`).join('')}</div></div>
+    <div class="pe-row">
+      ${dateFieldHTML('pe-birth', 'f-birth', 'Төрсөн өдөр', /^\d{4}-\d{2}-\d{2}$/.test(d.birth || '') ? d.birth : '', 'Сонгох')}
+      <div class="field"><label for="pe-weight">Жин (кг)</label><input id="pe-weight" inputmode="decimal" maxlength="5" placeholder="4.5" value="${esc(d.weight)}"></div>
+    </div>
+    ${datePanelHTML('pe-birth', '<button type="button" id="bToday">Өнөөдөр</button><button type="button" id="bClear">Арилгах</button>')}
+    <div class="field"><label for="pe-breed">Үүлдэр</label><input id="pe-breed" maxlength="30" placeholder="Жишээ: Хаски" value="${esc(d.breed)}"></div>
+    <button class="btn btn-plain" type="submit">${p ? 'Хадгалах' : 'Нэмэх'}</button>
+    ${p && p.photo ? '<button class="btn btn-ghost" type="button" id="peNoPhoto">Зургийг устгах</button>' : ''}
+    ${p && st.profiles.length > 1 ? '<button class="btn btn-danger" type="button" id="peDel">Энэ тэжээврийг устгах</button>' : ''}
+  </form>`);
+  let k = d.k, sex = d.sex;
+  $('#peTypes').onclick = e => { const b = e.target.closest('[data-k]'); if (!b) return; k = b.dataset.k; $('#peTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+  $('#peSex').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; sex = sex === b.dataset.s ? '' : b.dataset.s; $('#peSex').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.s === sex)); };
+  $('#pe-weight').addEventListener('input', e => { e.target.value = e.target.value.replace(',', '.').replace(/[^\d.]/g, ''); });
+  $('#pe-name').addEventListener('input', () => $('#f-pname').classList.remove('bad'));
+  // birth date: same wheels as the log form, up to 40 years back (parrots live long), optional
+  const bp = dateWheels('pe-birth', 'f-birth', $('#pe-birth').value, { back:40, empty:'Сонгох' });
+  const openB = bindPickers([bp]);
+  $('#bToday').onclick = () => bp.today();
+  $('#bClear').onclick = () => { bp.clear(); openB(bp, false); };
+  $('#peForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('#pe-name').value.trim();
+    if (!name) { const f = $('#f-pname'); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); $('#pe-name').focus(); return; }
+    const t = p || newProfile(k);
+    Object.assign(t, { k, name, sex, birth:$('#pe-birth').value, breed:$('#pe-breed').value.trim(), weight:$('#pe-weight').value.trim() });
+    if (!p) st.profiles.push(t);
+    st.cur = t.id; st.pets = new Set(st.profiles.map(x => x.k));
+    save(); pushPet(t); closeSheet(); renderHome();
+    toast(p ? 'Мэдээлэл хадгалагдлаа.' : `${name} нэмэгдлээ. Зургийг нь оруулаарай!`);
+  });
+  $('#peNoPhoto') && ($('#peNoPhoto').onclick = () => {
+    const oldPath = p.photoPath; p.photo = ''; p.photoPath = '';
+    save(); pushPet(p).then(ok => { if (ok && oldPath) sb.storage.from('pet-photos').remove([oldPath]); });
+    closeSheet(); renderPetHome(); toast('Зураг устгагдлаа.');
+  });
+  // delete asks twice so one stray tap never removes a pet
+  $('#peDel') && ($('#peDel').onclick = e => {
+    const b = e.currentTarget;
+    if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = `Дахин дарж ${p.name}-г устгана`; return; }
+    st.profiles = st.profiles.filter(x => x.id !== p.id); st.cur = st.profiles[0].id;
+    st.pets = new Set(st.profiles.map(x => x.k)); if (!st.pets.has(st.filter)) st.filter = 'all';
+    save(); removePetCloud(p); closeSheet(); renderHome(); toast(`${p.name} устгагдлаа.`);
+  });
 };
 const renderChips = () => {
   const mine = PETS.filter(p => st.pets.has(p.k));
@@ -952,13 +2528,13 @@ $('#grid').addEventListener('click', e => {
   openProduct(card.dataset.id);
 });
 $('#grid').addEventListener('keydown', e => { const c = e.target.closest('.card'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(c.dataset.id); } });
-$('#exploreBtn').onclick = () => { const h = $('#home'); h.scrollTo({ top: $('#arrivals').offsetTop + $('.sec2').offsetTop - 70, behavior: reduce ? 'auto' : 'smooth' }); };
+$('#exploreBtn').onclick = () => { const h = $('#shop'); h.scrollTo({ top: $('#arrivals').offsetTop + $('.sec2').offsetTop - 70, behavior: reduce ? 'auto' : 'smooth' }); };
 $('#starBtn').onclick = () => toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
 $('#cartPill').onclick = () => openCart();
 $('#avatarBtn').onclick = () => openProfile();
 $('#menuBtn').onclick = () => openCats();
 $('#searchBtn').onclick = () => openSearch();
-$('#home').addEventListener('scroll', () => $('#home .topbar').classList.toggle('scrolled', $('#home').scrollTop > 4), { passive:true });
+$('#shop').addEventListener('scroll', () => $('#shop .topbar').classList.toggle('scrolled', $('#shop').scrollTop > 4), { passive:true });
 
 /* ---------- cart ---------- */
 const cartTotals = () => {
@@ -971,7 +2547,6 @@ const cartTotals = () => {
 const renderCartUI = (bump = true) => {
   const t = cartTotals();
   $('#cartCnt').textContent = t.count; $('#cartTot').textContent = fmt(t.sub);
-  $('#navBadge').textContent = t.count; $('#navBadge').classList.toggle('show', t.count > 0);
   $('#pts').textContent = st.points;
   save();
   if (bump) { const p = $('#cartPill'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
@@ -1003,10 +2578,10 @@ const setNav = k => {
 const openSheet = (mode, html) => {
   st.sheet = mode; body.innerHTML = html; paintIcons(body); body.scrollTop = 0;
   sheet.classList.add('open'); scrim.classList.add('open');
-  if (mode === 'cart' || mode === 'profile') setNav(mode);
+  if (mode === 'profile') setNav(mode);
   setTimeout(() => sheet.querySelector('button, [tabindex]')?.focus({ preventScroll:true }), 350);
 };
-const closeSheet = () => { sheet.classList.remove('open'); scrim.classList.remove('open'); st.sheet = null; setNav('home'); };
+const closeSheet = () => { sheet.classList.remove('open'); scrim.classList.remove('open'); st.sheet = null; setNav(curTab()); };
 scrim.onclick = closeSheet;
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && st.sheet) closeSheet(); });
 const sheetHead = t => `<div class="sheet-h"><h2>${t}</h2><button class="circle-btn" data-close aria-label="Хаах">${ICON.close}</button></div>`;
@@ -1069,19 +2644,22 @@ const checkout = () => {
   c.innerHTML = reduce ? '' : Array.from({ length: 46 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${cols[i % 5]};animation-duration:${2.2 + Math.random() * 2}s;animation-delay:${Math.random() * .8}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join('');
   setTimeout(() => go('done'), 250);
 };
-$('#doneBtn').onclick = () => { go('home', true); $('#home').scrollTop = 0; };
+$('#doneBtn').onclick = () => { go('home', true); };
 
 const openProfile = () => {
   const u = st.user;
-  openSheet('profile', sheetHead('Профайл') + `<div class="prof"><span class="avatar">${u.name[0].toUpperCase()}</span><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span></div></div>
-    <div><div class="lbl">Миний тэжээвэр</div><div class="mypets">${[...st.pets].map(k => `<span>${petBy(k).svg}${petBy(k).n}</span>`).join('')}</div></div>
+  openSheet('profile', sheetHead('Профайл') + `<div class="prof"><button class="av-edit" id="userPhotoBtn" aria-label="${u.photo ? 'Профайл зураг солих' : 'Профайл зураг оруулах'}"><span class="avatar">${avatarHTML()}</span><span class="av-cam">${ICON.camera}</span></button><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span>${u.photo ? '<button class="av-rm" id="userPhotoRm">Зургийг устгах</button>' : ''}</div></div>
+    <div><div class="lbl">Миний тэжээвэр</div><div class="mypets">${st.profiles.map(p => `<span>${petPic(p)}${esc(p.name)}</span>`).join('')}</div></div>
     <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
     <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>`);
+  $('#userPhotoBtn').onclick = () => $('#userPhotoIn').click();
+  $('#userPhotoRm') && ($('#userPhotoRm').onclick = () => { delete st.user.photo; st.user.avatarDirty = true; save(); pushAvatar(); openProfile(); renderAvatars(); toast('Профайл зураг устгагдлаа.'); });
   $('#editPets').onclick = () => { closeSheet(); st.editPets = true; setTimeout(openPets, 200); };
   $('#logout').onclick = () => {
     // keep the account on this device so the user can log back in; only end the session
     st.signedIn = false; save();
-    closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4;
+    if (sb) { stopRealtime(); sb.auth.signOut().catch(() => {}); }
+    closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4; st.profiles = []; st.cur = null;
     $('#suForm').reset(); setTimeout(() => go('welcome', true), 200);
   };
 };
@@ -1096,7 +2674,7 @@ const openCats = () => {
 /* ---------- notifications ---------- */
 const NOTE_LOOK = {
   gift: ['gift', '#F26B12', '#FFE9DA'], box: ['box', '#0F4C17', '#DDF3D8'], star: ['star', '#F26B12', '#FFF1E2'],
-  new: ['spark', '#2F8FD0', '#E1F1FB'], truck: ['truck', '#6B4FB8', '#ECE6FA']
+  new: ['spark', '#2F8FD0', '#E1F1FB'], truck: ['truck', '#6B4FB8', '#ECE6FA'], friend: ['heart', '#D6336C', '#FFE3EC']
 };
 const ago = t => {
   const m = Math.floor((Date.now() - t) / 60000);
@@ -1105,11 +2683,15 @@ const ago = t => {
   const h = Math.floor(m / 60); if (h < 24) return `${h} цагийн өмнө`;
   return `${Math.floor(h / 24)} өдрийн өмнө`;
 };
+// two bells (home and shop) show the same notifications
 const renderBell = ring => {
-  const n = st.notes.filter(x => !x.read).length, b = $('#nBadge'), btn = $('#bellBtn');
-  b.textContent = n > 9 ? '9+' : n; b.classList.toggle('show', n > 0);
-  btn.setAttribute('aria-label', n ? `Мэдэгдэл, ${n} уншаагүй` : 'Мэдэгдэл');
-  if (ring && n && !reduce) { btn.classList.remove('ring'); void btn.offsetWidth; btn.classList.add('ring'); }
+  const n = st.notes.filter(x => !x.read).length;
+  [['#nBadge', '#bellBtn'], ['#homeBadge', '#homeBell']].forEach(([bs, ns]) => {
+    const b = $(bs), btn = $(ns); if (!b || !btn) return;
+    b.textContent = n > 9 ? '9+' : n; b.classList.toggle('show', n > 0);
+    btn.setAttribute('aria-label', n ? `Мэдэгдэл, ${n} уншаагүй` : 'Мэдэгдэл');
+    if (ring && n && !reduce) { btn.classList.remove('ring'); void btn.offsetWidth; btn.classList.add('ring'); }
+  });
 };
 const addNote = (n, ring = true) => {
   st.notes.unshift({ id:'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), time:Date.now(), read:false, ...n });
@@ -1152,9 +2734,18 @@ const openNotes = () => {
     if (a.startsWith('product:') && prodBy(a.slice(8))) setTimeout(() => openProduct(a.slice(8)), 250);
     else if (a === 'cart') setTimeout(openCart, 250);
     else if (a === 'stars') toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
+    else if (a.startsWith('freq:')) setTimeout(() => openRequest(a.slice(5)), 250);
+    else if (a.startsWith('fpet:')) {
+      // show the new friend on my pet's page
+      const [, myId] = a.split(':');
+      closeSheet(); if (st.profiles.some(p => p.id === myId)) st.cur = myId;
+      if (curTab() !== 'home') go('home'); renderPetHome();
+      setTimeout(() => $('#friends')?.scrollIntoView({ block:'center', behavior: reduce ? 'auto' : 'smooth' }), 300);
+    }
   });
 };
 $('#bellBtn').onclick = () => openNotes();
+$('#homeBell').onclick = () => openNotes();
 
 /* ---------- search ---------- */
 const POPULAR = ['Хоол', 'Аяга', 'Тоглоом', 'Элс', 'Өвс', 'Үр'];
@@ -1207,9 +2798,11 @@ const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;
 /* ---------- nav ---------- */
 document.querySelectorAll('.nav button').forEach(b => b.onclick = () => {
   const k = b.dataset.nav;
-  if (k === 'home') { closeSheet(); $('#home').scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' }); }
-  if (k === 'cart') openCart();
-  if (k === 'profile') openProfile();
+  if (k === 'profile') { openProfile(); return; }
+  if (st.sheet) closeSheet();
+  // tapping the tab you are on scrolls it back to the top; otherwise slide to the other tab
+  if (curTab() === k) $('#' + k).scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' });
+  else go(k, k === 'home');
 });
 
 /* ---------- swipe-to-confirm for every orange arrow button ---------- */
@@ -1246,18 +2839,42 @@ document.addEventListener('pointerdown', e => {
 let tt; const toast = msg => { $('#toastText').textContent = msg; const t = $('#toast'); t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 3200); };
 
 /* ---------- returning user: skip sign-up ---------- */
+// the server account is the login; this phone's copy is reused when it belongs to the same person
+const signedInAs = (u, local) => {
+  const mine = local && local.user && (local.user.id === u.id || (local.user.email || '').toLowerCase() === (u.email || '').toLowerCase());
+  if (mine) restore(local); else resetLocal();
+  const meta = u.user_metadata || {};
+  st.user = { ...(mine ? st.user : {}), id:u.id, email:u.email, name:(mine && st.user.name) || meta.name || 'Zoomies', phone:(mine && st.user.phone) || meta.phone || '' };
+  st.signedIn = true; save();
+};
 const saved = loadSaved();
-const returning = saved && saved.user && saved.user.name && saved.signedIn !== false;
+const wasIn = saved && saved.user && saved.user.name && saved.signedIn !== false;
 const screens = document.querySelectorAll('.screen');
-if (returning) {
+if (wasIn) {
   // open straight on the app without playing the welcome→home slide
   screens.forEach(s => s.style.transition = 'none');
   $('#welcome').classList.remove('active');
 }
-loadProducts().then(() => {
-  if (returning) {
-    restore(saved); st.signedIn = true; enterApp();
-    requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
+const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
+Promise.all([loadProducts(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).then(([, s]) => {
+  const session = s && s.data && s.data.session;
+  if (sb && session) {
+    // signed in: show the phone's copy at once, then refresh from the server in the background
+    signedInAs(session.user, saved); enterApp(); settle();
+    cloudLoad().then(() => {
+      if (!st.profiles.length) return;
+      if (document.querySelector('#home.active, #shop.active')) renderHome(); else if (!st.editPets) enterApp(); // e.g. a new phone: pets arrive from the server
+    }).catch(() => {});
+  } else if (wasIn && !sb) {
+    restore(saved); st.signedIn = true; enterApp(); settle(); // the server library could not load: keep working on this phone
+  } else if (wasIn && !saved.user.id) {
+    // an account from before the server: ask for a password once to move it online, everything on the phone is kept
+    $('#in-name').value = saved.user.name || ''; $('#in-email').value = saved.user.email || ''; $('#in-phone').value = saved.user.phone || '';
+    go('signup'); settle();
+    setTimeout(() => toast('Zoomies шинэчлэгдлээ! Мэдээллээ хадгалахын тулд нууц үг сонгоод "Үргэлжлүүлэх" дарна уу.'), 600);
+  } else {
+    if (wasIn) { go('login'); settle(); $('#in-lemail').value = saved.user.email || ''; } // signed out on the server side
+    if (pendingShare) setTimeout(showIncoming, 1600); // not signed in: show the pet over the welcome screen
   }
 });
 
@@ -1275,6 +2892,25 @@ $('#liForm').addEventListener('submit', async e => {
   if (!checks.email(email)) return fieldErr('f-lemail', 'Имэйл хаяг буруу байна. Жишээ: bolor@mail.mn');
   if (!pw) return fieldErr('f-lpass', 'Нууц үгээ оруулна уу.');
   const btn = $('#liBtn'); btn.disabled = true; btn.innerHTML = 'Шалгаж байна… <span class="spin" style="margin-left:10px"></span>';
+  if (sb) {
+    let res;
+    try { res = await sb.auth.signInWithPassword({ email, password:pw }); } catch (_) { res = { error:{ message:'network' } }; }
+    btn.disabled = false; btn.innerHTML = 'Нэвтрэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn);
+    if (res.error) {
+      const m = (res.error.code || '') + ' ' + (res.error.message || '');
+      if (/invalid|credentials/i.test(m)) return fieldErr('f-lpass', 'Имэйл эсвэл нууц үг буруу байна.');
+      if (/confirm/i.test(m)) return fieldErr('f-lemail', 'Имэйлээ баталгаажуулаагүй байна. Ирсэн захидлын холбоос дээр дарна уу.');
+      if (/rate|too many|429/i.test(m)) return toast('Хэт олон оролдлого боллоо. Хэдэн минутын дараа дахин оролдоно уу.');
+      if (/network|fetch/i.test(m)) return toast('Интернэт холболтоо шалгаад дахин оролдоно уу.');
+      return toast('Нэвтэрч чадсангүй: ' + res.error.message);
+    }
+    signedInAs(res.data.user, loadSaved());
+    try { await cloudLoad(); } catch (_) { toast('Сервертэй холбогдож чадсангүй. Утсан дээрх мэдээллээр үргэлжлүүллээ.'); }
+    $('#in-lpass').value = '';
+    enterApp();
+    setTimeout(() => toast(`Тавтай морил, ${st.user.name}!`), 700);
+    return;
+  }
   const rec = loadSaved();
   await new Promise(r => setTimeout(r, 700));
   btn.disabled = false; btn.innerHTML = 'Нэвтрэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn);

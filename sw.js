@@ -1,5 +1,5 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v3';
+const CACHE = 'zoomies-v4';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'products.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
@@ -21,8 +21,22 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  const cacheable = url.origin === location.origin || url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com';
+  // also: the pinned Supabase library and pet photos on Supabase (both never change at the same address).
+  // Supabase API and login calls (/rest, /auth, private files) are never cached.
+  const cacheable = url.origin === location.origin || url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com'
+    || (url.host === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/@supabase/supabase-js@'))
+    || (url.host === 'cdnjs.cloudflare.com' && url.pathname.startsWith('/ajax/libs/qrcode-generator/'))
+    || (url.host.endsWith('.supabase.co') && url.pathname.startsWith('/storage/v1/object/public/pet-photos/'));
   if (!cacheable) return;
+  // server pet photos: always fetched and stored in CORS mode, so the same cached copy serves both <img> tags
+  // and the share-card canvas (an opaque copy would break the canvas)
+  if (url.host.endsWith('.supabase.co')) {
+    e.respondWith(caches.match(url.href).then(hit => hit || fetch(url.href, { mode:'cors', credentials:'omit' }).then(r => {
+      if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(url.href, copy)); }
+      return r;
+    })));
+    return;
+  }
   // product list and photos: network first so edits on GitHub show up, cache as offline fallback
   if (url.origin === location.origin && (url.pathname.endsWith('/products.json') || url.pathname.includes('/photos/'))) {
     e.respondWith(fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })
