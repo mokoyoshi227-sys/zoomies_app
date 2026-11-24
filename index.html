@@ -1691,7 +1691,7 @@ const renderHealth = () => {
       <div class="hl-stats${periodChanged && prev ? ' swap' : ''}">${tiles}</div>
       ${many ? `<div class="st-foot">${s.elapsed ? `${s.elapsed} өдрөөс ${s.days} өдөр бүртгэлтэй` : 'Энэ хугацаа хараахан эхлээгүй'}</div>` : ''}
       ${many ? chartHTML(p.logs, hp, per, today) : ''}
-      ${many ? '' : `<div class="hl-list">${shown.length ? shown.map(logRow).join('') : '<div class="hl-empty">Энэ өдөр бүртгэл алга. Дээрх товчоор нэмээрэй.</div>'}
+      ${many ? '' : `<div class="hl-list">${shown.length ? shown.map(logRow).join('') : '<div class="hl-empty">Энэ өдөр бүртгэл алга.</div>'}
         ${list.length > shown.length ? `<button class="hl-more" data-all>Бүгдийг харах (${list.length})</button>` : ''}</div>`}
     </div>`;
   paintChartReadout();
@@ -2651,7 +2651,7 @@ const openProfile = () => {
   openSheet('profile', sheetHead('Профайл') + `<div class="prof"><button class="av-edit" id="userPhotoBtn" aria-label="${u.photo ? 'Профайл зураг солих' : 'Профайл зураг оруулах'}"><span class="avatar">${avatarHTML()}</span><span class="av-cam">${ICON.camera}</span></button><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span>${u.photo ? '<button class="av-rm" id="userPhotoRm">Зургийг устгах</button>' : ''}</div></div>
     <div><div class="lbl">Миний тэжээвэр</div><div class="mypets">${st.profiles.map(p => `<span>${petPic(p)}${esc(p.name)}</span>`).join('')}</div></div>
     <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
-    <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>`);
+    <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр амьтан өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>`);
   $('#userPhotoBtn').onclick = () => $('#userPhotoIn').click();
   $('#userPhotoRm') && ($('#userPhotoRm').onclick = () => { delete st.user.photo; st.user.avatarDirty = true; save(); pushAvatar(); openProfile(); renderAvatars(); toast('Профайл зураг устгагдлаа.'); });
   $('#editPets').onclick = () => { closeSheet(); st.editPets = true; setTimeout(openPets, 200); };
@@ -2703,7 +2703,7 @@ const seedNotes = () => {
   const fresh = PRODUCTS.find(p => p.isNew && p.pets.some(k => st.pets.has(k))) || PRODUCTS.find(p => p.isNew);
   st.notes = [
     { id:'seed-gift', type:'gift', t:'Эхний захиалгад 10% хөнгөлөлт', b:`${st.user.name}, Zoomies-д тавтай морил! Хөнгөлөлт сагсанд автоматаар тооцогдоно.`, action:'cart', time:now, read:false },
-    { id:'seed-new', type:'new', t:'Шинэ ирэлт', b:`${fresh.n} одоо худалдаанд гарлаа.`, action:'product:' + fresh.id, time:now - 60000, read:false },
+    { id:'seed-new', type:'new', t:'Бүтээгдэхүүнүүд', b:`${fresh.n} одоо худалдаанд гарлаа.`, action:'product:' + fresh.id, time:now - 60000, read:false },
     { id:'seed-star', type:'star', t:`Танд ${st.points} бонус од байна`, b:'10 од цуглуулбал 10,000₮ хөнгөлөлт эдэлнэ.', action:'stars', time:now - 120000, read:false }
   ];
   save();
