@@ -1,0 +1,1265 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E7F7E3">
+<meta name="description" content="Тэжээвэр амьтны хоол, хэрэгслийн дэлгүүр">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Zoomies">
+<style>
+/* base reset (what the artifact host used to provide) + safe areas for the installed app */
+html{height:100%; box-sizing:border-box; padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px); background:#E7F7E3; -webkit-text-size-adjust:100%}
+body{margin:0; font-size:14px; overscroll-behavior:none}
+img{max-width:100%}
+[hidden]{display:none!important}
+@media (max-width:520px){ html{background:#E7F7E3} }
+</style>
+</head>
+<body>
+<title>Zoomies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one phone-sized app, centered on deep forest green; full-bleed on real phones. Single deliberate look taken from the reference. */
+:root{
+  --forest:#0A3A0E;   /* page ground */
+  --pine:#0F4C17;     /* dark panels, primary text on light */
+  --mint:#E7F7E3;     /* screen ground */
+  --leaf:#A8E09E;     /* light green band */
+  --leaf-soft:#CDEFC6;
+  --orange:#F26B12;   /* call to action, star */
+  --orange-deep:#D9560A;
+  --card:#FFFFFF;
+  --ink:#0E2E12;
+  --muted:#4F6E52;
+  --danger:#C7361B;
+  --f-ui:"Montserrat", "Segoe UI", system-ui, sans-serif;
+  --f-logo:"Fredoka", "Montserrat", system-ui, sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --sb:46px;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:radial-gradient(120% 90% at 50% 0%, #11521a 0%, var(--forest) 60%); color:var(--ink); font-family:var(--f-ui); display:flex; align-items:center; justify-content:center; gap:64px; padding-block:24px; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); box-sizing:border-box; -webkit-font-smoothing:antialiased; overflow:hidden}
+*,*::before,*::after{box-sizing:border-box}
+button{font:inherit; color:inherit; border:0; background:none; cursor:pointer; -webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{outline:3px solid var(--orange); outline-offset:2px}
+
+/* side caption on wide screens */
+.aside{max-width:300px; color:#DDF3D8; display:none}
+.aside .wordmark{font-size:44px; color:#fff}
+.aside p{line-height:1.6; color:#B9DDB3; font-size:15px}
+.aside ol{padding:0; margin:20px 0 0; list-style:none; display:grid; gap:10px; font-size:14px}
+.aside li{display:flex; gap:12px; align-items:center}
+.aside li b{width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.1); display:grid; place-items:center; font-size:13px; flex:none}
+@media (min-width:960px){ .aside{display:block} }
+
+/* device */
+.device{position:relative; width:390px; height:min(844px, calc(100vh - 48px)); border-radius:48px; overflow:hidden; background:var(--mint); box-shadow:0 0 0 10px #062a09, 0 0 0 11px rgba(255,255,255,.07), 0 40px 90px rgba(0,0,0,.5); flex:none; isolation:isolate}
+@supports (overflow:clip){ .device{overflow:clip} }
+.statusbar{position:absolute; inset:0 0 auto; height:var(--sb); display:flex; align-items:center; justify-content:space-between; padding:6px 30px 0; font-weight:700; font-size:14px; z-index:50; pointer-events:none; transition:color .4s}
+.statusbar.light{color:#fff}
+.statusbar .notch{position:absolute; left:50%; top:10px; transform:translateX(-50%); width:110px; height:30px; border-radius:20px; background:#050f06}
+.statusbar svg{display:block}
+@media (max-width:520px){
+  body{padding:0; gap:0}
+  .device{width:100%; height:100%; border-radius:0; box-shadow:none}
+  .statusbar{display:none}
+  :root{--sb:10px}
+}
+
+/* screens */
+.screen{position:absolute; inset:0; opacity:0; visibility:hidden; transform:translateX(48px); pointer-events:none;
+  transition:opacity .45s ease, transform .6s var(--ease), visibility 0s .6s; overflow-y:auto; overflow-x:hidden; scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{opacity:1; visibility:visible; transform:none; pointer-events:auto; transition:opacity .5s ease .08s, transform .65s var(--ease) .04s, visibility 0s}
+.screen.leaving{transform:translateX(-36px) scale(.98)}
+.screen.back{transform:translateX(-48px)}
+
+/* logo */
+.wordmark{font-family:var(--f-logo); font-weight:700; letter-spacing:-.01em; display:inline-flex; align-items:center; line-height:1}
+.wordmark .oo{display:inline-flex; gap:.04em; margin:0 .02em; position:relative; top:.04em}
+.wordmark .oo i{width:.56em; height:.56em; border-radius:50%; background:#fff; box-shadow:inset 0 0 0 .07em currentColor; position:relative; display:block}
+.wordmark .oo i:first-child{top:.06em}
+.wordmark .oo i:last-child{top:-.07em}
+.wordmark .oo i::after{content:""; position:absolute; width:.24em; height:.24em; border-radius:50%; background:var(--pine); left:.16em; top:.16em; animation:look 4.2s var(--ease) infinite}
+@keyframes look{0%,18%{transform:translate(0,0)}24%,42%{transform:translate(.09em,-.03em)}48%,66%{transform:translate(-.09em,.02em)}72%,100%{transform:translate(0,.07em)}}
+.mark .ear{transform-box:fill-box; animation:flap 1.6s ease-in-out infinite}
+.mark .ear.r{animation-delay:.12s; transform-origin:30% 10%}
+.mark .ear.l{transform-origin:70% 10%}
+@keyframes flap{0%,100%{transform:rotate(0)}50%{transform:rotate(-9deg)}}
+.mark .ear.r{animation-name:flapR}
+@keyframes flapR{0%,100%{transform:rotate(0)}50%{transform:rotate(9deg)}}
+.mark .tongue{transform-box:fill-box; transform-origin:50% 0; animation:pant .5s ease-in-out infinite alternate}
+@keyframes pant{to{transform:scaleY(1.18)}}
+
+/* welcome */
+#welcome{background:#fff; color:var(--ink); display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:calc(var(--sb) + 34px) 28px 34px; text-align:center}
+#welcome .burst{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+#welcome .burst span{position:absolute; color:var(--leaf); opacity:.35}
+.w-hero{display:flex; flex-direction:column; align-items:center; gap:14px; position:relative}
+.w-hero .wordmark{font-size:56px; color:var(--pine)}
+.w-hero p{margin:0; color:var(--muted); font-size:15px; line-height:1.55; max-width:26ch}
+.w-photo{position:relative; width:calc(100% + 56px); margin:0 -28px; overflow:hidden; flex:none}
+.w-photo img{display:block; width:150%; max-width:none; margin-left:-31.5%; height:auto}
+#welcome.active .w-photo img{animation:photoIn 1.6s cubic-bezier(.25,.8,.3,1) .35s both}
+@keyframes photoIn{0%{filter:blur(24px); opacity:0; transform:scale(1.08)}45%{opacity:1}100%{filter:blur(0); opacity:1; transform:none}}
+.w-hero{margin-top:34px}
+/* wordmark motion: speed streaks, letters zoom in with a skid, eyes pop, word squashes */
+.wm-anim{position:relative; transform-origin:50% 100%}
+.wm-anim .ch{display:inline-block}
+.wm-anim .ch.oo{display:inline-flex}
+.wm-anim .streaks{position:absolute; left:-46px; top:0; bottom:0; width:60px; pointer-events:none}
+.wm-anim .streaks b{position:absolute; left:0; height:5px; border-radius:3px; background:var(--leaf); opacity:0}
+.wm-anim .streaks b:nth-child(1){top:22%; width:46px}
+.wm-anim .streaks b:nth-child(2){top:48%; width:64px}
+.wm-anim .streaks b:nth-child(3){top:74%; width:38px}
+#welcome.active .wm-anim .streaks b{animation:streak .8s var(--ease) both}
+#welcome.active .wm-anim .streaks b:nth-child(2){animation-delay:.07s}
+#welcome.active .wm-anim .streaks b:nth-child(3){animation-delay:.14s}
+@keyframes streak{0%{transform:translateX(-60px) scaleX(.3); opacity:0}35%{opacity:1}100%{transform:translateX(230px) scaleX(.15); opacity:0}}
+#welcome.active .wm-anim .ch{animation:zoomIn .85s var(--ease) both; animation-delay:calc(.12s + var(--d) * .07s)}
+@keyframes zoomIn{0%{transform:translateX(-150px) skewX(-28deg); opacity:0; filter:blur(6px)}55%{transform:translateX(9px) skewX(10deg); opacity:1; filter:blur(0)}78%{transform:translateX(-3px) skewX(-4deg)}100%{transform:none}}
+#welcome.active .wm-anim .oo i{animation:eyePop .7s var(--spring) both; animation-delay:.72s}
+#welcome.active .wm-anim .oo i + i{animation-delay:.8s}
+@keyframes eyePop{from{transform:scale(0) rotate(-200deg)}to{transform:none}}
+#welcome.active .wm-anim{animation:squash .6s var(--spring) 1s both}
+@keyframes squash{0%{transform:none}35%{transform:scale(1.07,.88)}100%{transform:none}}
+#welcome.active .w-hero p{animation:rise .8s var(--ease) 1.05s both}
+#welcome.active .w-cta{animation:rise .8s var(--ease) 1.2s both}
+@keyframes popIn{from{transform:scale(.3) rotate(-25deg); opacity:0}to{transform:none; opacity:1}}
+@keyframes rise{from{transform:translateY(24px); opacity:0}to{transform:none; opacity:1}}
+.w-cta{width:100%; display:grid; gap:14px; position:relative}
+.w-perks{display:flex; justify-content:center; gap:18px; font-size:12px; color:var(--muted); font-weight:600}
+.w-perks span{display:flex; align-items:center; gap:6px}
+
+/* buttons */
+.btn{height:58px; border-radius:30px; display:flex; align-items:center; justify-content:center; gap:12px; font-weight:700; font-size:16px; transition:transform .3s var(--spring), background .3s, opacity .3s, box-shadow .3s; position:relative; width:100%}
+.btn:active{transform:scale(.96)}
+.btn-orange{background:var(--orange); color:#fff; box-shadow:0 10px 24px rgba(242,107,18,.35); padding:0 8px 0 26px; justify-content:space-between}
+.btn-orange .arr{width:44px; height:44px; border-radius:50%; background:#FFF4EC; color:var(--orange); display:grid; place-items:center}
+/* swipe-to-confirm: drag the knob to the right end */
+.btn-orange:has(.arr){--x:0px; --p:0; justify-content:center; padding:0 46px 0 62px; overflow:hidden; touch-action:pan-y; user-select:none; -webkit-user-select:none; cursor:grab; color:rgb(255 255 255 / calc(1 - var(--p) * 1.4))}
+.btn-orange:has(.arr):active{transform:none}
+.btn-orange:has(.arr)::before{content:""; position:absolute; left:0; top:0; bottom:0; width:calc(var(--x) + 58px); background:var(--orange-deep); border-radius:inherit; transition:width .55s var(--spring)}
+.btn-orange:has(.arr)::after{content:"›››"; position:absolute; right:20px; top:50%; transform:translateY(-52%); font-size:20px; letter-spacing:1px; opacity:calc(.55 - var(--p)); animation:chev 1.8s ease-in-out infinite}
+@keyframes chev{0%,100%{right:20px}50%{right:14px}}
+.btn-orange .arr{position:absolute; left:7px; top:50%; z-index:1; transform:translate(var(--x), -50%); transition:transform .55s var(--spring); animation:nudge 3.2s ease-in-out 1.6s infinite}
+@keyframes nudge{0%,72%,100%{margin-left:0}80%{margin-left:14px}88%{margin-left:0}93%{margin-left:6px}}
+.btn-orange.dragging{cursor:grabbing}
+.btn-orange.dragging .arr,.btn-orange.dragging::before{transition:none; animation:none}
+.btn-orange.wiggle .arr{animation:wiggle .5s ease}
+@keyframes wiggle{25%{margin-left:18px}50%{margin-left:0}75%{margin-left:8px}}
+.btn-orange[disabled]{background:#B8C9B4; box-shadow:none; cursor:not-allowed}
+.btn-orange[disabled]::before,.btn-orange[disabled]::after{display:none}
+.btn-orange[disabled] .arr{color:#8FA58B; animation:none}
+.btn-ghost{background:transparent; color:var(--pine); box-shadow:inset 0 0 0 2px var(--leaf); height:52px}
+.btn .spin{width:22px; height:22px; border-radius:50%; border:3px solid rgba(255,255,255,.4); border-top-color:#fff; animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* shared top row */
+.toprow{display:flex; align-items:center; gap:10px; padding:calc(var(--sb) + 8px) 20px 0}
+.circle-btn{width:46px; height:46px; border-radius:50%; background:#fff; display:grid; place-items:center; color:var(--pine); box-shadow:0 4px 14px rgba(15,76,23,.08); transition:transform .3s var(--spring); flex:none}
+.circle-btn:active{transform:scale(.9)}
+.steps{margin-left:auto; display:flex; gap:6px; align-items:center; font-size:12px; font-weight:700; color:var(--muted)}
+.steps i{width:22px; height:6px; border-radius:3px; background:var(--leaf-soft); display:block; transition:background .4s, width .4s var(--ease)}
+.steps i.on{background:var(--pine); width:34px}
+
+/* peeking pets */
+.peek{position:relative; z-index:3; margin:0 auto; display:block}
+.peek svg{display:block; width:100%; height:auto; overflow:visible}
+.peek .head{transform:translateY(0)}
+.screen.active .peek .head{animation:peekUp 1s var(--spring) .15s both}
+.screen.active .peek .paw{animation:grab .55s var(--spring) both}
+.screen.active .peek .paw.l{animation-delay:.55s}
+.screen.active .peek .paw.r{animation-delay:.68s}
+@keyframes peekUp{from{transform:translateY(190px)}to{transform:translateY(0)}}
+@keyframes grab{from{transform:translateY(-26px); opacity:0}to{transform:none; opacity:1}}
+.peek .tilt{transform-box:view-box; transform-origin:150px 200px; animation:tilt 6s ease-in-out 1.6s infinite}
+@keyframes tilt{0%,30%,100%{transform:rotate(0)}38%,55%{transform:rotate(-5deg)}62%,80%{transform:rotate(3deg)}}
+.peek .eyes{transform-box:fill-box; transform-origin:center; animation:blink 4.5s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.peek .ear-l,.peek .ear-r{transform-box:fill-box; transform-origin:50% 8%; animation:earL 6s ease-in-out 1.6s infinite}
+.peek .ear-r{animation-name:earR}
+@keyframes earL{0%,36%,100%{transform:rotate(0)}44%{transform:rotate(6deg)}52%{transform:rotate(-2deg)}}
+@keyframes earR{0%,36%,100%{transform:rotate(0)}44%{transform:rotate(-6deg)}52%{transform:rotate(2deg)}}
+
+/* signup */
+#signup,#login{display:flex; flex-direction:column}
+.su-head{padding:22px 24px 0}
+.su-head h1{font-size:28px; font-weight:600; margin:0; letter-spacing:-.02em; text-wrap:balance}
+.su-head p{margin:8px 0 0; color:var(--muted); font-size:14px; line-height:1.5}
+/* log in: dog on the left, cat slides in beside it; both rest their paws on the form */
+.peek-duo{display:flex; justify-content:center; align-items:flex-end; margin-top:4px; margin-bottom:-17px; position:relative; z-index:3; flex:none}
+.peek-duo .peek{width:170px; margin:0; flex:none}
+.peek-duo .p-dog{margin-right:-18px}
+.screen.active .p-cat{animation:catIn .9s var(--spring) .45s both}
+@keyframes catIn{from{transform:translateX(80px) rotate(8deg); opacity:0}to{transform:none; opacity:1}}
+.screen.active .p-cat .head{animation-delay:.75s}
+.screen.active .p-cat .paw.l{animation-delay:1.1s}
+.screen.active .p-cat .paw.r{animation-delay:1.2s}
+.formcard{background:#fff; border-radius:30px 30px 0 0; padding:38px 22px 28px; flex:1; display:flex; flex-direction:column; gap:14px; position:relative; z-index:2; box-shadow:0 -10px 30px rgba(15,76,23,.06)}
+.field{display:grid; gap:6px}
+.field label{font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.02em}
+.inputwrap{position:relative}
+.field input{width:100%; height:52px; border-radius:16px; border:2px solid transparent; background:var(--mint); padding:0 16px; font:inherit; font-size:15px; font-weight:500; color:var(--ink); transition:border-color .25s, background .25s, box-shadow .25s}
+.field input::placeholder{color:#8EA88B}
+.field input:focus{outline:none; border-color:var(--pine); background:#fff; box-shadow:0 0 0 5px rgba(168,224,158,.45)}
+.field.bad input{border-color:var(--danger); background:#FFF5F2}
+.field.bad{animation:shake .4s ease}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.field .err{font-size:12px; color:var(--danger); font-weight:600; min-height:0; max-height:0; overflow:hidden; transition:max-height .3s var(--ease)}
+.field.bad .err{max-height:40px}
+.eyebtn{position:absolute; right:6px; top:6px; width:40px; height:40px; border-radius:12px; display:grid; place-items:center; color:var(--muted)}
+.textlink{background:none; color:var(--muted); font-size:14px; font-weight:500; padding:10px 12px; border-radius:12px; justify-self:center; align-self:center; transition:background .2s, transform .3s var(--spring)}
+.textlink b{color:var(--pine); font-weight:800; text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:3px; text-underline-offset:4px}
+.textlink:hover{background:rgba(168,224,158,.25)}
+.textlink:active{transform:scale(.95)}
+.fine{font-size:11.5px; color:var(--muted); text-align:center; line-height:1.5; margin:2px 0 0}
+
+/* pets */
+#pets{display:flex; flex-direction:column; padding-bottom:28px}
+.pets-head{padding:22px 24px 4px}
+.pets-head .hi{font-size:13px; font-weight:700; color:var(--orange); letter-spacing:.04em; text-transform:uppercase}
+.pets-head h1{font-size:28px; font-weight:600; margin:8px 0 0; letter-spacing:-.02em; text-wrap:balance; line-height:1.2}
+.pets-head p{margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.55}
+.petgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:22px 20px}
+.tile{position:relative; background:#fff; border-radius:24px; padding:16px 6px 14px; display:grid; justify-items:center; gap:10px; font-weight:700; font-size:13.5px; box-shadow:0 6px 18px rgba(15,76,23,.06); transition:transform .4s var(--spring), background .35s, color .35s, box-shadow .35s}
+.tile:active{transform:scale(.92)}
+.tile .ic{width:68px; height:68px; border-radius:50%; background:var(--mint); display:grid; place-items:center; transition:transform .5s var(--spring), background .35s}
+.tile .ic svg{width:52px; height:52px}
+.tile .ic{overflow:hidden}
+/* the cat photo has a transparent background: no circle behind or around it */
+svg.photo{overflow:visible}
+.tile .ic:has(.photo),.tile[aria-pressed="true"] .ic:has(.photo){background:transparent; overflow:visible}
+.tile .ic svg.photo{width:78px; max-width:none; height:auto}
+.tile .ic svg.photo.dog{width:70px; height:76px}
+.tile .ic svg.photo.bird{width:80px; position:relative; left:-5px}
+.tile .ic svg.photo.fish{width:80px; position:relative; left:-2px}
+.tile .ic svg.photo.rabbit{width:70px; position:relative; top:-6px; left:-3px}
+.tile .ic svg.photo.hamster{width:70px; position:relative; top:-2px}
+svg.photo.dog{overflow:hidden}
+.chip svg.photo,.mypets svg.photo,.catlist svg.photo{background:transparent; border-radius:0}
+.tile .tick{position:absolute; top:9px; right:9px; width:24px; height:24px; border-radius:50%; background:var(--orange); color:#fff; display:grid; place-items:center; transform:scale(0) rotate(-90deg); transition:transform .45s var(--spring)}
+.tile[aria-pressed="true"]{background:var(--pine); color:#fff; box-shadow:0 12px 26px rgba(15,76,23,.28)}
+.tile[aria-pressed="true"] .ic{background:var(--leaf); transform:scale(1.08) rotate(-8deg)}
+.tile[aria-pressed="true"] .tick{transform:none}
+#pets.active .tile{animation:tileIn .6s var(--spring) both; animation-delay:calc(var(--i) * 60ms + .15s)}
+@keyframes tileIn{from{transform:translateY(26px) scale(.9); opacity:0}to{transform:none; opacity:1}}
+.pets-foot{margin-top:auto; padding:0 20px; display:grid; gap:10px}
+.pets-foot .count{text-align:center; font-size:13px; font-weight:600; color:var(--muted); min-height:18px}
+
+/* home */
+#home{background:var(--mint); scroll-behavior:smooth}
+.topbar{display:flex; align-items:center; gap:8px; padding:calc(var(--sb) + 8px) 18px 0; position:relative; z-index:5}
+.topbar .grow{flex:1}
+.star-btn{position:relative; width:46px; height:46px; border-radius:50%; background:#fff; display:grid; place-items:center; transition:transform .3s var(--spring)}
+.star-btn b{position:absolute; inset:0; display:grid; place-items:center; font-size:12px; color:#fff; font-weight:800; padding-top:2px}
+.cart-pill{height:46px; border-radius:23px; background:#fff; display:flex; align-items:center; gap:8px; padding:0 14px 0 12px; font-weight:700; font-size:14px; color:var(--ink); position:relative; transition:transform .3s var(--spring); font-variant-numeric:tabular-nums}
+.cart-pill .cnt{position:absolute; left:24px; top:22px; min-width:17px; height:17px; border-radius:9px; background:var(--pine); color:#fff; font-size:10.5px; display:grid; place-items:center; padding:0 4px; border:2px solid #fff}
+.bump{animation:bump .5s var(--spring)}
+@keyframes bump{30%{transform:scale(1.18)}}
+.avatar{width:46px; height:46px; border-radius:50%; background:var(--pine); color:var(--leaf); display:grid; place-items:center; font-weight:800; font-size:18px; box-shadow:0 0 0 3px #fff; transition:transform .3s var(--spring)}
+.avatar:active,.star-btn:active,.cart-pill:active{transform:scale(.92)}
+
+.hero{text-align:center; padding-top:22px}
+.hero .hello{font-size:13px; font-weight:700; color:var(--muted)}
+.hero h1{font-size:34px; line-height:1.08; font-weight:500; margin:6px 24px 0; letter-spacing:-.03em; color:var(--pine); text-wrap:balance}
+#home.active .hero h1{animation:rise .8s var(--ease) both}
+/* the user's peeking photos (transparent webp). The flat chest/chin line is the ledge:
+   dog 1312×1045, ledge 148px above the bottom → 11.28% of width; cat 1176×872, ledge 104px → 8.84% */
+.peek-photo{display:block; position:relative; z-index:3; margin:0 auto; height:auto; pointer-events:none; user-select:none}
+/* soft shadow the paws cast on the ledge below them */
+.peek-photo.dogp{filter:drop-shadow(0 10px 9px rgba(0,0,0,.35)) drop-shadow(0 3px 3px rgba(0,0,0,.25))}
+.peek-photo.catp{filter:drop-shadow(0 8px 8px rgba(15,76,23,.30)) drop-shadow(0 2px 3px rgba(15,76,23,.22))}
+.peek-photo.dogp{width:84%; max-width:84%; margin-top:10px; margin-bottom:-9.48%}
+.panel .hello{color:#fff; font-size:14px; font-weight:700; margin:0 0 6px; opacity:.92}
+.panel .panel-title{font-weight:500; font-size:23px; line-height:1.25; margin:0 0 18px; letter-spacing:-.02em; color:#fff; text-wrap:balance}
+.peek-photo.catp{width:72%; max-width:72%; margin-bottom:-6.37%}
+.panel{position:relative; z-index:2; background:var(--pine); margin:0 14px; border-radius:28px; padding:calc(9.48% + 22px) 20px 26px; text-align:center; color:#fff}
+.panel h2{font-weight:500; font-size:21px; margin:0 0 18px; line-height:1.3}
+.panel .btn-orange{height:54px; font-size:14.5px; max-width:290px; margin:0 auto}
+.panel .btn-orange .arr{width:40px; height:40px}
+
+.sec2{padding-top:30px}
+.band{background:var(--leaf); padding:42px 16px 120px; position:relative; z-index:1}
+.rating{text-align:center}
+.rating .big{font-size:46px; font-weight:600; color:var(--pine); display:inline-flex; align-items:center; gap:6px; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
+.rating p{margin:4px auto 0; font-size:13px; color:#24502A; max-width:28ch; line-height:1.5; font-weight:500}
+.band h3{font-size:24px; font-weight:500; text-align:center; color:var(--pine); margin:30px 0 14px; letter-spacing:-.02em}
+.chips{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 14px; scrollbar-width:none; margin:0 -16px; padding-left:16px; padding-right:16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none; height:38px; border-radius:19px; background:rgba(255,255,255,.55); display:flex; align-items:center; gap:6px; padding:0 14px 0 8px; font-weight:700; font-size:13px; color:var(--pine); transition:background .3s, color .3s, transform .3s var(--spring)}
+.chip.all{padding-left:14px}
+.chip svg{width:26px; height:26px}
+.chip[aria-pressed="true"]{background:var(--pine); color:#fff}
+.chip:active{transform:scale(.94)}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.card{background:#fff; border-radius:20px; padding:12px 12px 14px; position:relative; text-align:center; cursor:pointer; animation:cardIn .55s var(--ease) both; animation-delay:calc(var(--i) * 55ms); transition:transform .35s var(--spring), box-shadow .35s}
+.card:hover{box-shadow:0 12px 24px rgba(15,76,23,.12)}
+.card:active{transform:scale(.97)}
+@keyframes cardIn{from{transform:translateY(22px); opacity:0}to{transform:none; opacity:1}}
+.card .art{height:92px; display:grid; place-items:center; margin:6px 0 4px}
+.card .art svg{height:88px; width:auto; transition:transform .5s var(--spring)}
+.card:hover .art svg{transform:translateY(-4px) rotate(-3deg)}
+.card .nm{font-size:12.5px; font-weight:600; color:#3B5A3E; line-height:1.3; min-height:2.6em; display:flex; align-items:center; justify-content:center}
+.card .pr{font-size:19px; font-weight:800; color:var(--ink); margin-top:2px; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.card .add{position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; display:grid; place-items:center; color:var(--pine); transition:background .25s, color .25s, transform .35s var(--spring)}
+.card .add:hover{background:var(--pine); color:#fff}
+.card .add:active{transform:scale(.85) rotate(90deg)}
+.card .tag{position:absolute; top:12px; left:12px; font-size:10px; font-weight:800; letter-spacing:.06em; color:var(--orange); text-transform:uppercase}
+
+/* bottom nav */
+.nav{position:absolute; left:50%; bottom:calc(18px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); z-index:20; background:var(--pine); border-radius:32px; padding:7px; display:flex; gap:4px; box-shadow:0 14px 34px rgba(6,40,10,.35); transition:transform .5s var(--ease), opacity .4s}
+.nav.hide{transform:translate(-50%, 130%); opacity:0}
+.nav .ind{position:absolute; top:7px; left:7px; height:50px; width:58px; border-radius:25px; background:var(--leaf); transition:transform .5s var(--spring), width .5s var(--spring)}
+.nav button{position:relative; z-index:1; height:50px; min-width:58px; border-radius:25px; display:grid; place-items:center; color:#CFEAC9; transition:color .3s}
+.nav button.on{color:var(--pine)}
+.nav .nb{position:absolute; top:7px; right:11px; min-width:16px; height:16px; border-radius:8px; background:var(--orange); color:#fff; font-size:10px; font-weight:800; display:grid; place-items:center; padding:0 3px; transform:scale(0); transition:transform .4s var(--spring)}
+.nav .nb.show{transform:scale(1)}
+
+/* sheets */
+.scrim{position:absolute; inset:0; background:rgba(6,30,9,.45); opacity:0; pointer-events:none; transition:opacity .4s ease; z-index:60; backdrop-filter:blur(2px)}
+.scrim.open{opacity:1; pointer-events:auto}
+.sheet{position:absolute; left:0; right:0; bottom:0; max-height:88%; background:var(--mint); border-radius:30px 30px 0 0; z-index:61; transform:translateY(105%); transition:transform .55s cubic-bezier(.32,.72,0,1); display:flex; flex-direction:column; padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.open{transform:none}
+.sheet .grab{width:44px; height:5px; border-radius:3px; background:#B8D8B2; margin:10px auto 4px; flex:none}
+.sheet .body{overflow-y:auto; padding:6px 20px 22px; scrollbar-width:none}
+.sheet .body > *{animation:rise .5s var(--ease) both}
+.sheet .body > *:nth-child(2){animation-delay:.05s}
+.sheet .body > *:nth-child(3){animation-delay:.1s}
+.sheet .body > *:nth-child(4){animation-delay:.15s}
+.sheet .body > *:nth-child(5){animation-delay:.2s}
+.sheet-h{display:flex; align-items:center; justify-content:space-between; margin:4px 0 14px}
+.sheet-h h2{font-size:22px; font-weight:600; margin:0; letter-spacing:-.02em; color:var(--pine)}
+
+.pd-art{background:var(--leaf); border-radius:26px; height:210px; display:grid; place-items:center; position:relative; overflow:hidden}
+.pd-art svg{height:170px; width:auto; animation:float 3.6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotate(-2deg)}}
+.pd-art::before{content:""; position:absolute; width:180px; height:180px; border-radius:50%; background:var(--leaf-soft); opacity:.7}
+.pd-art svg{position:relative}
+.pd-name{font-size:22px; font-weight:700; margin:16px 0 6px; letter-spacing:-.02em; line-height:1.25}
+.pd-tags{display:flex; gap:6px; flex-wrap:wrap}
+.pd-tags span{font-size:12px; font-weight:700; background:#fff; color:var(--pine); border-radius:12px; padding:5px 10px}
+.pd-desc{color:var(--muted); font-size:14px; line-height:1.6; margin:12px 0 18px}
+.pd-buy{display:flex; align-items:center; gap:12px}
+.stepper{display:flex; align-items:center; background:#fff; border-radius:28px; height:56px; padding:0 6px; flex:none}
+.stepper button{width:40px; height:40px; border-radius:50%; display:grid; place-items:center; color:var(--pine); transition:background .2s, transform .3s var(--spring)}
+.stepper button:active{transform:scale(.85); background:var(--mint)}
+.stepper output{min-width:28px; text-align:center; font-weight:800; font-size:16px; font-variant-numeric:tabular-nums}
+.stepper.sm{height:40px; padding:0 2px}
+.stepper.sm button{width:32px; height:32px}
+.stepper.sm output{min-width:22px; font-size:14px}
+.pd-buy .btn-orange{flex:1; padding:0 22px; justify-content:center; font-size:15px}
+
+.cart-row{display:flex; align-items:center; gap:12px; background:#fff; border-radius:20px; padding:10px 12px 10px 10px; margin-bottom:10px; transition:opacity .3s, transform .4s var(--ease)}
+.cart-row.out{opacity:0; transform:translateX(40px)}
+.cart-row .th{width:62px; height:62px; border-radius:16px; background:var(--mint); display:grid; place-items:center; flex:none}
+.cart-row .th svg{width:54px; height:auto}
+.cart-row .info{flex:1; min-width:0}
+.cart-row .info b{display:block; font-size:13.5px; font-weight:600; line-height:1.3}
+.cart-row .info span{font-size:15px; font-weight:800; font-variant-numeric:tabular-nums}
+.sum{background:#fff; border-radius:20px; padding:14px 16px; margin:6px 0 16px; display:grid; gap:9px; font-size:14px; font-variant-numeric:tabular-nums}
+.sum div{display:flex; justify-content:space-between}
+.sum .free{color:#2E7D32; font-weight:700}
+.sum .tot{border-top:1px dashed #CFE3CB; padding-top:10px; font-weight:800; font-size:17px}
+.sum small{color:var(--muted); font-size:11.5px; line-height:1.5}
+.empty{text-align:center; padding:6px 0 10px}
+.empty svg{width:180px}
+/* top bar fits five round buttons + cart; it stays pinned while the home screen scrolls */
+.topbar{gap:6px; position:sticky; top:0; z-index:20; padding-bottom:10px; background:rgba(231,247,227,.86); -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2); transition:box-shadow .3s}
+.topbar.scrolled{box-shadow:0 8px 24px rgba(15,76,23,.10)}
+.topbar .circle-btn,.topbar .star-btn,.topbar .avatar{width:42px; height:42px}
+.topbar .cart-pill{height:42px; padding:0 12px 0 10px; font-size:13px}
+.topbar .cart-pill .cnt{top:20px; left:22px}
+/* notifications */
+.bell-btn{position:relative}
+.bell-btn .nbadge{position:absolute; top:4px; right:3px; min-width:17px; height:17px; border-radius:9px; background:var(--orange); color:#fff; font-size:10px; font-weight:800; display:grid; place-items:center; padding:0 4px; border:2px solid #fff; transform:scale(0); transition:transform .45s var(--spring); font-variant-numeric:tabular-nums}
+.bell-btn .nbadge.show{transform:scale(1)}
+.bell-btn.ring [data-i="bell"] svg{animation:ring 1s ease; transform-origin:50% 12%}
+@keyframes ring{0%,100%{transform:rotate(0)}12%{transform:rotate(20deg)}26%{transform:rotate(-18deg)}40%{transform:rotate(13deg)}54%{transform:rotate(-9deg)}68%{transform:rotate(5deg)}82%{transform:rotate(-2deg)}}
+.bell-btn [data-i="bell"]{display:grid}
+.markall{display:block; margin:-6px 0 8px auto; font-size:13px; padding:6px 10px}
+.notes{display:grid; gap:8px}
+.note{display:flex; gap:12px; align-items:flex-start; text-align:left; width:100%; background:#fff; border-radius:18px; padding:12px 30px 12px 12px; position:relative; animation:rise .45s var(--ease) both; animation-delay:calc(var(--i) * 45ms); transition:background .35s, transform .3s var(--spring)}
+.note:active{transform:scale(.98)}
+.note:not(.unread){background:rgba(255,255,255,.5)}
+.note .nic{width:42px; height:42px; border-radius:14px; display:grid; place-items:center; flex:none}
+.note .nic svg{width:22px; height:22px}
+.ntx{display:grid; gap:3px; min-width:0; flex:1}
+.ntx b{font-size:14px; font-weight:800; color:var(--ink)}
+.note:not(.unread) .ntx b{font-weight:600}
+.ntx span{font-size:13px; color:var(--muted); line-height:1.45}
+.ntx em{font-style:normal; font-size:11.5px; color:#7E9A7B; font-weight:600}
+.ndot{position:absolute; top:17px; right:14px; width:9px; height:9px; border-radius:50%; background:var(--orange); transition:transform .35s var(--spring)}
+.note:not(.unread) .ndot{transform:scale(0)}
+.sum .disc{color:var(--orange-deep); font-weight:700}
+/* search */
+.search-box{display:flex; align-items:center; gap:10px; background:#fff; border-radius:18px; height:54px; padding:0 6px 0 16px; border:2px solid transparent; transition:border-color .25s, box-shadow .25s}
+.search-box:focus-within{border-color:var(--pine); box-shadow:0 0 0 5px rgba(168,224,158,.45)}
+.search-box .sicon{color:var(--muted); display:grid}
+.search-box input{flex:1; min-width:0; border:0; outline:0; background:transparent; font:inherit; font-size:15px; font-weight:500; color:var(--ink)}
+.search-box input::placeholder{color:#8EA88B}
+.search-box input::-webkit-search-cancel-button{display:none}
+.qclear{width:40px; height:40px; border-radius:12px; display:grid; place-items:center; color:var(--muted)}
+.sugg{display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 0}
+.sugg button{height:36px; border-radius:18px; background:#fff; padding:0 14px; font-weight:700; font-size:13px; color:var(--pine); transition:transform .3s var(--spring), background .2s}
+.sugg button:active{transform:scale(.93); background:var(--leaf)}
+#results .lbl{margin-top:18px}
+.res{cursor:pointer; animation:rise .45s var(--ease) both; animation-delay:calc(var(--i) * 40ms)}
+.res mark{background:var(--leaf); color:inherit; border-radius:4px; padding:0 2px}
+.res-add{width:38px; height:38px; border-radius:50%; background:var(--mint); color:var(--pine); display:grid; place-items:center; flex:none; transition:transform .35s var(--spring), background .2s, color .2s}
+.res-add:hover{background:var(--pine); color:#fff}
+.res-add:active{transform:scale(.85) rotate(90deg)}
+.noresult{text-align:center; padding:28px 10px; display:grid; gap:6px}
+.noresult b{font-size:16px; color:var(--pine)}
+.noresult span{font-size:13px; color:var(--muted)}
+/* sad pup for the empty cart: head sighs down, ears droop, a tear rolls */
+.sad .head{animation:sigh 3.2s ease-in-out infinite}
+@keyframes sigh{0%,100%{transform:translateY(0)}50%{transform:translateY(9px)}}
+.sad .tilt{animation:none; transform:rotate(-4deg)}
+.sad .ear-l{transform:rotate(12deg); animation:none}
+.sad .ear-r{transform:rotate(-12deg); animation:none}
+.sad .eyes{animation:blinkSad 4s infinite}
+@keyframes blinkSad{0%,88%,100%{transform:scaleY(1)}92%{transform:scaleY(.15)}}
+.sad .tear{transform-box:fill-box; animation:tear 2.6s ease-in infinite}
+@keyframes tear{0%{transform:translateY(-6px); opacity:0}20%{opacity:1}75%{transform:translateY(26px); opacity:1}100%{transform:translateY(34px); opacity:0}}
+.empty h3{margin:6px 0 4px; font-size:19px; color:var(--pine)}
+.empty p{margin:0 0 16px; color:var(--muted); font-size:14px}
+
+.prof{display:flex; align-items:center; gap:14px; background:#fff; border-radius:22px; padding:14px}
+.prof .avatar{width:60px; height:60px; font-size:24px; box-shadow:none}
+.prof b{font-size:18px; display:block}
+.prof span{font-size:13px; color:var(--muted); display:block; margin-top:2px; overflow-wrap:anywhere}
+.lbl{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:18px 0 10px}
+.mypets{display:flex; flex-wrap:wrap; gap:8px}
+.mypets span{display:flex; align-items:center; gap:6px; background:#fff; border-radius:20px; padding:4px 12px 4px 4px; font-weight:700; font-size:13px}
+.mypets svg{width:30px; height:30px; background:var(--mint); border-radius:50%}
+.pts{display:flex; align-items:center; gap:12px; background:var(--pine); color:#fff; border-radius:20px; padding:14px 16px; font-size:13px; line-height:1.45}
+.pts b{font-size:26px; display:flex; align-items:center; gap:4px}
+.catlist{display:grid; gap:8px}
+.catlist button{display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:8px 14px 8px 8px; font-weight:700; text-align:left; transition:transform .3s var(--spring)}
+.catlist button:active{transform:scale(.97)}
+.catlist svg{width:44px; height:44px; background:var(--mint); border-radius:50%; flex:none}
+.catlist em{margin-left:auto; font-style:normal; font-size:12px; color:var(--muted)}
+
+/* done */
+#done{background:var(--pine); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:calc(var(--sb) + 20px) 28px 40px; gap:14px}
+#done .mark{width:120px; height:120px}
+#done.active .mark{animation:popIn .9s var(--spring) both}
+#done h1{font-size:28px; font-weight:600; margin:8px 0 0; letter-spacing:-.02em}
+#done p{margin:0; color:#C6E8BF; line-height:1.55; font-size:14.5px; max-width:30ch}
+#done .award{background:rgba(255,255,255,.08); border-radius:20px; padding:12px 18px; display:flex; align-items:center; gap:10px; font-weight:700}
+#done.active h1,#done.active p,#done.active .award{animation:rise .7s var(--ease) both; animation-delay:.25s}
+#done.active .award{animation-delay:.4s}
+#done .btn{margin-top:16px}
+.confetti{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+.confetti i{position:absolute; top:-20px; width:10px; height:14px; border-radius:3px; animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(900px) rotate(720deg)}}
+
+/* toast */
+.toast{position:absolute; left:16px; right:16px; top:calc(var(--sb) + 64px); z-index:80; background:var(--ink); color:#fff; border-radius:18px; padding:13px 16px; font-size:13.5px; font-weight:600; display:flex; gap:10px; align-items:center; transform:translateY(-20px) scale(.96); opacity:0; pointer-events:none; transition:transform .5s var(--spring), opacity .3s; box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.toast.show{transform:none; opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; animation-delay:0s !important; transition-duration:.01ms !important}
+}
+</style>
+
+<aside class="aside">
+  <span class="wordmark" aria-label="Zoomies">Z<span class="oo"><i></i><i></i></span>mies</span>
+  <p>Тэжээвэр амьтны хоол, хэрэгсэл зардаг гар утасны аппын интерактив прототип. Утсан дээр дарж туршаарай.</p>
+  <ol>
+    <li><b>1</b> Бүртгэл үүсгэх</li>
+    <li><b>2</b> Тэжээвэр амьтнаа дүрсээр сонгох</li>
+    <li><b>3</b> Танд тохирсон бүтээгдэхүүн, сагс, захиалга</li>
+  </ol>
+</aside>
+
+<main class="device" id="app">
+  <div class="statusbar" id="sbar">
+    <span>9:41</span><span class="notch"></span>
+    <span style="display:flex;gap:6px;align-items:center">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><rect x="24" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg>
+    </span>
+  </div>
+
+  <!-- 1. Welcome -->
+  <section class="screen active" id="welcome" aria-label="Тавтай морил">
+    <div class="burst" id="burst"></div>
+    <div class="w-hero">
+      <span class="wordmark wm-anim" role="img" aria-label="Zoomies"><span class="streaks" aria-hidden="true"><b></b><b></b><b></b></span><span class="ch" style="--d:0">Z</span><span class="ch oo" style="--d:1"><i></i><i></i></span><span class="ch" style="--d:2">m</span><span class="ch" style="--d:3">i</span><span class="ch" style="--d:4">e</span><span class="ch" style="--d:5">s</span></span>
+      <p>Тэжээвэр амьтны хоол, хэрэгслийг нэг дороос. Гэрт тань хүргэнэ.</p>
+    </div>
+    <div class="w-photo"><img src="pets.jpg" alt="Нохой, муур, тоть, туулай, загас зэрэг тэжээвэр амьтад"></div>
+    <div class="w-cta">
+      <button class="textlink" id="loginLink">Бүртгэлтэй юу? <b>Нэвтрэх</b></button>
+      <button class="btn btn-orange" id="startBtn">Бүртгэл үүсгэх <span class="arr" data-i="arrow"></span></button>
+    </div>
+  </section>
+
+  <!-- 2. Sign up -->
+  <section class="screen" id="signup" aria-label="Бүртгэл үүсгэх">
+    <div class="toprow">
+      <button class="circle-btn" data-back="welcome" aria-label="Буцах" data-i="back"></button>
+      <div class="steps" aria-label="Алхам 1/2"><i class="on"></i><i></i><span style="margin-left:4px">1/2</span></div>
+    </div>
+    <div class="su-head">
+      <h1>Бүртгэл үүсгэх</h1>
+      <p>Бүртгүүлээд эхний захиалгадаа 10% хөнгөлөлт аваарай.</p>
+    </div>
+    <div class="peek-duo"><div class="peek p-dog" id="peekSignup"></div><div class="peek p-cat" id="peekSignupCat"></div></div>
+    <form class="formcard" id="suForm" novalidate>
+      <div class="field" id="f-name"><label for="in-name">Таны нэр</label><input id="in-name" autocomplete="given-name" placeholder="Жишээ: Болормаа"><div class="err">Нэрээ оруулна уу.</div></div>
+      <div class="field" id="f-email"><label for="in-email">Имэйл</label><input id="in-email" type="email" autocomplete="email" placeholder="bolor@mail.mn"><div class="err">Имэйл хаяг буруу байна. Жишээ: bolor@mail.mn</div></div>
+      <div class="field" id="f-phone"><label for="in-phone">Утасны дугаар</label><input id="in-phone" inputmode="numeric" autocomplete="tel" placeholder="9911 2233" maxlength="9"><div class="err">8 оронтой дугаар оруулна уу.</div></div>
+      <div class="field" id="f-pass"><label for="in-pass">Нууц үг</label><div class="inputwrap"><input id="in-pass" type="password" autocomplete="new-password" placeholder="Хамгийн багадаа 6 тэмдэгт"><button type="button" class="eyebtn" id="eyeBtn" aria-label="Нууц үг харуулах" data-i="eye"></button></div><div class="err">Нууц үг хамгийн багадаа 6 тэмдэгттэй байна.</div></div>
+      <button class="btn btn-orange" id="suBtn" type="submit" style="margin-top:6px">Үргэлжлүүлэх <span class="arr" data-i="arrow"></span></button>
+      <p class="fine">Бүртгүүлснээр та үйлчилгээний нөхцөлийг зөвшөөрч байна.</p>
+      <button type="button" class="textlink" data-goto="login">Бүртгэлтэй юу? <b>Нэвтрэх</b></button>
+    </form>
+  </section>
+
+  <!-- 2b. Log in -->
+  <section class="screen" id="login" aria-label="Нэвтрэх">
+    <div class="toprow">
+      <button class="circle-btn" data-back="welcome" aria-label="Буцах" data-i="back"></button>
+    </div>
+    <div class="su-head">
+      <h1>Нэвтрэх</h1>
+      <p>Дахин тавтай морил! Бүртгэлтэй имэйл, нууц үгээ оруулна уу.</p>
+    </div>
+    <div class="peek-duo"><div class="peek p-dog" id="peekLoginDog"></div><div class="peek p-cat" id="peekLoginCat"></div></div>
+    <form class="formcard" id="liForm" novalidate>
+      <div class="field" id="f-lemail"><label for="in-lemail">Имэйл</label><input id="in-lemail" type="email" autocomplete="email" placeholder="bolor@mail.mn"><div class="err">Имэйл хаяг буруу байна. Жишээ: bolor@mail.mn</div></div>
+      <div class="field" id="f-lpass"><label for="in-lpass">Нууц үг</label><div class="inputwrap"><input id="in-lpass" type="password" autocomplete="current-password" placeholder="Нууц үгээ оруулна уу"><button type="button" class="eyebtn" data-eye="in-lpass" aria-label="Нууц үг харуулах" data-i="eye"></button></div><div class="err">Нууц үгээ оруулна уу.</div></div>
+      <button class="btn btn-orange" id="liBtn" type="submit" style="margin-top:6px">Нэвтрэх <span class="arr" data-i="arrow"></span></button>
+      <button type="button" class="textlink" data-goto="signup">Бүртгэлгүй юу? <b>Бүртгэл үүсгэх</b></button>
+    </form>
+  </section>
+
+  <!-- 3. Pet choice -->
+  <section class="screen" id="pets" aria-label="Тэжээвэр сонгох">
+    <div class="toprow">
+      <button class="circle-btn" id="petsBack" aria-label="Буцах" data-i="back"></button>
+      <div class="steps" id="petSteps"><i class="on"></i><i class="on"></i><span style="margin-left:4px">2/2</span></div>
+    </div>
+    <div class="pets-head">
+      <div class="hi" id="petsHi">Сайн уу!</div>
+      <h1>Та ямар амьтан тэжээдэг вэ?</h1>
+      <p>Нэгээс олныг сонгож болно. Бид таны амьтанд тохирох бүтээгдэхүүнийг түрүүлж харуулна.</p>
+    </div>
+    <div class="petgrid" id="petGrid" role="group" aria-label="Тэжээвэр амьтад"></div>
+    <div class="pets-foot">
+      <div class="count" id="petCount" aria-live="polite"></div>
+      <button class="btn btn-orange" id="petsBtn" disabled>Дэлгүүр рүү орох <span class="arr" data-i="arrow"></span></button>
+    </div>
+  </section>
+
+  <!-- 4. Home -->
+  <section class="screen" id="home" aria-label="Нүүр">
+    <div class="topbar">
+      <button class="circle-btn" id="menuBtn" aria-label="Ангилал" data-i="menu"></button>
+      <button class="circle-btn" id="searchBtn" aria-label="Хайх" data-i="search"></button>
+      <button class="circle-btn bell-btn" id="bellBtn" aria-label="Мэдэгдэл"><span data-i="bell"></span><span class="nbadge" id="nBadge">0</span></button>
+      <div class="grow"></div>
+      <button class="star-btn" id="starBtn" aria-label="Бонус од"><span data-i="star"></span><b id="pts">4</b></button>
+      <button class="cart-pill" id="cartPill" aria-label="Сагс"><span data-i="cart"></span><span class="cnt" id="cartCnt">0</span><span id="cartTot">0₮</span></button>
+      <button class="avatar" id="avatarBtn" aria-label="Профайл">Б</button>
+    </div>
+    <div class="hero">
+      <img class="peek-photo dogp" src="home-dog.webp" alt="Самбар дээгүүр шагайж буй алтан ретривер нохой">
+      <div class="panel">
+        <div class="hello" id="hello"></div>
+        <h1 class="panel-title">Тэжээвэр амьтны тань<br>дуртай бүхэн</h1>
+        <button class="btn btn-orange" id="exploreBtn">Бүтээгдэхүүн үзэх <span class="arr" data-i="arrow"></span></button>
+      </div>
+    </div>
+    <div class="sec2">
+      <img class="peek-photo catp" src="home-cat.webp" alt="Ногоон хэсэг дээгүүр шагайж буй шар муур">
+      <div class="band">
+        <div class="rating">
+          <div class="big">4.6 <span data-i="starBig"></span></div>
+          <p>98,000+ тэжээвэр амьтны эздийн үнэлгээгээр</p>
+        </div>
+        <h3 id="arrivals">Шинэ ирэлт</h3>
+        <div class="chips" id="chips" role="group" aria-label="Шүүлтүүр"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Done -->
+  <section class="screen" id="done" aria-label="Захиалга баталгаажлаа">
+    <div class="confetti" id="confetti"></div>
+    <div class="mark" id="markDone"></div>
+    <h1>Захиалга баталгаажлаа!</h1>
+    <p id="doneText"></p>
+    <div class="award"><span data-i="star"></span><span id="doneAward"></span></div>
+    <button class="btn btn-orange" id="doneBtn">Нүүр хуудас руу <span class="arr" data-i="arrow"></span></button>
+  </section>
+
+  <nav class="nav hide" id="nav" aria-label="Үндсэн цэс">
+    <span class="ind" id="navInd"></span>
+    <button class="on" data-nav="home" aria-label="Нүүр" data-i="home"></button>
+    <button data-nav="cart" aria-label="Сагс"><span data-i="cart"></span><span class="nb" id="navBadge">0</span></button>
+    <button data-nav="profile" aria-label="Профайл" data-i="user"></button>
+  </nav>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="body" id="sheetBody"></div></div>
+  <div class="toast" id="toast" role="status"><span data-i="star"></span><span id="toastText"></span></div>
+</main>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt = n => n.toLocaleString('en-US') + '₮';
+
+/* ---------- icons ---------- */
+const S = (d, w = 20, sw = 2) => `<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  menu: S('<path d="M5 8h14M5 12h9M5 16h14"/>'),
+  search: S('<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>'),
+  bell: S('<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>'),
+  gift: S('<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9v11M4 13.5h16M12 9C10 5 6 5 6 7.5S10 9 12 9zm0 0c2-4 6-4 6-1.5S14 9 12 9z"/>'),
+  box: S('<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>'),
+  truck: S('<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/>'),
+  spark: S('<path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/>'),
+  back: S('<path d="M15 6l-6 6 6 6"/>'),
+  // swipe-knob icon: the user's paw SVG (paw_672675.svg)
+  arrow: `<svg viewBox="0 0 512 512" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M378.608,290.994C344.16,249.402,300.618,226.496,256,226.496s-88.161,22.906-122.607,64.498c-30.963,37.385-49.448,84.501-49.448,126.035c0,20.176,6.168,35.544,18.332,45.679c12.006,10.004,27.857,13.388,45.541,13.387c18.817,0,39.711-3.832,60.24-7.598c17.939-3.291,34.883-6.399,47.943-6.399c11.272,0,27.165,2.95,43.988,6.073c39.317,7.3,83.881,15.572,109.624-5.832c12.238-10.175,18.443-25.420,18.443-45.310C428.057,375.495,409.572,328.379,378.608,290.994z"/><path d="M382.13,65.146c-12.604-18.583-30.652-29.24-49.517-29.24c-18.866,0-36.913,10.658-49.517,29.24c-11.578,17.071-17.955,39.489-17.955,63.125c0,23.636,6.376,46.054,17.955,63.125c12.604,18.582,30.652,29.24,49.517,29.24c18.866,0,36.913-10.658,49.517-29.24c11.578-17.071,17.955-39.489,17.955-63.125C400.085,104.635,393.709,82.216,382.13,65.146z"/><path d="M228.905,65.145c-12.604-18.583-30.651-29.24-49.517-29.24s-36.914,10.658-49.517,29.24c-11.578,17.071-17.955,39.489-17.955,63.125s6.376,46.054,17.955,63.125c12.604,18.583,30.651,29.241,49.517,29.241s36.913-10.658,49.517-29.241c11.578-17.071,17.955-39.488,17.955-63.125C246.859,104.634,240.483,82.215,228.905,65.145z"/><path d="M509.019,210.133c-5.081-17.284-15.972-29.843-30.665-35.362c-11.824-4.441-25.171-3.688-37.583,2.121c-17.105,8.004-31.086,24.532-38.356,45.345c-5.941,17.008-6.682,34.985-2.085,50.622c5.081,17.284,15.972,29.843,30.666,35.362c5.085,1.91,10.45,2.859,15.902,2.859c7.227,0,14.607-1.669,21.682-4.98c17.105-8.004,31.086-24.532,38.356-45.344v-0.001C512.876,243.748,513.617,225.77,509.019,210.133z"/><path d="M109.587,222.235c-7.271-20.813-21.252-37.34-38.356-45.344c-12.413-5.809-25.761-6.561-37.584-2.121c-14.694,5.52-25.585,18.079-30.666,35.362c-4.597,15.637-3.856,33.615,2.085,50.622v0.001c7.272,20.813,21.252,37.34,38.356,45.344c7.076,3.311,14.455,4.98,21.682,4.98c5.452,0,10.818-0.95,15.902-2.859c14.696-5.52,25.586-18.079,30.667-35.362C116.268,257.222,115.527,239.244,109.587,222.235z"/></svg>`,
+  cart: S('<path d="M3 4h2l2.2 10.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.2"/><circle cx="9.5" cy="19.5" r="1.2"/><circle cx="17" cy="19.5" r="1.2"/>', 22, 1.9),
+  home: S('<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>', 22),
+  user: S('<circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', 22),
+  plus: S('<path d="M12 5v14M5 12h14"/>', 18, 2.4),
+  minus: S('<path d="M5 12h14"/>', 18, 2.4),
+  close: S('<path d="M6 6l12 12M18 6L6 18"/>', 18, 2.4),
+  check: S('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 14, 3),
+  eye: S('<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+  star: `<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" fill="#F26B12" stroke="#F26B12" stroke-width="1.5" stroke-linejoin="round"/></svg>`,
+  starBig: `<svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" fill="#F26B12" stroke="#F26B12" stroke-width="1.5" stroke-linejoin="round"/></svg>`
+};
+const paintIcons = (root = document) => root.querySelectorAll('[data-i]').forEach(el => { if (!el.dataset.done) { el.insertAdjacentHTML('afterbegin', ICON[el.dataset.i]); el.dataset.done = 1; } });
+
+/* ---------- logo mark: puppy face ---------- */
+const markSVG = () => `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <circle cx="60" cy="60" r="58" fill="#F26B12"/>
+  <path d="M8 66 q20 -4 30 -2" stroke="#FFB27A" stroke-width="4" stroke-linecap="round" fill="none" opacity=".8"/>
+  <path d="M10 78 q16 -3 26 -1" stroke="#FFB27A" stroke-width="4" stroke-linecap="round" fill="none" opacity=".6"/>
+  <path class="ear l" d="M34 32 C20 34 16 58 22 74 C26 82 36 80 38 70 C40 58 42 44 42 36 Z" fill="#0F4C17"/>
+  <path class="ear r" d="M86 32 C100 34 104 58 98 74 C94 82 84 80 82 70 C80 58 78 44 78 36 Z" fill="#0F4C17"/>
+  <ellipse cx="60" cy="62" rx="27" ry="30" fill="#FFF4E6"/>
+  <ellipse cx="60" cy="76" rx="16" ry="12" fill="#FFE2C2"/>
+  <circle cx="50" cy="58" r="4.6" fill="#0E2E12"/><circle cx="70" cy="58" r="4.6" fill="#0E2E12"/>
+  <circle cx="51.6" cy="56.2" r="1.6" fill="#fff"/><circle cx="71.6" cy="56.2" r="1.6" fill="#fff"/>
+  <ellipse cx="44" cy="68" rx="4" ry="2.4" fill="#F7A08A" opacity=".7"/><ellipse cx="76" cy="68" rx="4" ry="2.4" fill="#F7A08A" opacity=".7"/>
+  <path d="M55 69 q5 -3 10 0 q0 5 -5 6 q-5 -1 -5 -6z" fill="#0E2E12"/>
+  <path class="tongue" d="M56 79 q4 9 8 0 z" fill="#F0727E"/>
+  <path d="M60 75 v3 M60 78 q-4 4 -8 1 M60 78 q4 4 8 1" stroke="#0E2E12" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+/* ---------- peeking pets (ledge at y=200) ---------- */
+let uid = 0;
+const paws = (fill, line) => `<g class="paw l"><ellipse cx="100" cy="206" rx="30" ry="18" fill="${fill}"/><path d="M89 213v8M100 214v9M111 213v8" stroke="${line}" stroke-width="3" stroke-linecap="round"/></g>
+  <g class="paw r"><ellipse cx="200" cy="206" rx="30" ry="18" fill="${fill}"/><path d="M189 213v8M200 214v9M211 213v8" stroke="${line}" stroke-width="3" stroke-linecap="round"/></g>`;
+const dogSVG = (sad = false) => { const id = 'cl' + (++uid); return `<svg viewBox="0 0 300 230" role="img" aria-label="${sad ? 'Гунигтай нохой' : 'Нохой'}"${sad ? ' class="sad"' : ''}>
+  <defs><clipPath id="${id}"><rect width="300" height="200"/></clipPath></defs>
+  <g clip-path="url(#${id})"><g class="head"><g class="tilt">
+    <ellipse cx="150" cy="240" rx="96" ry="72" fill="#DE9D4C"/>
+    <path class="ear-l" d="M94 76 C60 78 46 128 56 174 C62 196 86 198 96 178 C104 150 110 108 110 86 Z" fill="#B7742C"/>
+    <path class="ear-r" d="M206 76 C240 78 254 128 244 174 C238 196 214 198 204 178 C196 150 190 108 190 86 Z" fill="#B7742C"/>
+    <path d="M150 40 C202 40 222 82 220 124 C218 170 190 198 150 198 C110 198 82 170 80 124 C78 82 98 40 150 40 Z" fill="#E8AE5E"/>
+    <path d="M150 58 C138 58 134 92 140 124 L160 124 C166 92 162 58 150 58 Z" fill="#F4CC8E" opacity=".75"/>
+    <ellipse cx="150" cy="162" rx="44" ry="32" fill="#F7DBA9"/>
+    ${sad ? '' : '<path d="M104 98 Q117 89 131 96 M169 96 Q183 89 196 98" stroke="#B7742C" stroke-width="4.5" fill="none" stroke-linecap="round"/>'}
+    ${sad ? `
+    <path d="M104 106 Q118 99 131 92 M169 92 Q182 99 196 106" stroke="#B7742C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    <g class="eyes"><ellipse cx="120" cy="124" rx="11" ry="11.5" fill="#2A1708"/><ellipse cx="180" cy="124" rx="11" ry="11.5" fill="#2A1708"/>
+      <path d="M107 121 Q120 112 133 121 L133 110 L107 110Z M167 121 Q180 112 193 121 L193 110 L167 110Z" fill="#E8AE5E"/>
+      <circle cx="117" cy="129" r="3.4" fill="#fff"/><circle cx="177" cy="129" r="3.4" fill="#fff"/></g>
+    <path class="tear" d="M112 138 Q108 146 112 150 Q116 146 112 138Z" fill="#7CC4F0"/>
+    <path d="M135 146 Q150 137 165 146 Q165 159 150 163 Q135 159 135 146Z" fill="#2A1708"/>
+    <ellipse cx="145" cy="146" rx="5" ry="2.4" fill="#fff" opacity=".45"/>
+    <path d="M150 163 V170 M134 182 Q150 168 166 182" stroke="#2A1708" stroke-width="3" fill="none" stroke-linecap="round"/>` : `
+    <g class="eyes"><ellipse cx="120" cy="120" rx="11.5" ry="12.5" fill="#2A1708"/><ellipse cx="180" cy="120" rx="11.5" ry="12.5" fill="#2A1708"/>
+      <circle cx="124.5" cy="115" r="4.2" fill="#fff"/><circle cx="184.5" cy="115" r="4.2" fill="#fff"/></g>
+    <ellipse cx="101" cy="150" rx="11" ry="6.5" fill="#F28C6B" opacity=".35"/><ellipse cx="199" cy="150" rx="11" ry="6.5" fill="#F28C6B" opacity=".35"/>
+    <path d="M135 146 Q150 137 165 146 Q165 159 150 163 Q135 159 135 146Z" fill="#2A1708"/>
+    <ellipse cx="145" cy="146" rx="5" ry="2.4" fill="#fff" opacity=".45"/>
+    <path d="M143 174 Q150 194 157 174 Z" fill="#F07A8A"/>
+    <path d="M150 163 V171 M150 171 Q140 181 130 173 M150 171 Q160 181 170 173" stroke="#2A1708" stroke-width="3" fill="none" stroke-linecap="round"/>`}
+  </g></g></g>${paws('#E8AE5E', '#B7742C')}</svg>`; };
+const catSVG = () => { const id = 'cl' + (++uid); return `<svg viewBox="0 0 300 230" role="img" aria-label="Муур">
+  <defs><clipPath id="${id}"><rect width="300" height="200"/></clipPath></defs>
+  <g clip-path="url(#${id})"><g class="head"><g class="tilt">
+    <ellipse cx="150" cy="240" rx="92" ry="66" fill="#EE9A44"/>
+    <g class="ear-l"><path d="M80 104 L90 26 L142 70 Z" fill="#EE9A44"/><path d="M92 92 L97 46 L128 72 Z" fill="#F7B8B0"/></g>
+    <g class="ear-r"><path d="M220 104 L210 26 L158 70 Z" fill="#EE9A44"/><path d="M208 92 L203 46 L172 72 Z" fill="#F7B8B0"/></g>
+    <ellipse cx="150" cy="134" rx="84" ry="68" fill="#F2A651"/>
+    <path d="M150 70 V94 M134 73 L138 92 M166 73 L162 92 M70 124 H90 M72 140 H90 M230 124 H210 M228 140 H210" stroke="#CF7526" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="137" cy="164" rx="17" ry="13" fill="#FFF1DE"/><ellipse cx="163" cy="164" rx="17" ry="13" fill="#FFF1DE"/>
+    <g class="eyes">
+      <ellipse cx="114" cy="128" rx="19" ry="20" fill="#B7D44A"/><ellipse cx="186" cy="128" rx="19" ry="20" fill="#B7D44A"/>
+      <ellipse cx="114" cy="129" rx="6.5" ry="14" fill="#1C1C14"/><ellipse cx="186" cy="129" rx="6.5" ry="14" fill="#1C1C14"/>
+      <circle cx="120" cy="120" r="5" fill="#fff"/><circle cx="192" cy="120" r="5" fill="#fff"/></g>
+    <path d="M142 151 H158 L150 160 Z" fill="#F27C8D" stroke="#F27C8D" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M150 160 V165 M150 165 Q143 173 136 167 M150 165 Q157 173 164 167" stroke="#3A2414" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M122 162 L80 154 M122 168 L82 172 M178 162 L220 154 M178 168 L218 172" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+  </g></g></g>${paws('#F6B567', '#CF7526')}</svg>`; };
+
+/* ---------- pet icons ---------- */
+const PETS = [
+  // dog: the user's puppy photo (480×507, transparent), cropped to the puppy without its floor reflection
+  {k:'dog', n:'Нохой', svg:`<svg class="photo dog" viewBox="58 60 382 416" aria-hidden="true"><image href="dog.png" width="480" height="507"/></svg>`},
+  // cat: the user's whole-cat photo (525×350), framed so the full cat fits inside the circle
+  {k:'cat', n:'Муур', svg:`<svg class="photo" viewBox="78 20 430 310" aria-hidden="true"><image href="cat2.webp" width="525" height="350"/></svg>`},
+  // bird: the user's parrot photo (1749×980, transparent), cropped to the bird
+  {k:'bird', n:'Шувуу', svg:`<svg class="photo bird" viewBox="60 50 1470 880" aria-hidden="true"><image href="bird.webp" width="1749" height="980"/></svg>`},
+  // fish: the user's goldfish photo (2000×1125, transparent), cropped to the fish
+  {k:'fish', n:'Загас', svg:`<svg class="photo fish" viewBox="70 15 1840 1060" aria-hidden="true"><image href="fish.webp" width="2000" height="1125"/></svg>`},
+  // rabbit: the user's rabbit photo (1417×1347, transparent)
+  {k:'rabbit', n:'Туулай', svg:`<svg class="photo rabbit" viewBox="30 0 1375 1347" aria-hidden="true"><image href="rabbit.webp" width="1417" height="1347"/></svg>`},
+  // hamster: the user's hamster photo (519×475, transparent)
+  {k:'hamster', n:'Шишүүхэй', svg:`<svg class="photo hamster" viewBox="0 0 519 475" aria-hidden="true"><image href="hamster.png" width="519" height="475"/></svg>`}
+];
+const petBy = k => PETS.find(p => p.k === k);
+
+/* ---------- product art ---------- */
+const shadow = `<ellipse cx="60" cy="92" rx="40" ry="5" fill="#0F4C17" opacity=".1"/>`;
+const pawMark = c => `<ellipse cx="60" cy="58" rx="7" ry="6" fill="${c}"/><circle cx="51.5" cy="50.5" r="3" fill="${c}"/><circle cx="57" cy="46" r="3" fill="${c}"/><circle cx="63" cy="46" r="3" fill="${c}"/><circle cx="68.5" cy="50.5" r="3" fill="${c}"/>`;
+const ART = {
+  bowl: (c1, c2, face) => `${shadow}<path d="M12 42 Q16 86 60 88 Q104 86 108 42 Z" fill="${c1}"/><ellipse cx="60" cy="42" rx="48" ry="12" fill="${c2}"/><ellipse cx="60" cy="43" rx="38" ry="7.5" fill="#000" opacity=".1"/><circle cx="50" cy="42" r="4" fill="#A0622D"/><circle cx="60" cy="40" r="4" fill="#B7742C"/><circle cx="70" cy="43" r="4" fill="#A0622D"/><circle cx="56" cy="45" r="3.5" fill="#8B5224"/>${face ? `<path d="M44 60 q4 4 8 0 M68 60 q4 4 8 0" stroke="#3A2414" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M57 66 l3 3 3-3" stroke="#3A2414" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 66 h-12 M38 70 l-11 4 M82 66 h12 M82 70 l11 4" stroke="#3A2414" stroke-width="1.6" stroke-linecap="round"/>` : ''}`,
+  bag: (c, p) => `${shadow}<path d="M30 20 L90 20 L95 88 Q60 93 25 88 Z" fill="${c}"/><path d="M30 20 l5 -6 5 6 5 -6 5 6 5 -6 5 6 5 -6 5 6 5 -6 5 6 5 -6 5 6z" fill="${c}"/><rect x="30" y="20" width="60" height="7" fill="#000" opacity=".15"/><circle cx="60" cy="54" r="18" fill="#fff"/>${pawMark(p)}<rect x="42" y="78" width="36" height="5" rx="2.5" fill="#fff" opacity=".55"/>`,
+  mouse: () => `${shadow}<path d="M88 70 q20 0 24 -18" stroke="#E2574C" stroke-width="3.5" fill="none" stroke-linecap="round"/><ellipse cx="58" cy="66" rx="34" ry="22" fill="#2E8B57"/><path d="M40 49 q6 17 0 34 M54 45 q6 21 0 42 M68 46 q6 19 0 40 M82 51 q5 15 0 30" stroke="#fff" stroke-width="5" fill="none"/><circle cx="32" cy="50" r="9" fill="#2E8B57"/><circle cx="32" cy="50" r="5" fill="#F7B8B0"/><circle cx="29" cy="64" r="3" fill="#0E2E12"/><circle cx="24" cy="71" r="3.2" fill="#F27C8D"/>`,
+  rope: () => `${shadow}<rect x="24" y="44" width="72" height="15" rx="7.5" fill="#E9C46A"/><path d="M34 44 l-6 15 M44 44 l-6 15 M54 44 l-6 15 M64 44 l-6 15 M74 44 l-6 15 M84 44 l-6 15 M94 44 l-6 15" stroke="#C99A2E" stroke-width="2.4"/><circle cx="24" cy="51.5" r="15" fill="#2F8FD0"/><circle cx="96" cy="51.5" r="15" fill="#F26B12"/><path d="M10 64 l-4 10 M15 66 l-2 11 M21 67 l0 11 M110 64 l4 10 M105 66 l2 11 M99 67 l0 11" stroke="#E9C46A" stroke-width="3" stroke-linecap="round"/>`,
+  leash: () => `${shadow}<path d="M54 32 Q82 6 98 38 Q106 58 90 74" stroke="#0F4C17" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="89" cy="80" rx="11" ry="9" fill="none" stroke="#0F4C17" stroke-width="5"/><circle cx="44" cy="56" r="25" fill="none" stroke="#F26B12" stroke-width="10"/><rect x="38" y="25" width="13" height="10" rx="2.5" fill="#C9CED6"/><circle cx="44" cy="86" r="7.5" fill="#E7B53B"/>`,
+  can: c => `${shadow}<rect x="36" y="22" width="48" height="66" rx="7" fill="#D5DCE2"/><rect x="36" y="34" width="48" height="42" fill="${c}"/><ellipse cx="60" cy="22" rx="24" ry="6" fill="#BFC8D0"/><ellipse cx="60" cy="22" rx="17" ry="3.6" fill="#AEB8C1"/><path d="M47 55 q10 -11 21 0 q-11 11 -21 0z M68 55 l8 -7 v14z" fill="#fff"/><circle cx="52" cy="53.5" r="1.5" fill="${c}"/>`,
+  wheel: () => `${shadow}<path d="M60 50 L40 92 M60 50 L80 92" stroke="#7C8A99" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="46" r="37" fill="#fff" stroke="#F26B12" stroke-width="7"/><g stroke="#F9C49A" stroke-width="2.4"><path d="M60 12 v68 M26 46 h68 M36 22 l48 48 M84 22 l-48 48"/></g><circle cx="60" cy="46" r="6" fill="#F26B12"/>`,
+  carrot: () => `${shadow}<path d="M42 32 C34 36 34 46 42 52 L86 86 Q93 90 90 82 L58 38 C54 30 48 28 42 32Z" fill="#F7892B"/><path d="M52 50 l7 -4 M62 60 l7 -4 M72 70 l6 -3" stroke="#D96A12" stroke-width="2.4" stroke-linecap="round"/><path d="M42 32 C30 24 24 14 16 16 C22 28 30 34 40 38Z" fill="#43A047"/><path d="M46 30 C46 18 42 8 34 4 C34 16 38 26 44 34Z" fill="#66BB6A"/>`
+};
+const art = a => `<svg viewBox="0 0 120 100" aria-hidden="true">${ART[a[0]](...a.slice(1))}</svg>`;
+
+const PRODUCTS = [
+  {id:'p1', n:'Нарлаг муурын аяга', pets:['cat'], price:24900, art:['bowl','#F26B12','#FF9A55',true], d:'Керамик аяга, гулсдаггүй ёроолтой. Багтаамж 350 мл. Аяга угаагчинд угааж болно.', isNew:true},
+  {id:'p2', n:'Гаа ногоон аяга', pets:['cat','dog'], price:29900, art:['bowl','#CFE6D2','#E4F3E6',false], d:'Хоёр давхар ханатай, дулаан тогтоодог. Жижиг нохой, мууранд тохиромжтой. 500 мл.', isNew:true},
+  {id:'p3', n:'Судалтай хулгана', pets:['cat'], price:9900, art:['mouse'], d:'Зөөлөн нэхмэл тоглоом, дотроо муурын өвстэй. Муурыг идэвхтэй байлгана.'},
+  {id:'p4', n:'Тахиатай хуурай хоол · 3 кг', pets:['dog'], price:68900, art:['bag','#0F4C17','#F26B12'], d:'Насанд хүрсэн нохойд. Тахианы мах 28%, үр тариагүй. Нэг уут дунд нохойд ойролцоогоор 3 долоо хоног хүрнэ.', isNew:true},
+  {id:'p5', n:'Олсон тоглоом', pets:['dog'], price:15900, art:['rope'], d:'Хөвөн олсоор хийсэн, шүд цэвэрлэхэд тусална. Татаж тоглоход бат бөх.'},
+  {id:'p6', n:'Хүзүүвч ба оосор', pets:['dog'], price:32500, art:['leash'], d:'Тохируулгатай хүзүүвч (30–45 см), 1.5 м урттай оосор. Шөнө гэрэл ойлгоно.'},
+  {id:'p7', n:'Муурны элс · 10 л', pets:['cat'], price:21500, art:['bag','#5B8DB8','#5B8DB8'], d:'Бөөгнөрдөг бентонит элс, үнэр шингээгчтэй. 10 литр нэг муурд 4 долоо хоног хүрнэ.'},
+  {id:'p8', n:'Үрийн холимог · 1 кг', pets:['bird'], price:12900, art:['bag','#E7B53B','#B8860B'], d:'Тоть, шар шувуунд зориулсан шар будаа, наранцэцгийн үр, овъёосны холимог.', isNew:true},
+  {id:'p9', n:'Загасны ширхэгт хоол', pets:['fish'], price:8900, art:['can','#2F8FD0'], d:'Халуун усны загасанд. Усыг булингартуулдаггүй. 100 г.'},
+  {id:'p10', n:'Шинэ өвс · 1 кг', pets:['rabbit','hamster'], price:14500, art:['bag','#6DAF4E','#3E7D2A'], d:'Хуурай, тоосгүй тимофей өвс. Туулай, шишүүхэйн шүд, хоол боловсруулалтад тустай.'},
+  {id:'p11', n:'Чимээгүй гүйлтийн дугуй', pets:['hamster'], price:27900, art:['wheel'], d:'Шөнө чимээ гаргадаггүй холхивчтой, 21 см голчтой. Тор руу бэхэлнэ.', isNew:true},
+  {id:'p12', n:'Лууван зажлуур', pets:['rabbit'], price:7900, art:['carrot'], d:'Байгалийн модоор хийсэн зажлах тоглоом. Шүдийг хэт ургахаас сэргийлнэ.'}
+];
+const prodBy = id => PRODUCTS.find(p => p.id === id);
+
+/* ---------- state ---------- */
+const st = { user:null, pets:new Set(), cart:new Map(), points:4, filter:'all', editPets:false, sheet:null };
+// account, pets, cart and stars are remembered on this device so sign-up happens once.
+// The password itself is never stored, only a salted SHA-256 hash so "Нэвтрэх" can check it.
+const KEY = 'zoomies.account.v1';
+st.pw = null; st.signedIn = false; st.notes = []; st.orders = 0;
+const save = () => { if (!st.user) return; try { localStorage.setItem(KEY, JSON.stringify({ user:st.user, pets:[...st.pets], cart:[...st.cart], points:st.points, pw:st.pw, signedIn:st.signedIn, notes:st.notes, orders:st.orders })); } catch (_) {} };
+const loadSaved = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (_) { return null; } };
+const hashPw = async (pw, salt) => {
+  try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ':' + pw)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  catch (_) { return null; }
+};
+const newSalt = () => { try { return [...crypto.getRandomValues(new Uint8Array(12))].map(x => x.toString(16).padStart(2, '0')).join(''); } catch (_) { return String(Date.now()); } };
+const restore = s => {
+  st.user = s.user; st.pw = s.pw || null;
+  st.pets = new Set((s.pets || []).filter(k => petBy(k)));
+  st.cart = new Map((s.cart || []).filter(([id, q]) => prodBy(id) && q > 0));
+  st.points = Number.isFinite(s.points) ? s.points : 4;
+  st.notes = Array.isArray(s.notes) ? s.notes : [];
+  st.orders = Number.isFinite(s.orders) ? s.orders : 0;
+};
+const enterApp = () => { if (st.pets.size) { st.filter = 'all'; renderHome(); go('home'); } else { st.editPets = false; openPets(); } };
+
+/* ---------- navigation ---------- */
+const go = (id, back = false) => {
+  const cur = document.querySelector('.screen.active'), nxt = $('#' + id);
+  if (cur === nxt) return;
+  if (cur) {
+    cur.classList.remove('active');
+    cur.classList.add(back ? 'back' : 'leaving');
+    setTimeout(() => cur.classList.remove('leaving', 'back'), 650);
+  }
+  nxt.classList.remove('leaving', 'back');
+  if (back) { nxt.style.transition = 'none'; nxt.style.transform = 'translateX(-48px)'; nxt.offsetWidth; nxt.style.transition = ''; nxt.style.transform = ''; }
+  nxt.scrollTop = 0;
+  nxt.classList.add('active');
+  $('#sbar').classList.toggle('light', id === 'done');
+  $('#nav').classList.toggle('hide', id !== 'home');
+};
+document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => go(b.dataset.back, true));
+
+/* ---------- welcome ---------- */
+$('#markDone').innerHTML = markSVG();
+(() => { // scattered paw prints
+  const b = $('#burst'); const spots = [[8,14,26,-20],[78,9,34,18],[86,38,22,30],[6,52,30,-35],[70,64,26,10],[18,80,20,25],[84,84,32,-12]];
+  b.innerHTML = spots.map(([x,y,s,r]) => `<span style="left:${x}%;top:${y}%;transform:rotate(${r}deg)"><svg width="${s}" height="${s}" viewBox="40 38 40 30" fill="currentColor">${pawMark('currentColor')}</svg></span>`).join('');
+})();
+$('#startBtn').onclick = () => go('signup');
+
+/* ---------- sign up ---------- */
+$('#peekSignup').innerHTML = dogSVG();
+$('#peekSignupCat').innerHTML = catSVG();
+$('#eyeBtn').onclick = () => { const i = $('#in-pass'); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; $('#eyeBtn').setAttribute('aria-label', show ? 'Нууц үг нуух' : 'Нууц үг харуулах'); };
+$('#in-phone').addEventListener('input', e => { const d = e.target.value.replace(/\D/g, '').slice(0, 8); e.target.value = d.length > 4 ? d.slice(0,4) + ' ' + d.slice(4) : d; });
+const checks = {
+  name: v => v.trim().length >= 2,
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()),
+  phone: v => v.replace(/\D/g, '').length === 8,
+  pass: v => v.length >= 6
+};
+Object.keys(checks).forEach(k => $('#in-' + k).addEventListener('input', () => { const f = $('#f-' + k); if (f.classList.contains('bad') && checks[k]($('#in-' + k).value)) f.classList.remove('bad'); }));
+$('#suForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let firstBad = null;
+  Object.keys(checks).forEach(k => {
+    const f = $('#f-' + k), ok = checks[k]($('#in-' + k).value);
+    f.classList.remove('bad'); if (!ok) { void f.offsetWidth; f.classList.add('bad'); firstBad = firstBad || $('#in-' + k); }
+  });
+  if (firstBad) { firstBad.focus(); return; }
+  const btn = $('#suBtn'); btn.disabled = true; btn.innerHTML = 'Шалгаж байна… <span class="spin" style="margin-left:10px"></span>';
+  setTimeout(async () => {
+    st.user = { name: $('#in-name').value.trim(), email: $('#in-email').value.trim(), phone: $('#in-phone').value.trim() };
+    const salt = newSalt(), hash = await hashPw($('#in-pass').value, salt);
+    st.pw = hash ? { salt, hash } : null; st.signedIn = true;
+    st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0;
+    $('#in-pass').value = ''; save();
+    btn.disabled = false; btn.innerHTML = 'Үргэлжлүүлэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn);
+    st.editPets = false; openPets();
+  }, 800);
+});
+
+/* ---------- pets ---------- */
+const openPets = () => {
+  $('#petsHi').textContent = `Сайн уу, ${st.user.name}!`;
+  $('#petSteps').style.visibility = st.editPets ? 'hidden' : 'visible';
+  $('#petsBtn').firstChild.textContent = st.editPets ? 'Хадгалах ' : 'Дэлгүүр рүү орох ';
+  renderPetGrid(); go('pets', st.editPets);
+};
+const renderPetGrid = () => {
+  $('#petGrid').innerHTML = PETS.map((p, i) => `<button class="tile" style="--i:${i}" data-k="${p.k}" aria-pressed="${st.pets.has(p.k)}"><span class="tick">${ICON.check}</span><span class="ic">${p.svg}</span>${p.n}</button>`).join('');
+  updatePetFoot();
+};
+const updatePetFoot = () => {
+  const n = st.pets.size;
+  $('#petsBtn').disabled = !n;
+  $('#petCount').textContent = n ? `${n} амьтан сонгосон: ${[...st.pets].map(k => petBy(k).n.toLowerCase()).join(', ')}` : 'Дор хаяж нэгийг сонгоно уу';
+};
+$('#petGrid').addEventListener('click', e => {
+  const t = e.target.closest('.tile'); if (!t) return;
+  const k = t.dataset.k;
+  st.pets.has(k) ? st.pets.delete(k) : st.pets.add(k);
+  t.setAttribute('aria-pressed', st.pets.has(k));
+  t.style.animation = 'none';
+  updatePetFoot();
+});
+$('#petsBack').onclick = () => st.editPets ? go('home', true) : go('signup', true);
+$('#petsBtn').onclick = () => {
+  const first = !st.editPets;
+  if (!st.pets.has(st.filter)) st.filter = 'all';
+  save(); renderHome(); go('home', !first);
+  setTimeout(() => toast(first ? `Тавтай морил, ${st.user.name}! Эхний захиалгад 10% хөнгөлөлт.` : 'Тэжээвэр амьтдыг шинэчиллээ.'), 700);
+};
+
+/* ---------- home ---------- */
+const renderHome = () => {
+  $('#avatarBtn').textContent = st.user.name[0].toUpperCase();
+  $('#hello').textContent = `Сайн уу, ${st.user.name}`;
+  renderChips(); renderGrid(); renderCartUI(false);
+  if (!st.notes.length) seedNotes();
+  renderBell(st.notes.some(n => !n.read));
+};
+const renderChips = () => {
+  const mine = PETS.filter(p => st.pets.has(p.k));
+  $('#chips').innerHTML = `<button class="chip all" data-f="all" aria-pressed="${st.filter === 'all'}">Танд зориулсан</button>` +
+    mine.map(p => `<button class="chip" data-f="${p.k}" aria-pressed="${st.filter === p.k}">${p.svg}${p.n}</button>`).join('') +
+    PETS.filter(p => !st.pets.has(p.k)).map(p => `<button class="chip" data-f="${p.k}" aria-pressed="${st.filter === p.k}" style="opacity:.75">${p.svg}${p.n}</button>`).join('');
+};
+const visibleProducts = () => {
+  if (st.filter !== 'all') return PRODUCTS.filter(p => p.pets.includes(st.filter));
+  const mine = PRODUCTS.filter(p => p.pets.some(k => st.pets.has(k)));
+  return mine.length ? mine : PRODUCTS;
+};
+const renderGrid = () => {
+  const list = visibleProducts();
+  $('#grid').innerHTML = list.map((p, i) => `<article class="card" style="--i:${i}" data-id="${p.id}" tabindex="0" aria-label="${p.n}, ${fmt(p.price)}">
+    ${p.isNew ? '<span class="tag">Шинэ</span>' : ''}
+    <button class="add" aria-label="${p.n} сагсанд нэмэх">${ICON.plus}</button>
+    <div class="art">${art(p.art)}</div><div class="nm">${p.n}</div><div class="pr">${fmt(p.price)}</div></article>`).join('');
+  // odd count: let the last card span both columns so nothing sits alone
+  const last = $('#grid').lastElementChild; if (list.length % 2 && last) last.style.gridColumn = '1 / -1';
+};
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  st.filter = c.dataset.f;
+  $('#chips').querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === c));
+  // center the chip inside its own row only (scrollIntoView also shifted the whole screen sideways)
+  const row = $('#chips'), rr = row.getBoundingClientRect(), cr = c.getBoundingClientRect();
+  row.scrollBy({ left: cr.left - rr.left - (rr.width - cr.width) / 2, behavior: reduce ? 'auto' : 'smooth' });
+  renderGrid();
+});
+$('#grid').addEventListener('click', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  if (e.target.closest('.add')) { addToCart(card.dataset.id, 1, card.querySelector('.art svg')); return; }
+  openProduct(card.dataset.id);
+});
+$('#grid').addEventListener('keydown', e => { const c = e.target.closest('.card'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(c.dataset.id); } });
+$('#exploreBtn').onclick = () => { const h = $('#home'); h.scrollTo({ top: $('#arrivals').offsetTop + $('.sec2').offsetTop - 70, behavior: reduce ? 'auto' : 'smooth' }); };
+$('#starBtn').onclick = () => toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
+$('#cartPill').onclick = () => openCart();
+$('#avatarBtn').onclick = () => openProfile();
+$('#menuBtn').onclick = () => openCats();
+$('#searchBtn').onclick = () => openSearch();
+$('#home').addEventListener('scroll', () => $('#home .topbar').classList.toggle('scrolled', $('#home').scrollTop > 4), { passive:true });
+
+/* ---------- cart ---------- */
+const cartTotals = () => {
+  let count = 0, sub = 0;
+  st.cart.forEach((q, id) => { count += q; sub += q * prodBy(id).price; });
+  const ship = sub === 0 || sub >= 50000 ? 0 : 5000;
+  const disc = st.orders ? 0 : Math.round(sub * 0.1 / 100) * 100; // 10% off the first order
+  return { count, sub, ship, disc, total: sub - disc + ship };
+};
+const renderCartUI = (bump = true) => {
+  const t = cartTotals();
+  $('#cartCnt').textContent = t.count; $('#cartTot').textContent = fmt(t.sub);
+  $('#navBadge').textContent = t.count; $('#navBadge').classList.toggle('show', t.count > 0);
+  $('#pts').textContent = st.points;
+  save();
+  if (bump) { const p = $('#cartPill'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
+};
+const addToCart = (id, qty, fromEl) => {
+  st.cart.set(id, (st.cart.get(id) || 0) + qty);
+  const pill = $('#cartPill');
+  if (fromEl && !reduce && fromEl.animate) {
+    const a = fromEl.getBoundingClientRect(), b = pill.getBoundingClientRect();
+    const g = fromEl.cloneNode(true);
+    Object.assign(g.style, { position:'fixed', left:a.left + 'px', top:a.top + 'px', width:a.width + 'px', height:a.height + 'px', zIndex:999, pointerEvents:'none' });
+    document.body.appendChild(g);
+    const dx = b.left + 14 - a.left - a.width / 2, dy = b.top + 10 - a.top - a.height / 2;
+    g.animate([
+      { transform:'translate(0,0) scale(1) rotate(0)' },
+      { transform:`translate(${dx * .45}px, ${dy * .45 - 70}px) scale(.65) rotate(-12deg)`, offset:.45 },
+      { transform:`translate(${dx}px, ${dy}px) scale(.12) rotate(10deg)`, opacity:.4 }
+    ], { duration:720, easing:'cubic-bezier(.45,0,.4,1)' }).onfinish = () => { g.remove(); renderCartUI(); };
+  } else renderCartUI();
+};
+
+/* ---------- sheets ---------- */
+const sheet = $('#sheet'), scrim = $('#scrim'), body = $('#sheetBody');
+const setNav = k => {
+  const btns = [...document.querySelectorAll('.nav button')]; const b = btns.find(x => x.dataset.nav === k);
+  btns.forEach(x => x.classList.toggle('on', x === b));
+  $('#navInd').style.transform = `translateX(${b.offsetLeft - 7}px)`;
+};
+const openSheet = (mode, html) => {
+  st.sheet = mode; body.innerHTML = html; paintIcons(body); body.scrollTop = 0;
+  sheet.classList.add('open'); scrim.classList.add('open');
+  if (mode === 'cart' || mode === 'profile') setNav(mode);
+  setTimeout(() => sheet.querySelector('button, [tabindex]')?.focus({ preventScroll:true }), 350);
+};
+const closeSheet = () => { sheet.classList.remove('open'); scrim.classList.remove('open'); st.sheet = null; setNav('home'); };
+scrim.onclick = closeSheet;
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && st.sheet) closeSheet(); });
+const sheetHead = t => `<div class="sheet-h"><h2>${t}</h2><button class="circle-btn" data-close aria-label="Хаах">${ICON.close}</button></div>`;
+body.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeSheet(); });
+
+// swipe down to close
+(() => { let y0 = null, dy = 0;
+  // buttons in the header (the X) must keep their own click, so drag never starts on them
+  sheet.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; if (e.target.closest('.grab') || (body.scrollTop <= 0 && e.target.closest('.sheet-h'))) { y0 = e.clientY; sheet.style.transition = 'none'; sheet.setPointerCapture(e.pointerId); } });
+  sheet.addEventListener('pointermove', e => { if (y0 === null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
+  const end = () => { if (y0 === null) return; sheet.style.transition = ''; sheet.style.transform = ''; if (dy > 90) closeSheet(); y0 = null; dy = 0; };
+  sheet.addEventListener('pointerup', end); sheet.addEventListener('pointercancel', end);
+})();
+
+const openProduct = id => {
+  const p = prodBy(id); let q = 1;
+  openSheet('product', `<div class="pd-art">${art(p.art)}</div>
+    <div><div class="pd-name">${p.n}</div><div class="pd-tags">${p.pets.map(k => `<span>${petBy(k).n}</span>`).join('')}${p.isNew ? '<span style="color:#F26B12">Шинэ</span>' : ''}</div></div>
+    <p class="pd-desc">${p.d}</p>
+    <div class="pd-buy"><div class="stepper"><button data-q="-1" aria-label="Хасах">${ICON.minus}</button><output id="pdQ">1</output><button data-q="1" aria-label="Нэмэх">${ICON.plus}</button></div>
+      <button class="btn btn-orange" id="pdAdd">Сагсанд · <span id="pdSum">${fmt(p.price)}</span></button></div>`);
+  body.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { q = Math.min(20, Math.max(1, q + +b.dataset.q)); $('#pdQ').textContent = q; $('#pdSum').textContent = fmt(q * p.price); });
+  $('#pdAdd').onclick = () => { const svg = body.querySelector('.pd-art svg'); closeSheet(); setTimeout(() => addToCart(id, q, svg), 60); };
+};
+
+const openCart = () => {
+  const t = cartTotals();
+  if (!t.count) {
+    openSheet('cart', sheetHead('Миний сагс') + `<div class="empty"><div class="peek" style="width:180px">${dogSVG(true)}</div><h3>Сагс хоосон байна</h3><p>Таны тэжээвэрт таалагдах зүйл олдоно.</p><button class="btn btn-orange" data-close style="justify-content:center; padding:0 24px">Дэлгүүр хэсэх</button></div>`);
+    return;
+  }
+  const rows = [...st.cart].map(([id, q]) => { const p = prodBy(id); return `<div class="cart-row" data-id="${id}"><div class="th">${art(p.art)}</div><div class="info"><b>${p.n}</b><span>${fmt(p.price * q)}</span></div><div class="stepper sm"><button data-d="-1" aria-label="Хасах">${ICON.minus}</button><output>${q}</output><button data-d="1" aria-label="Нэмэх">${ICON.plus}</button></div></div>`; }).join('');
+  const left = 50000 - t.sub;
+  openSheet('cart', sheetHead('Миний сагс') + `<div id="rows">${rows}</div>
+    <div class="sum"><div><span>Барааны дүн</span><span>${fmt(t.sub)}</span></div>
+      ${t.disc ? `<div><span>Эхний захиалгын 10% хөнгөлөлт</span><span class="disc">−${fmt(t.disc)}</span></div>` : ''}
+      <div><span>Хүргэлт</span><span class="${t.ship ? '' : 'free'}">${t.ship ? fmt(t.ship) : 'Үнэгүй'}</span></div>
+      ${left > 0 ? `<small>Дахиад ${fmt(left)}-ийн бараа авбал Улаанбаатар хотод үнэгүй хүргэнэ.</small>` : ''}
+      <div class="tot"><span>Төлөх дүн</span><span>${fmt(t.total)}</span></div></div>
+    <button class="btn btn-orange" id="checkout">Захиалах · ${fmt(t.total)} <span class="arr">${ICON.arrow}</span></button>`);
+  body.querySelectorAll('.cart-row [data-d]').forEach(b => b.onclick = () => {
+    const row = b.closest('.cart-row'), id = row.dataset.id, q = (st.cart.get(id) || 0) + +b.dataset.d;
+    if (q <= 0) { st.cart.delete(id); row.classList.add('out'); setTimeout(() => { renderCartUI(); openCart(); }, 300); return; }
+    st.cart.set(id, q); renderCartUI(); const y = body.scrollTop; openCart(); body.scrollTop = y;
+    body.querySelectorAll(':scope > *').forEach(x => x.style.animation = 'none');
+  });
+  $('#checkout').onclick = checkout;
+};
+
+const checkout = () => {
+  const t = cartTotals(); const earned = Math.max(1, Math.floor(t.total / 10000));
+  st.points += earned; st.orders += 1; st.cart.clear(); closeSheet(); renderCartUI(false);
+  addNote({ type:'box', t:'Захиалга баталгаажлаа', b:`${fmt(t.total)}-ийн захиалга. 24 цагийн дотор хүргэнэ.`, action:'none' }, false);
+  addNote({ type:'star', t:`+${earned} бонус од`, b:`Одоо танд ${st.points} од байна. 10 од = 10,000₮ хөнгөлөлт.`, action:'stars' }, false);
+  // a little later the order "leaves the warehouse"
+  setTimeout(() => { if (st.user) { addNote({ type:'truck', t:'Захиалга хүргэлтэд гарлаа', b:'Жолооч тантай 30 минутын дотор холбогдоно.', action:'none' }); toast('Таны захиалга хүргэлтэд гарлаа.'); } }, 20000);
+  $('#doneText').textContent = `${st.user.name}, таны ${fmt(t.total)}-ийн захиалгыг 24 цагийн дотор ${st.user.phone} дугаарт залгаж хүргэнэ.`;
+  $('#doneAward').textContent = `+${earned} бонус од авлаа`;
+  const c = $('#confetti'); const cols = ['#F26B12', '#A8E09E', '#FFF4E6', '#E7B53B', '#6EC6E8'];
+  c.innerHTML = reduce ? '' : Array.from({ length: 46 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${cols[i % 5]};animation-duration:${2.2 + Math.random() * 2}s;animation-delay:${Math.random() * .8}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join('');
+  setTimeout(() => go('done'), 250);
+};
+$('#doneBtn').onclick = () => { go('home', true); $('#home').scrollTop = 0; };
+
+const openProfile = () => {
+  const u = st.user;
+  openSheet('profile', sheetHead('Профайл') + `<div class="prof"><span class="avatar">${u.name[0].toUpperCase()}</span><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span></div></div>
+    <div><div class="lbl">Миний тэжээвэр</div><div class="mypets">${[...st.pets].map(k => `<span>${petBy(k).svg}${petBy(k).n}</span>`).join('')}</div></div>
+    <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
+    <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>`);
+  $('#editPets').onclick = () => { closeSheet(); st.editPets = true; setTimeout(openPets, 200); };
+  $('#logout').onclick = () => {
+    // keep the account on this device so the user can log back in; only end the session
+    st.signedIn = false; save();
+    closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4;
+    $('#suForm').reset(); setTimeout(() => go('welcome', true), 200);
+  };
+};
+const openCats = () => {
+  openSheet('cats', sheetHead('Ангилал') + `<div class="catlist"><button data-f="all"><svg viewBox="0 0 64 64"><g transform="translate(-28 -20)">${pawMark('#0F4C17')}</g></svg>Танд зориулсан<em>${PRODUCTS.filter(p => p.pets.some(k => st.pets.has(k))).length} бараа</em></button>` +
+    PETS.map(p => `<button data-f="${p.k}">${p.svg}${p.n}<em>${PRODUCTS.filter(x => x.pets.includes(p.k)).length} бараа</em></button>`).join('') + '</div>');
+  body.querySelectorAll('.catlist button').forEach(b => b.onclick = () => {
+    st.filter = b.dataset.f; closeSheet(); renderChips(); renderGrid();
+    setTimeout(() => $('#exploreBtn').click(), 250);
+  });
+};
+/* ---------- notifications ---------- */
+const NOTE_LOOK = {
+  gift: ['gift', '#F26B12', '#FFE9DA'], box: ['box', '#0F4C17', '#DDF3D8'], star: ['star', '#F26B12', '#FFF1E2'],
+  new: ['spark', '#2F8FD0', '#E1F1FB'], truck: ['truck', '#6B4FB8', '#ECE6FA']
+};
+const ago = t => {
+  const m = Math.floor((Date.now() - t) / 60000);
+  if (m < 1) return 'Дөнгөж сая';
+  if (m < 60) return `${m} минутын өмнө`;
+  const h = Math.floor(m / 60); if (h < 24) return `${h} цагийн өмнө`;
+  return `${Math.floor(h / 24)} өдрийн өмнө`;
+};
+const renderBell = ring => {
+  const n = st.notes.filter(x => !x.read).length, b = $('#nBadge'), btn = $('#bellBtn');
+  b.textContent = n > 9 ? '9+' : n; b.classList.toggle('show', n > 0);
+  btn.setAttribute('aria-label', n ? `Мэдэгдэл, ${n} уншаагүй` : 'Мэдэгдэл');
+  if (ring && n && !reduce) { btn.classList.remove('ring'); void btn.offsetWidth; btn.classList.add('ring'); }
+};
+const addNote = (n, ring = true) => {
+  st.notes.unshift({ id:'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), time:Date.now(), read:false, ...n });
+  st.notes = st.notes.slice(0, 30); save(); renderBell(ring);
+  if (st.sheet === 'notes') openNotes();
+};
+const seedNotes = () => {
+  const now = Date.now();
+  const fresh = PRODUCTS.find(p => p.isNew && p.pets.some(k => st.pets.has(k))) || PRODUCTS.find(p => p.isNew);
+  st.notes = [
+    { id:'seed-gift', type:'gift', t:'Эхний захиалгад 10% хөнгөлөлт', b:`${st.user.name}, Zoomies-д тавтай морил! Хөнгөлөлт сагсанд автоматаар тооцогдоно.`, action:'cart', time:now, read:false },
+    { id:'seed-new', type:'new', t:'Шинэ ирэлт', b:`${fresh.n} одоо худалдаанд гарлаа.`, action:'product:' + fresh.id, time:now - 60000, read:false },
+    { id:'seed-star', type:'star', t:`Танд ${st.points} бонус од байна`, b:'10 од цуглуулбал 10,000₮ хөнгөлөлт эдэлнэ.', action:'stars', time:now - 120000, read:false }
+  ];
+  save();
+};
+const noteRow = (n, i) => {
+  const [ic, col, bg] = NOTE_LOOK[n.type] || NOTE_LOOK.new;
+  return `<button class="note${n.read ? '' : ' unread'}" data-id="${n.id}" style="--i:${i}">
+    <span class="nic" style="color:${col};background:${bg}">${ICON[ic]}</span>
+    <span class="ntx"><b>${esc(n.t)}</b><span>${esc(n.b)}</span><em>${ago(n.time)}</em></span><i class="ndot"></i></button>`;
+};
+const openNotes = () => {
+  const unread = st.notes.some(n => !n.read);
+  openSheet('notes', sheetHead('Мэдэгдэл') +
+    (unread ? '<button class="textlink markall" id="markAll">Бүгдийг уншсан болгох</button>' : '') +
+    (st.notes.length ? `<div class="notes" id="notes">${st.notes.map(noteRow).join('')}</div>`
+      : `<div class="empty"><h3>Шинэ мэдэгдэл алга</h3><p>Захиалга, хөнгөлөлт, шинэ барааны мэдээ энд гарна.</p></div>`));
+  $('#markAll') && ($('#markAll').onclick = () => {
+    st.notes.forEach(n => n.read = true); save(); renderBell(false);
+    body.querySelectorAll('.note').forEach(el => el.classList.remove('unread'));
+    $('#markAll').remove();
+  });
+  $('#notes') && $('#notes').addEventListener('click', e => {
+    const el = e.target.closest('.note'); if (!el) return;
+    const n = st.notes.find(x => x.id === el.dataset.id); if (!n) return;
+    n.read = true; el.classList.remove('unread'); save(); renderBell(false);
+    if (!st.notes.some(x => !x.read)) $('#markAll')?.remove();
+    const a = n.action || '';
+    if (a.startsWith('product:') && prodBy(a.slice(8))) setTimeout(() => openProduct(a.slice(8)), 250);
+    else if (a === 'cart') setTimeout(openCart, 250);
+    else if (a === 'stars') toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
+  });
+};
+$('#bellBtn').onclick = () => openNotes();
+
+/* ---------- search ---------- */
+const POPULAR = ['Хоол', 'Аяга', 'Тоглоом', 'Элс', 'Өвс', 'Үр'];
+const norm = s => s.toLowerCase().trim();
+const searchText = p => norm(`${p.n} ${p.d} ${p.pets.map(k => petBy(k).n).join(' ')}`);
+const highlight = (text, q) => {
+  if (!q) return esc(text);
+  const i = norm(text).indexOf(q);
+  return i < 0 ? esc(text) : esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+};
+const resultRow = (p, q, i) => `<div class="cart-row res" data-id="${p.id}" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(p.n)}, ${fmt(p.price)}">
+  <div class="th">${art(p.art)}</div><div class="info"><b>${highlight(p.n, q)}</b><span>${fmt(p.price)}</span></div>
+  <button class="res-add" aria-label="${esc(p.n)} сагсанд нэмэх">${ICON.plus}</button></div>`;
+const renderResults = () => {
+  const q = norm($('#q').value);
+  $('#qClear').hidden = !q;
+  $('#sugg').hidden = !!q;
+  let html;
+  if (!q) {
+    const mine = PRODUCTS.filter(p => p.pets.some(k => st.pets.has(k))).slice(0, 4);
+    html = `<div class="lbl">Танд санал болгох</div>` + mine.map((p, i) => resultRow(p, '', i)).join('');
+  } else {
+    const hits = PRODUCTS.filter(p => searchText(p).includes(q))
+      .sort((a, b) => (norm(b.n).includes(q) - norm(a.n).includes(q)) || (b.pets.some(k => st.pets.has(k)) - a.pets.some(k => st.pets.has(k))));
+    html = hits.length
+      ? `<div class="lbl">${hits.length} бараа олдлоо</div>` + hits.map((p, i) => resultRow(p, q, i)).join('')
+      : `<div class="noresult"><b>“${esc($('#q').value.trim())}” олдсонгүй</b><span>Өөр үгээр хайж үзээрэй. Жишээ: хоол, аяга, тоглоом.</span></div>`;
+  }
+  $('#results').innerHTML = html;
+};
+const openSearch = () => {
+  openSheet('search', sheetHead('Хайлт') + `<div class="search-box"><span class="sicon">${ICON.search}</span><input id="q" type="search" placeholder="Хоол, аяга, тоглоом…" autocomplete="off" aria-label="Бараа хайх"><button id="qClear" class="qclear" aria-label="Цэвэрлэх" hidden>${ICON.close}</button></div>
+    <div class="sugg" id="sugg"><div class="lbl" style="width:100%;margin:0">Түгээмэл хайлт</div>${POPULAR.map(w => `<button data-w="${w}">${w}</button>`).join('')}</div>
+    <div id="results"></div>`);
+  const q = $('#q');
+  q.addEventListener('input', renderResults);
+  $('#qClear').onclick = () => { q.value = ''; renderResults(); q.focus(); };
+  $('#sugg').onclick = e => { const b = e.target.closest('[data-w]'); if (b) { q.value = b.dataset.w; renderResults(); } };
+  $('#results').addEventListener('click', e => {
+    const row = e.target.closest('.res'); if (!row) return;
+    if (e.target.closest('.res-add')) { addToCart(row.dataset.id, 1, row.querySelector('.th svg')); toast(`${prodBy(row.dataset.id).n} сагсанд нэмэгдлээ.`); return; }
+    openProduct(row.dataset.id);
+  });
+  $('#results').addEventListener('keydown', e => { const row = e.target.closest('.res'); if (row && e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(row.dataset.id); } });
+  renderResults();
+  setTimeout(() => q.focus({ preventScroll:true }), 420);
+};
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+/* ---------- nav ---------- */
+document.querySelectorAll('.nav button').forEach(b => b.onclick = () => {
+  const k = b.dataset.nav;
+  if (k === 'home') { closeSheet(); $('#home').scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' }); }
+  if (k === 'cart') openCart();
+  if (k === 'profile') openProfile();
+});
+
+/* ---------- swipe-to-confirm for every orange arrow button ---------- */
+const setSwipe = (b, x, max) => { b.style.setProperty('--x', x + 'px'); b.style.setProperty('--p', max ? (x / max).toFixed(3) : 0); };
+// a plain tap or mouse click does not act; keyboard (Enter/Space) and our own trigger (detail 0) still do
+document.addEventListener('click', e => {
+  const b = e.target.closest('.btn-orange'); if (!b || !b.querySelector('.arr') || e.detail === 0) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+}, true);
+document.addEventListener('pointerdown', e => {
+  const b = e.target.closest('.btn-orange'); if (!b || b.disabled || (e.button && e.button !== 0)) return;
+  const knob = b.querySelector('.arr'); if (!knob) return;
+  const max = b.clientWidth - knob.offsetWidth - 14, x0 = e.clientX; let x = 0, moved = false;
+  b.classList.add('dragging'); b.classList.remove('wiggle');
+  try { b.setPointerCapture(e.pointerId); } catch (_) {}
+  const move = ev => { x = Math.min(max, Math.max(0, ev.clientX - x0)); if (x > 6) moved = true; setSwipe(b, x, max); };
+  const up = () => {
+    b.removeEventListener('pointermove', move); b.removeEventListener('pointerup', up); b.removeEventListener('pointercancel', up);
+    b.classList.remove('dragging');
+    if (x >= max * .8) {
+      setSwipe(b, max, max);
+      if (navigator.vibrate) try { navigator.vibrate(12); } catch (_) {}
+      setTimeout(() => b.click(), 220);
+      setTimeout(() => setSwipe(b, 0, max), 800);
+    } else {
+      setSwipe(b, 0, max);
+      if (!moved) { void b.offsetWidth; b.classList.add('wiggle'); toast('Сумтай бөмбөлгийг баруун тийш чирнэ үү'); }
+    }
+  };
+  b.addEventListener('pointermove', move); b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
+});
+
+/* ---------- toast ---------- */
+let tt; const toast = msg => { $('#toastText').textContent = msg; const t = $('#toast'); t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 3200); };
+
+/* ---------- returning user: skip sign-up ---------- */
+const saved = loadSaved();
+if (saved && saved.user && saved.user.name && saved.signedIn !== false) {
+  // open straight on the app without playing the welcome→home slide
+  const screens = document.querySelectorAll('.screen');
+  screens.forEach(s => s.style.transition = 'none');
+  restore(saved); st.signedIn = true; enterApp();
+  requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
+}
+
+/* ---------- log in ---------- */
+$('#peekLoginDog').innerHTML = dogSVG();
+$('#peekLoginCat').innerHTML = catSVG();
+$('#loginLink').onclick = () => go('login');
+document.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => go(b.dataset.goto));
+document.querySelectorAll('[data-eye]').forEach(b => b.onclick = () => { const i = $('#' + b.dataset.eye); const show = i.type === 'password'; i.type = show ? 'text' : 'password'; b.setAttribute('aria-label', show ? 'Нууц үг нуух' : 'Нууц үг харуулах'); });
+const fieldErr = (id, msg) => { const f = $('#' + id); f.querySelector('.err').textContent = msg; f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); f.querySelector('input').focus(); };
+['lemail', 'lpass'].forEach(k => $('#in-' + k).addEventListener('input', () => $('#f-' + k).classList.remove('bad')));
+$('#liForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#in-lemail').value.trim(), pw = $('#in-lpass').value;
+  if (!checks.email(email)) return fieldErr('f-lemail', 'Имэйл хаяг буруу байна. Жишээ: bolor@mail.mn');
+  if (!pw) return fieldErr('f-lpass', 'Нууц үгээ оруулна уу.');
+  const btn = $('#liBtn'); btn.disabled = true; btn.innerHTML = 'Шалгаж байна… <span class="spin" style="margin-left:10px"></span>';
+  const rec = loadSaved();
+  await new Promise(r => setTimeout(r, 700));
+  btn.disabled = false; btn.innerHTML = 'Нэвтрэх <span class="arr" data-i="arrow"></span>'; paintIcons(btn);
+  if (!rec || !rec.user || rec.user.email.toLowerCase() !== email.toLowerCase())
+    return fieldErr('f-lemail', 'Энэ имэйлээр бүртгэл олдсонгүй. Доорх "Бүртгэл үүсгэх" дээр дарна уу.');
+  if (rec.pw && rec.pw.hash && (await hashPw(pw, rec.pw.salt)) !== rec.pw.hash)
+    return fieldErr('f-lpass', 'Нууц үг буруу байна. Дахин оролдоно уу.');
+  restore(rec); st.signedIn = true; save();
+  $('#in-lpass').value = '';
+  enterApp();
+  setTimeout(() => toast(`Тавтай морил, ${st.user.name}!`), 700);
+});
+
+paintIcons();
+})();
+</script>
+
+<script>
+// installable app: offline cache via service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>
