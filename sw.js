@@ -1,7 +1,7 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v5';
+const CACHE = 'zoomies-v7';
 const SHELL = [
-  './', 'index.html', 'manifest.webmanifest', 'products.json',
+  './', 'index.html', 'manifest.webmanifest', 'products.json', 'privacy.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
   'pets.jpg', 'home-dog.webp', 'home-cat.webp',
   'dog.png', 'cat2.webp', 'bird.webp', 'fish.webp', 'rabbit.webp', 'hamster.png'
@@ -39,16 +39,20 @@ self.addEventListener('fetch', e => {
     })));
     return;
   }
-  // product list and photos: network first so edits on GitHub show up, cache as offline fallback
-  if (url.origin === location.origin && (url.pathname.endsWith('/products.json') || url.pathname.includes('/photos/'))) {
+  // product list, photos and the privacy policy: network first so edits on GitHub show up, cache as offline fallback
+  if (url.origin === location.origin && (url.pathname.endsWith('/products.json') || url.pathname.endsWith('/privacy.html') || url.pathname.includes('/photos/'))) {
     e.respondWith(fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })
       .catch(() => caches.match(req, { ignoreSearch:true })));
     return;
   }
   // pages: network first so updates show up, cache as fallback offline
+  // only the app itself is kept as the offline page; other pages (privacy.html…) are cached under their own address
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('index.html', copy)); return r; })
-      .catch(() => caches.match('index.html')));
+    const isApp = /\/(index\.html)?$/.test(url.pathname);
+    e.respondWith(fetch(req).then(r => {
+      if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(isApp ? 'index.html' : req, copy)); }
+      return r;
+    }).catch(() => caches.match(isApp ? 'index.html' : req)));
     return;
   }
   e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(r => {

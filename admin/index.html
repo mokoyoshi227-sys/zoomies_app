@@ -103,6 +103,26 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
 .empty{grid-column:1/-1; text-align:center; padding:50px 10px; color:var(--muted)}
 .empty b{display:block; font-size:16px; color:var(--pine); margin-bottom:4px}
 
+/* orders */
+.tabs .cnt.hot{background:var(--orange); color:#fff}
+.tabs button[aria-selected="true"] .cnt.hot{background:var(--orange); color:#fff}
+#ostat{overflow-x:auto; scrollbar-width:none; max-width:100%}
+#ostat button{white-space:nowrap}
+.grid.orders{grid-template-columns:repeat(auto-fill, minmax(320px, 1fr))}
+.ord{background:#fff; border-radius:22px; padding:14px 16px; display:grid; gap:7px; align-content:start; box-shadow:0 4px 16px rgba(15,76,23,.06), inset 4px 0 0 var(--c); animation:rise .45s var(--ease) both; animation-delay:calc(var(--i) * 25ms)}
+.oh{display:flex; align-items:center; gap:8px}
+.oh b{font-size:18px; font-variant-numeric:tabular-nums}
+.ost{font-size:11.5px; font-weight:800; border-radius:8px; padding:3px 9px}
+.oh time{margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+.ow{font-size:13.5px; line-height:1.45; overflow-wrap:anywhere}
+.ow a{color:var(--pine); font-weight:700; text-decoration:none}
+.oi{list-style:none; margin:2px 0; padding:8px 10px; background:var(--mint); border-radius:12px; display:grid; gap:3px; font-size:13px}
+.oi li{display:flex; justify-content:space-between; gap:10px}
+.oi li span:last-child{font-variant-numeric:tabular-nums; white-space:nowrap}
+.ot{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:12px; color:var(--muted)}
+.ot b{font-size:19px; color:var(--ink); font-variant-numeric:tabular-nums}
+.oa{display:flex; gap:8px; margin-top:4px}
+.oa .btn{flex:1; height:40px; font-size:13px; padding:0 12px}
 /* editor drawer */
 .scrim{position:fixed; inset:0; background:rgba(6,30,9,.45); opacity:0; pointer-events:none; transition:opacity .35s; z-index:40}
 .scrim.open{opacity:1; pointer-events:auto}
@@ -125,7 +145,8 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
 .tog[aria-checked="true"]{background:var(--pine)}
 .tog[aria-checked="true"]::after{transform:translateX(20px)}
 .photo{display:flex; gap:12px; align-items:center}
-.photo .pv{width:110px; height:110px; border-radius:18px; background:#fff; display:grid; place-items:center; overflow:hidden; flex:none; box-shadow:inset 0 0 0 2px var(--line)}
+.photo .pv{width:110px; height:110px; border-radius:18px; background:var(--mint); display:grid; place-items:center; overflow:hidden; flex:none; box-shadow:inset 0 0 0 2px var(--line)}
+.photo .pv img{object-fit:contain}
 .photo .pv img{width:100%; height:100%; object-fit:cover}
 .photo .pa{display:grid; gap:8px}
 .photo .pa .btn{height:38px; font-size:13px}
@@ -177,7 +198,9 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
       <div class="seg" id="show" role="group" aria-label="Шүүлтүүр">
         <button data-s="all" aria-pressed="true">Бүгд</button><button data-s="on" aria-pressed="false">Харагдаж буй</button><button data-s="off" aria-pressed="false">Нуусан</button>
       </div>
+      <div class="seg" id="ostat" role="group" aria-label="Захиалгын төлөв" hidden></div>
       <span class="live" title="Энд хадгалсан өөрчлөлт апп дээр шууд харагдана"><i></i>Апп-тай шууд холбоотой</span>
+      <button class="btn btn-ghost" id="notifOn" hidden>🔔 Мэдэгдэл асаах</button>
       <button class="btn btn-main" id="add">+ Нэмэх</button>
     </div>
     <div class="grid" id="grid"></div>
@@ -266,7 +289,12 @@ const S = {
     text:r => `${r.name} ${r.specialty} ${r.phone} ${clinicName(r.clinic_id)}`
   }
 };
-const st = { tab:'products', rows:{ products:[], clinics:[], vets:[] }, q:'', show:'all', edit:null, draft:{}, newPhoto:null };
+const st = { tab:'orders', rows:{ orders:[], products:[], clinics:[], vets:[] }, q:'', show:'all', ostat:'open', edit:null, draft:{}, newPhoto:null, unseen:0, mine:new Set() };
+// orders come first: the tab the shop works from every day
+const OS = { new:['Шинэ', '#2F8FD0'], paid:['Төлөгдсөн', '#2E7D32'], delivering:['Хүргэлтэд', '#6B4FB8'], done:['Хүргэгдсэн', '#0F4C17'], cancelled:['Цуцалсан', '#C7361B'] };
+const PAY = { cod:'Хүргэлтээр төлөх', transfer:'Дансаар шилжүүлэх', qpay:'QPay' };
+const NEXT = { new:[['paid', '💰 Төлөгдсөн'], ['cancelled', 'Цуцлах']], paid:[['delivering', '🚚 Хүргэлтэд гаргах'], ['cancelled', 'Цуцлах']], delivering:[['done', '✅ Хүргэгдсэн']], done:[], cancelled:[] };
+const TABS = () => [['orders', '🧾', 'Захиалга', st.rows.orders.filter(o => o.status === 'new' || o.status === 'paid').length], ...Object.entries(S).map(([t, s]) => [t, s.icon, s.title, st.rows[t].length])];
 const vetsOf = cid => st.rows.vets.filter(v => v.clinic_id === cid).length;
 const clinicName = id => (st.rows.clinics.find(c => c.id === id) || {}).name || 'Эмнэлэггүй';
 
@@ -294,16 +322,62 @@ $('#lf').onsubmit = async e => {
 $('#out').onclick = async () => { await sb.auth.signOut(); if (chan) { sb.removeChannel(chan); chan = null; } showLogin(); };
 
 /* ---------- data ---------- */
+const loadOrders = async () => {
+  const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending:false }).limit(300);
+  if (error) { if (!/orders/.test(error.message)) toast(error.message, true); return; } // orders.sql not run yet: tab stays empty
+  st.rows.orders = data;
+};
 const loadAll = async () => {
   const res = await Promise.all(Object.keys(S).map(t => sb.from(t).select('*').order('sort').order('created_at')));
   Object.keys(S).forEach((t, i) => { if (res[i].error) toast(res[i].error.message, true); else st.rows[t] = res[i].data; });
+  await loadOrders();
 };
-// keep the lists in step if something changes elsewhere (another tab, another admin device)
+
+/* ---------- alerts for orders: sound + message + desktop notification + count in the tab title ---------- */
+let ac = null;
+const beep = () => {
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume();
+    [[880, 0], [1320, .16]].forEach(([f, t0]) => {
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + t0;
+      o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.3, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + .3);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + .32);
+    });
+  } catch (_) {}
+};
+document.addEventListener('click', () => { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); ac.resume(); } catch (_) {} }, { once:true }); // browsers allow sound after a first click
+const canNotify = () => 'Notification' in window;
+const showNotifBtn = () => { $('#notifOn').hidden = !(canNotify() && Notification.permission === 'default'); };
+$('#notifOn').onclick = async () => { try { await Notification.requestPermission(); } catch (_) {} showNotifBtn(); if (canNotify() && Notification.permission === 'granted') toast('Мэдэгдэл асаалаа. Шинэ захиалга ирэхэд дэлгэцийн буланд гарна.'); };
+const setTitle = () => { document.title = (st.unseen ? `(${st.unseen}) ` : '') + 'Zoomies Админ'; };
+const alertOrder = (title, body) => {
+  beep(); toast(`${title} · ${body}`);
+  if (document.hidden || st.tab !== 'orders') { st.unseen++; setTitle(); }
+  if (canNotify() && Notification.permission === 'granted' && document.hidden) {
+    try { const n = new Notification(title, { body, icon:'../icons/icon-192.png', tag:'zoomies-order' }); n.onclick = () => { window.focus(); goTab('orders'); n.close(); }; } catch (_) {}
+  }
+};
+document.addEventListener('visibilitychange', () => { if (!document.hidden && st.tab === 'orders') { st.unseen = 0; setTitle(); } });
+
+// keep the lists in step if something changes elsewhere (another tab, another admin device, the app)
 let chan = null, lt = 0;
 const live = () => {
   if (chan) return;
   chan = sb.channel('admin-catalog');
   Object.keys(S).forEach(t => chan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(lt); lt = setTimeout(async () => { await loadAll(); renderTabs(); render(); }, 300); }));
+  chan.on('postgres_changes', { event:'INSERT', schema:'public', table:'orders' }, ({ new:o }) => {
+    if (!st.rows.orders.some(x => x.id === o.id)) st.rows.orders.unshift(o);
+    alertOrder(`🛒 Шинэ захиалга #${o.number}`, `${o.customer_name} · ${fmt(o.total)} · ${PAY[o.payment_method] || ''}`);
+    renderTabs(); if (st.tab === 'orders') render();
+  });
+  chan.on('postgres_changes', { event:'UPDATE', schema:'public', table:'orders' }, ({ new:o }) => {
+    const cur = st.rows.orders.find(x => x.id === o.id), was = cur && cur.status;
+    if (cur) Object.assign(cur, o); else st.rows.orders.unshift(o);
+    // a payment confirmed by something other than this screen (QPay later, or another admin device)
+    if (o.status === 'paid' && was !== 'paid' && !st.mine.has(o.id)) alertOrder(`💰 #${o.number} төлөгдлөө`, `${o.customer_name} · ${fmt(o.total)}`);
+    st.mine.delete(o.id);
+    renderTabs(); if (st.tab === 'orders') render();
+  });
   chan.subscribe();
 };
 
@@ -311,14 +385,50 @@ const live = () => {
 const renderTabs = () => {
   const tabs = $('#tabs');
   tabs.querySelectorAll('button').forEach(b => b.remove());
-  tabs.insertAdjacentHTML('beforeend', Object.entries(S).map(([t, s]) => `<button role="tab" data-t="${t}" aria-selected="${t === st.tab}">${s.icon} ${s.title}<span class="cnt">${st.rows[t].length}</span></button>`).join(''));
+  tabs.insertAdjacentHTML('beforeend', TABS().map(([t, icon, title, n]) => `<button role="tab" data-t="${t}" aria-selected="${t === st.tab}">${icon} ${title}<span class="cnt${t === 'orders' && n ? ' hot' : ''}">${n}</span></button>`).join(''));
   const b = tabs.querySelector(`[data-t="${st.tab}"]`), ind = tabs.querySelector('.ind');
   ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`;
 };
-$('#tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (!b || b.dataset.t === st.tab) return; st.tab = b.dataset.t; st.q = ''; $('#q').value = ''; renderTabs(); render(); };
+const goTab = t => { st.tab = t; st.q = ''; $('#q').value = ''; if (t === 'orders') { st.unseen = 0; setTitle(); } renderTabs(); render(); };
+$('#tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (!b || b.dataset.t === st.tab) return; goTab(b.dataset.t); };
 $('#q').oninput = e => { st.q = e.target.value.trim().toLowerCase(); render(); };
 $('#show').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; st.show = b.dataset.s; $('#show').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); };
+/* orders list: open (new + paid + delivering) first; buttons move an order to its next step */
+const ORDER_FILTERS = [['open', 'Идэвхтэй', o => ['new', 'paid', 'delivering'].includes(o.status)], ['new', 'Шинэ', o => o.status === 'new'], ['paid', 'Төлөгдсөн', o => o.status === 'paid'], ['delivering', 'Хүргэлтэд', o => o.status === 'delivering'], ['done', 'Дууссан', o => o.status === 'done' || o.status === 'cancelled'], ['all', 'Бүгд', () => true]];
+const when = s => { const d = new Date(s); return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+const renderOrders = () => {
+  $('#title').textContent = 'Захиалга';
+  const os = $('#ostat');
+  os.innerHTML = ORDER_FILTERS.map(([k, n, f]) => `<button data-o="${k}" aria-pressed="${st.ostat === k}">${n} ${st.rows.orders.filter(f).length}</button>`).join('');
+  const f = (ORDER_FILTERS.find(x => x[0] === st.ostat) || ORDER_FILTERS[0])[2];
+  const rows = st.rows.orders.filter(f).filter(o => !st.q || `#${o.number} ${o.customer_name} ${o.phone} ${o.address} ${(o.items || []).map(i => i.name).join(' ')}`.toLowerCase().includes(st.q));
+  $('#grid').innerHTML = rows.length ? rows.map((o, i) => {
+    const [label, col] = OS[o.status] || OS.new;
+    return `<div class="ord" data-oid="${o.id}" style="--i:${i}; --c:${col}">
+      <div class="oh"><b>#${o.number}</b><span class="ost" style="color:${col}; background:${col}1A">${label}</span><time>${when(o.created_at)}</time></div>
+      <div class="ow">👤 <b>${esc(o.customer_name)}</b> · <a href="tel:${esc(String(o.phone).replace(/[^\d+]/g, ''))}">📞 ${esc(o.phone)}</a></div>
+      <div class="ow">📍 ${esc(o.address)}</div>
+      ${o.note ? `<div class="ow">💬 ${esc(o.note)}</div>` : ''}
+      <ul class="oi">${(o.items || []).map(it => `<li><span>${esc(it.name)} × ${it.qty}</span><span>${fmt(it.price * it.qty)}</span></li>`).join('')}</ul>
+      <div class="ot"><span>${PAY[o.payment_method] || o.payment_method}${o.discount ? ` · хөнгөлөлт −${fmt(o.discount)}` : ''}${o.shipping ? ` · хүргэлт ${fmt(o.shipping)}` : ' · хүргэлт үнэгүй'}</span><b>${fmt(o.total)}</b></div>
+      ${NEXT[o.status].length ? `<div class="oa">${NEXT[o.status].map(([s, n]) => `<button class="btn ${s === 'cancelled' ? 'btn-danger' : 'btn-dark'}" data-set="${s}">${n}</button>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('') : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : 'Захиалга алга'}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : 'Шинэ захиалга ирэхэд энд дуугаран гарч ирнэ.'}</div>`;
+};
+$('#ostat').onclick = e => { const b = e.target.closest('[data-o]'); if (!b) return; st.ostat = b.dataset.o; render(); };
+const setOrderStatus = async (o, status, btn) => {
+  if (status === 'cancelled' && !btn.classList.contains('sure')) { btn.classList.add('sure'); btn.textContent = 'Дахин дарж цуцална'; setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Цуцлах'; }, 3000); return; }
+  btn.disabled = true; st.mine.add(o.id);
+  const { data, error } = await sb.from('orders').update({ status }).eq('id', o.id).select().single();
+  if (error) { st.mine.delete(o.id); btn.disabled = false; return toast('Өөрчилж чадсангүй: ' + error.message, true); }
+  Object.assign(o, data); renderTabs(); render();
+  toast(`#${o.number}: ${OS[status][0]}. Худалдан авагчид шууд мэдэгдлээ.`);
+};
 const render = () => {
+  const ord = st.tab === 'orders';
+  $('#ostat').hidden = !ord; $('#show').hidden = ord; $('#add').hidden = ord; showNotifBtn();
+  $('#grid').classList.toggle('orders', ord);
+  if (ord) return renderOrders();
   const s = S[st.tab];
   $('#title').textContent = s.title;
   $('#add').textContent = `+ ${s.one} нэмэх`;
@@ -330,6 +440,8 @@ const render = () => {
     : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : `${s.title} алга`}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : `"+ ${s.one} нэмэх" дээр дарж эхлээрэй.`}</div>`;
 };
 $('#grid').onclick = async e => {
+  const ob = e.target.closest('.ord [data-set]');
+  if (ob) { const o = st.rows.orders.find(x => x.id === ob.closest('.ord').dataset.oid); if (o) setOrderStatus(o, ob.dataset.set, ob); return; }
   const item = e.target.closest('.item'); if (!item) return;
   const r = st.rows[st.tab].find(x => String(x.id) === item.dataset.id); if (!r) return;
   if (e.target.closest('[data-eye]')) { // quick show/hide without opening the editor
@@ -356,7 +468,7 @@ const field = f => {
     case 'clinic': return wrap(`<select id="f_${f.k}"><option value="">— Эмнэлэггүй —</option>${st.rows.clinics.map(c => `<option value="${c.id}"${c.id === v ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`);
     case 'toggle': return `<div class="sw" data-k="${f.k}"><div><b>${f.label}</b>${f.hint ? `<span>${f.hint}</span>` : ''}</div><button type="button" class="tog" role="switch" id="f_${f.k}" aria-checked="${!!v}" aria-label="${f.label}"></button></div>`;
     case 'photo': return wrap(`<div class="photo"><span class="pv" id="pv">${v ? `<img src="${esc(imgSrc(v))}" alt="">` : `<span class="noimg" style="font-size:34px;opacity:.5">${S[st.tab].icon}</span>`}</span>
-        <span class="pa"><button type="button" class="btn btn-dark" id="pick">${v ? 'Зураг солих' : 'Зураг оруулах'}</button>${v ? '<button type="button" class="btn btn-ghost" id="unpick">Зураг устгах</button>' : ''}<span class="hint">JPG, PNG. Автоматаар жижигрүүлнэ.</span></span></div>`);
+        <span class="pa"><button type="button" class="btn btn-dark" id="pick">${v ? 'Зураг солих' : 'Зураг оруулах'}</button>${v ? '<button type="button" class="btn btn-ghost" id="unpick">Зураг устгах</button>' : ''}<span class="hint">JPG, PNG. Автоматаар жижигрүүлнэ. Тунгалаг арын PNG тунгалаг хэвээрээ үлдэнэ.</span></span></div>`);
     default: return wrap(`<input id="f_${f.k}" maxlength="${f.max || 200}" value="${esc(v)}" placeholder="${esc(f.ph || '')}">`);
   }
 };
@@ -384,10 +496,31 @@ $('#dx').onclick = closeEditor; $('#scrim').onclick = closeEditor;
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawer').classList.contains('open')) closeEditor(); });
 
 // photos: shrink to 900px JPEG in the browser before uploading
+// Pictures with see-through parts (a PNG cut-out of a product) keep them: they are saved as WebP, or PNG on
+// browsers that cannot write WebP. Ordinary photos have no see-through parts and become a smaller JPEG.
+const toBlobP = (c, type, q) => new Promise(r => c.toBlob(r, type, q));
+const hasAlpha = (g, w, h) => {
+  const d = g.getImageData(0, 0, w, h).data;
+  for (let i = 3; i < d.length; i += 4) if (d[i] < 250) return true;
+  return false;
+};
 const shrink = file => new Promise((res, rej) => {
   const url = URL.createObjectURL(file), img = new Image();
-  img.onload = () => { const s = Math.min(1, 900 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
-    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error('image')), 'image/jpeg', .86); };
+  img.onload = async () => {
+    URL.revokeObjectURL(url);
+    const s = Math.min(1, 900 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas');
+    c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, 0, c.width, c.height);                        // on a transparent canvas first
+    if (hasAlpha(g, c.width, c.height)) {
+      let b = await toBlobP(c, 'image/webp', .9);
+      if (!b || b.type !== 'image/webp') b = await toBlobP(c, 'image/png'); // this browser cannot write WebP
+      return b ? res(b) : rej(new Error('image'));
+    }
+    g.globalCompositeOperation = 'destination-over'; g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); // solid photo: JPEG
+    const b = await toBlobP(c, 'image/jpeg', .86);
+    b ? res(b) : rej(new Error('image'));
+  };
   img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image')); };
   img.src = url;
 });
@@ -428,8 +561,9 @@ $('#save').onclick = async () => {
     const row = {}; S[t].fields.forEach(f => { if (f.type === 'latlng') { row.lat = d.lat; row.lng = d.lng; } else if (f.type !== 'photo') row[f.k] = d[f.k]; });
     if (t === 'products') row.description = row.description || '';
     if (st.newPhoto) {
-      const path = `${t}/${crypto.randomUUID()}.jpg`;
-      const up = await sb.storage.from('catalog').upload(path, st.newPhoto, { contentType:'image/jpeg' });
+      const ext = { 'image/webp':'webp', 'image/png':'png' }[st.newPhoto.type] || 'jpg';
+      const path = `${t}/${crypto.randomUUID()}.${ext}`;
+      const up = await sb.storage.from('catalog').upload(path, st.newPhoto, { contentType:st.newPhoto.type || 'image/jpeg' });
       if (up.error) throw up.error;
       row.photo = CAT_URL(path);
     } else if (st.removePhoto) row.photo = null;

@@ -260,8 +260,11 @@ svg.photo.dog{overflow:hidden}
 #home,#shop{background:var(--mint); scroll-behavior:smooth}
 .topbar{display:flex; align-items:center; gap:8px; padding:calc(var(--sb) + 8px) 18px 0; position:relative; z-index:5}
 .topbar .grow{flex:1}
-.star-btn{position:relative; width:46px; height:46px; border-radius:50%; background:#fff; display:grid; place-items:center; transition:transform .3s var(--spring)}
-.star-btn b{position:absolute; inset:0; display:grid; place-items:center; font-size:12px; color:#fff; font-weight:800; padding-top:2px}
+/* bonus stars: a pill with the star first and the count after it (like the cart pill) */
+.star-btn{height:46px; border-radius:23px; background:#fff; display:flex; align-items:center; gap:5px; padding:0 13px 0 10px; transition:transform .3s var(--spring)}
+.star-btn [data-i="star"]{display:grid}
+.star-btn svg{width:20px; height:20px}
+.star-btn b{font-size:14px; color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums; line-height:1}
 .cart-pill{height:46px; border-radius:23px; background:#fff; display:flex; align-items:center; gap:8px; padding:0 14px 0 12px; font-weight:700; font-size:14px; color:var(--ink); position:relative; transition:transform .3s var(--spring); font-variant-numeric:tabular-nums}
 .cart-pill .cnt{position:absolute; left:24px; top:22px; min-width:17px; height:17px; border-radius:9px; background:var(--pine); color:#fff; font-size:10.5px; display:grid; place-items:center; padding:0 4px; border:2px solid #fff}
 .bump{animation:bump .5s var(--spring)}
@@ -290,10 +293,7 @@ svg.photo.dog{overflow:hidden}
 
 .sec2{padding-top:30px}
 .band{background:var(--leaf); padding:42px 16px 120px; position:relative; z-index:1}
-.rating{text-align:center}
-.rating .big{font-size:46px; font-weight:600; color:var(--pine); display:inline-flex; align-items:center; gap:6px; letter-spacing:-.03em; font-variant-numeric:tabular-nums}
-.rating p{margin:4px auto 0; font-size:13px; color:#24502A; max-width:28ch; line-height:1.5; font-weight:500}
-.band h3{font-size:24px; font-weight:500; text-align:center; color:var(--pine); margin:30px 0 14px; letter-spacing:-.02em}
+.band h3{font-size:24px; font-weight:500; text-align:center; color:var(--pine); margin:0 0 14px; letter-spacing:-.02em}
 .chips{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 14px; scrollbar-width:none; margin:0 -16px; padding-left:16px; padding-right:16px}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none; height:38px; border-radius:19px; background:rgba(255,255,255,.55); display:flex; align-items:center; gap:6px; padding:0 14px 0 8px; font-weight:700; font-size:13px; color:var(--pine); transition:background .3s, color .3s, transform .3s var(--spring)}
@@ -321,12 +321,44 @@ svg.photo.dog{overflow:hidden}
 .nav.hide{transform:translate(-50%, 130%); opacity:0}
 .nav .ind{position:absolute; top:7px; left:7px; height:50px; width:58px; border-radius:25px; background:var(--leaf); transition:transform .5s var(--spring), width .5s var(--spring)}
 .nav button{position:relative; z-index:1; height:50px; min-width:58px; border-radius:25px; display:grid; place-items:center; color:#CFEAC9; transition:color .3s}
+.nav-av{width:30px; height:30px; border-radius:50%; display:grid; place-items:center; overflow:hidden}
+.nav-av.photo{box-shadow:0 0 0 2px #CFEAC9; transition:box-shadow .3s}
+.nav button.on .nav-av.photo{box-shadow:0 0 0 2px var(--pine)}
+.nav-av img{width:100%; height:100%; object-fit:cover}
 .nav button.on{color:var(--pine)}
 .nav .nb{position:absolute; top:7px; right:11px; min-width:16px; height:16px; border-radius:8px; background:var(--orange); color:#fff; font-size:10px; font-weight:800; display:grid; place-items:center; padding:0 3px; transform:scale(0); transition:transform .4s var(--spring)}
 .nav .nb.show{transform:scale(1)}
 
 /* home: pet profile */
 #home{padding-bottom:120px}
+/* vets tab */
+#vets{background:var(--mint); padding-bottom:120px}
+.vt-tools{position:sticky; top:0; z-index:5; display:grid; gap:10px; padding:14px 16px 12px; background:rgba(231,247,227,.9); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px)}
+.vt-seg{position:relative; display:grid; grid-template-columns:1fr 1fr; gap:4px; background:#fff; border-radius:16px; padding:4px}
+.vt-seg .ind{position:absolute; top:4px; left:4px; bottom:4px; width:calc(50% - 6px); border-radius:12px; background:var(--pine); box-shadow:0 6px 14px rgba(15,76,23,.25); transition:transform .55s var(--spring)}
+.vt-seg button{position:relative; z-index:1; height:40px; border-radius:12px; font-weight:700; font-size:14px; color:var(--muted); transition:color .35s}
+.vt-seg button[aria-pressed="true"]{color:#fff}
+.vt-list{display:grid; gap:10px; padding:4px 16px 0}
+.vt-card{display:flex; align-items:center; gap:12px; background:#fff; border-radius:22px; padding:10px; text-align:left; cursor:pointer; box-shadow:0 6px 16px rgba(15,76,23,.06); animation:rise .5s var(--ease) both; animation-delay:calc(var(--i) * 45ms); transition:transform .3s var(--spring), box-shadow .3s}
+.vt-card:active{transform:scale(.98)}
+.vt-ph{width:84px; height:84px; border-radius:16px; background:var(--leaf-soft); display:grid; place-items:center; overflow:hidden; flex:none; font-size:36px}
+.vt-ph img,.vt-av img{width:100%; height:100%; object-fit:cover}
+.vt-av{width:58px; height:58px; border-radius:50%; background:var(--mint); display:grid; place-items:center; overflow:hidden; flex:none; font-size:26px; box-shadow:0 0 0 3px #fff, 0 4px 10px rgba(15,76,23,.12)}
+.vet-card{padding:12px 10px 12px 14px}
+.vt-tx{flex:1; min-width:0; display:grid; gap:3px}
+.vt-tx b{font-size:15px; color:var(--ink); line-height:1.3}
+.vt-tx em{font-style:normal; font-size:12.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vt-tx em.spec{color:var(--orange); font-weight:700}
+.vt-tx small{font-size:12px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vt-tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:2px}
+.vt-tags i{font-style:normal; font-size:11px; font-weight:700; background:var(--mint); color:var(--pine); border-radius:8px; padding:3px 8px}
+.vt-tags i.n{background:#FFE9DA; color:#C45110}
+.vt-call{width:44px; height:44px; border-radius:50%; background:var(--pine); color:#fff; display:grid; place-items:center; flex:none; transition:transform .3s var(--spring)}
+.vt-call:active{transform:scale(.88)}
+.vt-empty{text-align:center; padding:50px 20px; display:grid; justify-items:center; gap:6px; animation:rise .5s var(--ease) both}
+.vt-empty span{font-size:52px; width:96px; height:96px; border-radius:50%; background:#fff; display:grid; place-items:center; margin-bottom:6px}
+.vt-empty b{font-size:17px; color:var(--pine)}
+.vt-empty p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5; max-width:28ch}
 .ph-top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:calc(var(--sb) + 12px) 20px 0}
 .ph-hi{font-size:13px; font-weight:700; color:var(--orange); letter-spacing:.04em; text-transform:uppercase}
 .ph-top > div{min-width:0}
@@ -695,9 +727,11 @@ svg.photo.dog{overflow:hidden}
 /* top bar fits five round buttons + cart; it stays pinned while the home screen scrolls */
 .topbar{gap:6px; position:sticky; top:0; z-index:20; padding-bottom:10px; background:rgba(231,247,227,.86); -webkit-backdrop-filter:blur(14px) saturate(1.2); backdrop-filter:blur(14px) saturate(1.2); transition:box-shadow .3s}
 .topbar.scrolled{box-shadow:0 8px 24px rgba(15,76,23,.10)}
-.topbar .circle-btn,.topbar .star-btn,.topbar .avatar{width:42px; height:42px}
+.topbar .circle-btn,.topbar .avatar{width:42px; height:42px}
+.topbar .star-btn{height:42px; padding:0 11px 0 9px}
 .topbar .cart-pill{height:42px; padding:0 12px 0 10px; font-size:13px}
 .topbar .cart-pill .cnt{top:20px; left:22px}
+.cart-pill #cartTot{margin-left:10px} /* room for a two-digit count badge */
 /* notifications */
 .bell-btn{position:relative}
 .bell-btn .nbadge{position:absolute; top:4px; right:3px; min-width:17px; height:17px; border-radius:9px; background:var(--orange); color:#fff; font-size:10px; font-weight:800; display:grid; place-items:center; padding:0 4px; border:2px solid #fff; transform:scale(0); transition:transform .45s var(--spring); font-variant-numeric:tabular-nums}
@@ -765,6 +799,50 @@ svg.photo.dog{overflow:hidden}
 .av-edit .av-cam svg{width:14px; height:14px}
 .av-edit.busy{opacity:.6; pointer-events:none}
 .prof .av-rm{display:inline-block; margin-top:6px; padding:4px 0; font-size:12px; font-weight:700; color:var(--danger)}
+/* checkout form + my orders */
+.co{display:grid; gap:12px; margin:0 0 16px}
+.co .field textarea{width:100%; border-radius:16px; border:2px solid transparent; background:#fff; padding:12px 14px; font:inherit; font-size:15px; font-weight:500; color:var(--ink); resize:none; transition:border-color .25s}
+.co .field textarea:focus{outline:none; border-color:var(--pine)}
+.co .field input{background:#fff}
+.co .field.bad textarea{border-color:var(--danger); background:#FFF5F2}
+.pay{display:grid; gap:8px}
+.pay button{display:grid; gap:2px; text-align:left; background:#fff; border-radius:16px; padding:11px 14px 11px 44px; position:relative; box-shadow:inset 0 0 0 2px transparent; transition:box-shadow .25s}
+.pay button::before{content:""; position:absolute; left:14px; top:50%; width:20px; height:20px; margin-top:-10px; border-radius:50%; box-shadow:inset 0 0 0 2px var(--leaf); transition:box-shadow .25s}
+.pay button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--pine)}
+.pay button[aria-pressed="true"]::before{box-shadow:inset 0 0 0 6px var(--pine)}
+.pay b{font-size:14px; color:var(--ink)}
+.pay span{font-size:12px; color:var(--muted)}
+.my-orders{display:grid; gap:8px}
+.mo{display:flex; justify-content:space-between; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px}
+.mo b{font-size:14px; display:block; font-variant-numeric:tabular-nums}
+.mo span{font-size:12px; color:var(--muted)}
+.mo-r{text-align:right; display:grid; justify-items:end; gap:4px}
+.mo-r i{font-style:normal; font-size:11px; font-weight:800; border-radius:8px; padding:3px 8px}
+/* privacy policy sheet */
+.pv-doc{font-size:14px; line-height:1.65; color:var(--ink)}
+.pv-load{display:grid; place-items:center; padding:40px 0}
+.pv-load .spin{border-color:var(--leaf-soft); border-top-color:var(--pine)}
+.pv-date{font-size:12px; font-weight:700; color:var(--muted); margin:-4px 0 10px}
+.pv-doc .lead{font-size:14.5px; color:var(--muted); margin-top:0}
+.pv-doc .toc{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 4px}
+.pv-doc .toc a{font-size:12px; font-weight:700; color:var(--pine); background:#fff; border-radius:12px; padding:6px 10px; text-decoration:none}
+.pv-doc h2{font-size:16px; color:var(--pine); margin:22px 0 6px; scroll-margin-top:10px}
+.pv-doc h2 span{display:inline-grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#fff; font-size:12px; margin-right:8px; vertical-align:1px}
+.pv-doc p,.pv-doc li{margin:5px 0}
+.pv-doc ul{padding-left:20px; margin:4px 0}
+.pv-doc .box{background:#fff; border-radius:16px; padding:10px 14px; margin:8px 0}
+.pv-doc .box.ok{background:#DDF3D8}
+.pv-doc a{color:var(--pine); font-weight:700}
+.fine a{color:var(--pine); font-weight:700; text-decoration-color:var(--leaf); text-decoration-thickness:2px; text-underline-offset:2px}
+.prof-foot{display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding:0 4px}
+.prof-foot a{font-size:13px; font-weight:700; color:var(--pine); text-decoration:underline; text-decoration-color:var(--leaf); text-decoration-thickness:2px; text-underline-offset:3px}
+.prof-foot button{font-size:13px; font-weight:700; color:var(--danger); padding:6px 0}
+.del-warn{display:flex; gap:12px; background:#FFF1EC; border-radius:20px; padding:14px; margin-bottom:14px; color:var(--ink)}
+.del-warn > span{font-size:24px}
+.del-warn b{color:var(--danger); font-size:15px}
+.del-warn p{margin:6px 0 4px; font-size:13px; color:var(--muted)}
+.del-warn ul{margin:0; padding-left:18px; font-size:13px; line-height:1.6}
+.btn-danger .spin{border-color:rgba(199,54,27,.3); border-top-color:var(--danger)}
 .prof b{font-size:18px; display:block}
 .prof span{font-size:13px; color:var(--muted); display:block; margin-top:2px; overflow-wrap:anywhere}
 .lbl{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:18px 0 10px}
@@ -784,8 +862,28 @@ svg.photo.dog{overflow:hidden}
 #done{background:var(--pine); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:calc(var(--sb) + 20px) 28px 40px; gap:14px}
 #done .mark{width:120px; height:120px}
 #done.active .mark{animation:popIn .9s var(--spring) both}
+#done .mark svg{display:block; width:100%; height:100%; filter:drop-shadow(0 12px 24px rgba(0,0,0,.25))}
+#done .tick{stroke-dasharray:72; stroke-dashoffset:72}
+#done.active .tick{animation:drawTick .5s var(--ease) .55s forwards}
+@keyframes drawTick{to{stroke-dashoffset:0}}
 #done h1{font-size:28px; font-weight:600; margin:8px 0 0; letter-spacing:-.02em}
 #done p{margin:0; color:#C6E8BF; line-height:1.55; font-size:14.5px; max-width:30ch}
+/* bank transfer details (cart and confirmation) */
+.bank-wrap{display:grid; grid-template-rows:0fr; opacity:0; margin-top:-12px; transition:grid-template-rows .45s var(--ease), opacity .3s, margin-top .45s var(--ease)}
+.bank-wrap.open{grid-template-rows:1fr; opacity:1; margin-top:0}
+.bank-wrap > div{overflow:hidden; min-height:0}
+/* bank details: plain Arial, normal weight (buttons inherit it through button{font:inherit}) */
+.bank{background:#fff; border-radius:18px; padding:12px 14px; display:grid; gap:8px; box-shadow:inset 0 0 0 2px var(--leaf); text-align:left; color:var(--ink); font-family:Arial, Helvetica, sans-serif; font-weight:400}
+.bk-h{font-weight:400; font-size:14px; color:var(--pine)}
+.bk-row{display:grid; grid-template-columns:1fr auto; grid-template-areas:"label btn" "value value"; align-items:center; column-gap:10px; row-gap:2px; background:var(--mint); border-radius:12px; padding:8px 8px 9px 12px}
+.bk-row span{grid-area:label; font-size:11.5px; font-weight:400; color:var(--muted)}
+.bk-row b{grid-area:value; font-size:16px; font-weight:400; font-variant-numeric:tabular-nums; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.bk-copy{grid-area:btn; display:flex; align-items:center; gap:5px; height:30px; padding:0 11px; border-radius:15px; background:var(--pine); color:#fff; font-size:12px; font-weight:400; transition:background .25s, transform .3s var(--spring)}
+.bk-copy svg{width:15px; height:15px}
+.bk-copy i{font-style:normal}
+.bk-copy:active{transform:scale(.92)}
+.bk-copy.done{background:#2E9E44}
+.bk-note{margin:2px 2px 0; font-size:12.5px; font-weight:400; color:var(--orange-deep); line-height:1.45}
 #done .award{background:rgba(255,255,255,.08); border-radius:20px; padding:12px 18px; display:flex; align-items:center; gap:10px; font-weight:700}
 #done.active h1,#done.active p,#done.active .award{animation:rise .7s var(--ease) both; animation-delay:.25s}
 #done.active .award{animation-delay:.4s}
@@ -853,7 +951,7 @@ svg.photo.dog{overflow:hidden}
       <div class="field" id="f-phone"><label for="in-phone">Утасны дугаар</label><input id="in-phone" inputmode="numeric" autocomplete="tel" placeholder="9911 2233" maxlength="9"><div class="err">8 оронтой дугаар оруулна уу.</div></div>
       <div class="field" id="f-pass"><label for="in-pass">Нууц үг</label><div class="inputwrap"><input id="in-pass" type="password" autocomplete="new-password" placeholder="Хамгийн багадаа 6 тэмдэгт"><button type="button" class="eyebtn" id="eyeBtn" aria-label="Нууц үг харуулах" data-i="eye"></button></div><div class="err">Нууц үг хамгийн багадаа 6 тэмдэгттэй байна.</div></div>
       <button class="btn btn-orange" id="suBtn" type="submit" style="margin-top:6px">Үргэлжлүүлэх <span class="arr" data-i="arrow"></span></button>
-      <p class="fine">Бүртгүүлснээр та үйлчилгээний нөхцөлийг зөвшөөрч байна.</p>
+      <p class="fine">Бүртгүүлснээр та манай <a href="privacy.html" data-privacy>нууцлалын бодлого</a>-ыг зөвшөөрч байна.</p>
       <button type="button" class="textlink" data-goto="login">Бүртгэлтэй юу? <b>Нэвтрэх</b></button>
     </form>
   </section>
@@ -898,8 +996,7 @@ svg.photo.dog{overflow:hidden}
   <section class="screen" id="home" aria-label="Миний тэжээвэр">
     <div class="ph-top">
       <div><div class="ph-hi" id="phHi"></div><h1>Таны тэжээвэр амьтад</h1></div>
-      <span class="ph-btns"><button class="circle-btn bell-btn" id="homeBell" aria-label="Мэдэгдэл"><span data-i="bell"></span><span class="nbadge" id="homeBadge">0</span></button>
-      <button class="avatar" id="homeAvatar" aria-label="Профайл">Б</button></span>
+      <span class="ph-btns"><button class="circle-btn bell-btn" id="homeBell" aria-label="Мэдэгдэл"><span data-i="bell"></span><span class="nbadge" id="homeBadge">0</span></button></span>
     </div>
     <div class="pet-tabs" id="petTabs" role="tablist" aria-label="Тэжээвэр амьтад"></div>
     <div class="pet-hero" id="petHero"></div>
@@ -907,11 +1004,22 @@ svg.photo.dog{overflow:hidden}
     <section class="hl" id="friends" aria-label="Найзууд"></section>
     <section class="hl" id="health" aria-label="Эрүүл мэндийн хөтлөл"></section>
     <section class="hl" id="memo" aria-label="Тэмдэглэл"></section>
-    <section class="hl" id="clinics" aria-label="Малын эмнэлэг" hidden></section>
     <div class="recs-h"><h3 id="recsTitle"></h3><button class="textlink" id="recsAll"><b>Бүгдийг үзэх</b></button></div>
     <div class="pet-recs" id="petRecs"></div>
     <input type="file" id="petPhotoIn" accept="image/*" hidden>
     <input type="file" id="userPhotoIn" accept="image/*" hidden>
+  </section>
+
+  <!-- 4b. Vet clinics and vets (third tab) -->
+  <section class="screen" id="vets" aria-label="Малын эмнэлэг, эмч">
+    <div class="ph-top">
+      <div><div class="ph-hi">Мэргэжлийн тусламж</div><h1>Малын эмнэлэг, эмч</h1></div>
+    </div>
+    <div class="vt-tools">
+      <label class="search-box"><span class="sicon" data-i="search"></span><input id="vq" type="search" placeholder="Эмнэлэг, эмч, үйлчилгээ хайх…" autocomplete="off" aria-label="Эмнэлэг, эмч хайх"></label>
+      <div class="vt-seg" id="vtSeg" role="group" aria-label="Харах"><span class="ind" aria-hidden="true"></span><button data-v="clinics" aria-pressed="true">Эмнэлэг</button><button data-v="vets" aria-pressed="false">Эмч</button></div>
+    </div>
+    <div class="vt-list" id="vtList"></div>
   </section>
 
   <!-- 5. Shop (the former home screen) -->
@@ -923,7 +1031,6 @@ svg.photo.dog{overflow:hidden}
       <div class="grow"></div>
       <button class="star-btn" id="starBtn" aria-label="Бонус од"><span data-i="star"></span><b id="pts">4</b></button>
       <button class="cart-pill" id="cartPill" aria-label="Сагс"><span data-i="cart"></span><span class="cnt" id="cartCnt">0</span><span id="cartTot">0₮</span></button>
-      <button class="avatar" id="avatarBtn" aria-label="Профайл">Б</button>
     </div>
     <div class="hero">
       <img class="peek-photo dogp" src="home-dog.webp" alt="Самбар дээгүүр шагайж буй алтан ретривер нохой">
@@ -935,11 +1042,7 @@ svg.photo.dog{overflow:hidden}
     <div class="sec2">
       <img class="peek-photo catp" src="home-cat.webp" alt="Ногоон хэсэг дээгүүр шагайж буй шар муур">
       <div class="band">
-        <div class="rating">
-          <div class="big">4.6 <span data-i="starBig"></span></div>
-          <p>98,000+ тэжээвэр амьтны эздийн үнэлгээгээр</p>
-        </div>
-        <h3 id="arrivals">Шинэ ирэлт</h3>
+        <h3 id="arrivals">Бүтээгдэхүүнүүд</h3>
         <div class="chips" id="chips" role="group" aria-label="Шүүлтүүр"></div>
         <div class="grid" id="grid"></div>
       </div>
@@ -960,7 +1063,8 @@ svg.photo.dog{overflow:hidden}
     <span class="ind" id="navInd"></span>
     <button class="on" data-nav="home" aria-label="Миний тэжээвэр" data-i="home"></button>
     <button data-nav="shop" aria-label="Дэлгүүр" data-i="shop"></button>
-    <button data-nav="profile" aria-label="Профайл" data-i="user"></button>
+    <button data-nav="vets" aria-label="Малын эмнэлэг, эмч" data-i="clinic"></button>
+    <button data-nav="profile" aria-label="Профайл"><span class="nav-av" id="navAvatar"></span></button>
   </nav>
 
   <div class="scrim" id="scrim"></div>
@@ -1001,6 +1105,8 @@ const ICON = {
   walk: S('<circle cx="13.5" cy="4" r="2"/><path d="M8 21l3-7 3 3v4M7 12l3-4h3.5l2.5 4 3 1M11 14l-.5-4"/>'),
   pill: S('<path d="M10.5 3.5a4.95 4.95 0 0 1 7 7l-7 7a4.95 4.95 0 0 1-7-7z"/><path d="M7 7l7 7"/>'),
   chev: S('<path d="M6 9l6 6 6-6"/>', 18, 2.4),
+  clinic: S('<path d="M4 20.5V9.5L12 4l8 5.5v11z"/><path d="M12 10v6.5M8.75 13.25h6.5"/>', 22),
+  phone: S('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>', 19),
   share: S('<path d="M12 3.5v11M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/>', 20, 2.2),
   link: S('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>', 20),
   image: S('<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/>', 20),
@@ -1017,22 +1123,6 @@ const ICON = {
 };
 const paintIcons = (root = document) => root.querySelectorAll('[data-i]').forEach(el => { if (!el.dataset.done) { el.insertAdjacentHTML('afterbegin', ICON[el.dataset.i]); el.dataset.done = 1; } });
 
-/* ---------- logo mark: puppy face ---------- */
-const markSVG = () => `<svg viewBox="0 0 120 120" aria-hidden="true">
-  <circle cx="60" cy="60" r="58" fill="#F26B12"/>
-  <path d="M8 66 q20 -4 30 -2" stroke="#FFB27A" stroke-width="4" stroke-linecap="round" fill="none" opacity=".8"/>
-  <path d="M10 78 q16 -3 26 -1" stroke="#FFB27A" stroke-width="4" stroke-linecap="round" fill="none" opacity=".6"/>
-  <path class="ear l" d="M34 32 C20 34 16 58 22 74 C26 82 36 80 38 70 C40 58 42 44 42 36 Z" fill="#0F4C17"/>
-  <path class="ear r" d="M86 32 C100 34 104 58 98 74 C94 82 84 80 82 70 C80 58 78 44 78 36 Z" fill="#0F4C17"/>
-  <ellipse cx="60" cy="62" rx="27" ry="30" fill="#FFF4E6"/>
-  <ellipse cx="60" cy="76" rx="16" ry="12" fill="#FFE2C2"/>
-  <circle cx="50" cy="58" r="4.6" fill="#0E2E12"/><circle cx="70" cy="58" r="4.6" fill="#0E2E12"/>
-  <circle cx="51.6" cy="56.2" r="1.6" fill="#fff"/><circle cx="71.6" cy="56.2" r="1.6" fill="#fff"/>
-  <ellipse cx="44" cy="68" rx="4" ry="2.4" fill="#F7A08A" opacity=".7"/><ellipse cx="76" cy="68" rx="4" ry="2.4" fill="#F7A08A" opacity=".7"/>
-  <path d="M55 69 q5 -3 10 0 q0 5 -5 6 q-5 -1 -5 -6z" fill="#0E2E12"/>
-  <path class="tongue" d="M56 79 q4 9 8 0 z" fill="#F0727E"/>
-  <path d="M60 75 v3 M60 78 q-4 4 -8 1 M60 78 q4 4 8 1" stroke="#0E2E12" stroke-width="2" fill="none" stroke-linecap="round"/>
-</svg>`;
 
 /* ---------- peeking pets (ledge at y=200) ---------- */
 let uid = 0;
@@ -1182,7 +1272,7 @@ st.profiles = []; st.cur = null;
 st.delQ = [];     // pets deleted while offline, removed from the server on the next connection
 st.delItems = []; // health log entries / memos deleted while offline: [{ t:'health_logs'|'memos', id }]
 st.fr = { reqs:[], cards:{} }; // friend requests touching my pets + a card per other pet (copy of the server)
-const save = () => { if (!st.user) return true; try { localStorage.setItem(KEY, JSON.stringify({ user:st.user, pets:[...st.pets], cart:[...st.cart], points:st.points, pw:st.pw, signedIn:st.signedIn, notes:st.notes, orders:st.orders, profiles:st.profiles, cur:st.cur, delQ:st.delQ, delItems:st.delItems, fr:st.fr })); return true; } catch (_) { return false; } };
+const save = () => { if (!st.user) return true; try { localStorage.setItem(KEY, JSON.stringify({ user:st.user, pets:[...st.pets], cart:[...st.cart], points:st.points, pw:st.pw, signedIn:st.signedIn, notes:st.notes, orders:st.orders, profiles:st.profiles, cur:st.cur, delQ:st.delQ, delItems:st.delItems, fr:st.fr, myOrders:st.myOrders })); return true; } catch (_) { return false; } };
 const loadSaved = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (_) { return null; } };
 const hashPw = async (pw, salt) => {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ':' + pw)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
@@ -1201,10 +1291,11 @@ const restore = s => {
   st.delQ = Array.isArray(s.delQ) ? s.delQ : [];
   st.delItems = Array.isArray(s.delItems) ? s.delItems : [];
   st.fr = s.fr && Array.isArray(s.fr.reqs) ? s.fr : { reqs:[], cards:{} };
+  st.myOrders = Array.isArray(s.myOrders) ? s.myOrders : [];
   syncProfiles();
 };
 // a brand-new account on this device: nothing carried over
-const resetLocal = () => { st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0; st.profiles = []; st.cur = null; st.delQ = []; st.delItems = []; st.fr = { reqs:[], cards:{} }; st.pw = null; };
+const resetLocal = () => { st.pets.clear(); st.cart.clear(); st.points = 4; st.notes = []; st.orders = 0; st.profiles = []; st.cur = null; st.delQ = []; st.delItems = []; st.fr = { reqs:[], cards:{} }; st.pw = null; st.myOrders = []; };
 /* ---------- pet profiles ---------- */
 // ids are UUIDs made on the phone, so a new pet has its final server id from the start (works offline too)
 const uuid = () => crypto.randomUUID ? crypto.randomUUID() : '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
@@ -1320,7 +1411,8 @@ const cloudLoad = async () => {
   toPush.forEach(pushPet);
   await loadItems();
   await loadFriends().catch(err => console.warn('friends', err));
-  startRealtime();
+  await loadMyOrders().catch(() => {});
+  startRealtime(); startOrdersLive();
   return true;
 };
 
@@ -1416,12 +1508,13 @@ const go = (id, back = false) => {
   $('#nav').classList.toggle('hide', !TABS.includes(id));
   if (TABS.includes(id)) setNav(id);
 };
-const TABS = ['home', 'shop'];
+const TABS = ['home', 'shop', 'vets'];
 const curTab = () => { const a = document.querySelector('.screen.active'); return a && TABS.includes(a.id) ? a.id : 'home'; };
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => go(b.dataset.back, true));
 
 /* ---------- welcome ---------- */
-$('#markDone').innerHTML = markSVG();
+// order confirmed: an orange circle whose white tick draws itself when the screen opens
+$('#markDone').innerHTML = `<svg viewBox="0 0 120 120" role="img" aria-label="Амжилттай"><circle cx="60" cy="60" r="58" fill="#F26B12"/><path class="tick" d="M35 62 L53 79 L86 43" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 (() => { // scattered paw prints
   const b = $('#burst'); const spots = [[8,14,26,-20],[78,9,34,18],[86,38,22,30],[6,52,30,-35],[70,64,26,10],[18,80,20,25],[84,84,32,-12]];
   b.innerHTML = spots.map(([x,y,s,r]) => `<span style="left:${x}%;top:${y}%;transform:rotate(${r}deg)"><svg width="${s}" height="${s}" viewBox="40 38 40 30" fill="currentColor">${pawMark('currentColor')}</svg></span>`).join('');
@@ -1537,7 +1630,11 @@ const renderHome = () => {
 };
 // the user's own photo, or the first letter of their name
 const avatarHTML = () => st.user.photo ? `<img src="${st.user.photo}" alt="">` : esc(st.user.name[0].toUpperCase());
-const renderAvatars = () => document.querySelectorAll('#avatarBtn, #homeAvatar, #sheet .avatar').forEach(el => el.innerHTML = avatarHTML());
+const renderAvatars = () => {
+  document.querySelectorAll('#sheet .avatar').forEach(el => el.innerHTML = avatarHTML());
+  // the profile item in the bottom menu: the user's own photo when there is one, otherwise a person icon
+  const nav = $('#navAvatar'); if (nav) { nav.innerHTML = st.user && st.user.photo ? `<img src="${st.user.photo}" alt="">` : ICON.user; nav.classList.toggle('photo', !!(st.user && st.user.photo)); }
+};
 // "2 нас 3 сар" from a yyyy-mm-dd birth date
 const ageText = birth => {
   if (!birth) return '';
@@ -1582,19 +1679,55 @@ const loadClinics = async () => {
 const telHref = p => 'tel:' + String(p || '').replace(/[^\d+]/g, '');
 const mapHref = c => c.lat != null && c.lng != null ? `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([c.name, c.address, c.district, 'Улаанбаатар'].filter(Boolean).join(', '))}`;
 const safeImg = u => /^https:\/\//.test(u || '') ? u : ''; // only server photos
+/* the "Малын эмнэлэг, эмч" tab: two lists (clinics / vets), one search over both */
+const vt = { view:'clinics', q:'', shown:null };
+const clinicOf = v => CLINICS.find(c => c.id === v.clinic_id);
+const vtMatch = (text, q) => !q || text.toLowerCase().includes(q);
 const renderClinics = () => {
-  const box = $('#clinics'), loose = VETS.filter(v => !v.clinic_id || !CLINICS.some(c => c.id === v.clinic_id));
-  box.hidden = !CLINICS.length && !loose.length;
-  if (box.hidden) return;
-  box.innerHTML = `<div class="hl-h"><h3>Малын эмнэлэг</h3><span>${CLINICS.length ? CLINICS.length + ' эмнэлэг' : ''}</span></div>
-    <div class="cl-row">${CLINICS.map((c, i) => `<button class="cl" data-cl="${c.id}" style="--i:${i}">
-        <span class="cl-ph">${safeImg(c.photo) ? `<img src="${esc(c.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🏥</span>'}</span>
-        <span class="cl-tx"><b>${esc(c.name)}</b><em>${esc(c.district || c.address || '')}</em><small>${esc(c.hours || '')}</small>
-        <span class="cl-n">${VETS.filter(v => v.clinic_id === c.id).length} эмч</span></span></button>`).join('')}
-      ${loose.length ? `<button class="cl" data-cl="" style="--i:${CLINICS.length}"><span class="cl-ph"><span aria-hidden="true">🩺</span></span><span class="cl-tx"><b>Эмч нар</b><em>Эмнэлэгт харьяалагдаагүй</em><span class="cl-n">${loose.length} эмч</span></span></button>` : ''}
-    </div>`;
+  const q = vt.q, L = $('#vtList');
+  const clinics = CLINICS.filter(c => vtMatch([c.name, c.district, c.address, c.phone, ...(c.services || []), ...VETS.filter(v => v.clinic_id === c.id).map(v => v.name)].join(' '), q));
+  const vets = VETS.filter(v => vtMatch([v.name, v.specialty, v.phone, (clinicOf(v) || {}).name].join(' '), q));
+  // counts on the switch, and its pill slides to the chosen side
+  const seg = $('#vtSeg');
+  seg.querySelector('[data-v="clinics"]').textContent = `Эмнэлэг${CLINICS.length ? ' · ' + clinics.length : ''}`;
+  seg.querySelector('[data-v="vets"]').textContent = `Эмч${VETS.length ? ' · ' + vets.length : ''}`;
+  seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === vt.view));
+  const ind = seg.querySelector('.ind'), at = v => `translateX(${v === 'vets' ? 'calc(100% + 4px)' : '0'})`;
+  slidePill(ind, () => ind.style.transform = at(vt.shown && !reduce ? vt.shown : vt.view), () => ind.style.transform = at(vt.view));
+  vt.shown = vt.view;
+  const call = (phone, who) => phone ? `<a class="vt-call" href="${telHref(phone)}" aria-label="${esc(who)} руу залгах" data-stop>${ICON.phone}</a>` : '';
+  const empty = (icon, title, text) => `<div class="vt-empty"><span aria-hidden="true">${icon}</span><b>${title}</b><p>${text}</p></div>`;
+  if (vt.view === 'clinics') {
+    L.innerHTML = clinics.length ? clinics.map((c, i) => `<div class="vt-card" role="button" tabindex="0" data-cl="${c.id}" style="--i:${i}">
+        <span class="vt-ph">${safeImg(c.photo) ? `<img src="${esc(c.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🏥</span>'}</span>
+        <span class="vt-tx"><b>${esc(c.name)}</b>
+          ${c.district || c.address ? `<em>📍 ${esc([c.district, c.address].filter(Boolean).join(', '))}</em>` : ''}
+          ${c.hours ? `<small>🕘 ${esc(c.hours)}</small>` : ''}
+          <span class="vt-tags">${(c.services || []).slice(0, 3).map(s => `<i>${esc(s)}</i>`).join('')}<i class="n">${VETS.filter(v => v.clinic_id === c.id).length} эмч</i></span></span>
+        ${call(c.phone, c.name)}</div>`).join('')
+      : CLINICS.length ? empty('🔍', 'Илэрц олдсонгүй', 'Өөр үгээр хайж үзээрэй.') : empty('🏥', 'Удахгүй нэмэгдэнэ', 'Малын эмнэлгүүдийн мэдээлэл энд гарч ирнэ.');
+  } else {
+    L.innerHTML = vets.length ? vets.map((v, i) => `<div class="vt-card vet-card" role="button" tabindex="0" data-vet="${v.id}" style="--i:${i}">
+        <span class="vt-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🩺</span>'}</span>
+        <span class="vt-tx"><b>${esc(v.name)}</b>${v.specialty ? `<em class="spec">${esc(v.specialty)}</em>` : ''}<small>${esc((clinicOf(v) || {}).name || 'Бие даасан эмч')}</small></span>
+        ${call(v.phone, v.name)}</div>`).join('')
+      : VETS.length ? empty('🔍', 'Илэрц олдсонгүй', 'Өөр үгээр хайж үзээрэй.') : empty('🩺', 'Удахгүй нэмэгдэнэ', 'Малын эмч нарын мэдээлэл энд гарч ирнэ.');
+  }
 };
-$('#clinics').addEventListener('click', e => { const b = e.target.closest('[data-cl]'); if (b) openClinic(b.dataset.cl); });
+$('#vq').addEventListener('input', e => { vt.q = e.target.value.trim().toLowerCase(); renderClinics(); });
+$('#vtSeg').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b || b.dataset.v === vt.view) return; vt.view = b.dataset.v; renderClinics(); $('#vets').scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' }); });
+const vtOpen = el => { if (el.dataset.cl !== undefined) openClinic(el.dataset.cl); else if (el.dataset.vet) openVet(el.dataset.vet); };
+$('#vtList').addEventListener('click', e => { if (e.target.closest('[data-stop]')) return; const c = e.target.closest('.vt-card'); if (c) vtOpen(c); });
+$('#vtList').addEventListener('keydown', e => { const c = e.target.closest('.vt-card'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); vtOpen(c); } });
+const openVet = id => {
+  const v = VETS.find(x => x.id === id); if (!v) { toast('Энэ эмчийн мэдээлэл шинэчлэгдсэн байна.'); return; }
+  const c = clinicOf(v);
+  openSheet('vet', sheetHead('Малын эмч') + `<div class="pcard"><div class="pc-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="">` : '<span style="font-size:54px">🩺</span>'}</div>
+      <h3>${esc(v.name)}</h3>${v.specialty ? `<div class="pc-own">${esc(v.specialty)}</div>` : ''}<div class="pc-brand">Zoomies</div></div>
+    ${v.bio ? `<p class="pd-desc">${esc(v.bio)}</p>` : ''}
+    <div class="cl-acts">${v.phone ? `<a class="btn btn-plain" href="${telHref(v.phone)}">📞 Залгах</a>` : ''}${c ? `<button class="btn btn-ghost" id="vetClinic">🏥 ${esc(c.name)}</button>` : ''}</div>`);
+  $('#vetClinic') && ($('#vetClinic').onclick = () => openClinic(c.id));
+};
 const vetRow = v => `<div class="vet"><span class="vet-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="">` : '🩺'}</span>
   <span class="vet-tx"><b>${esc(v.name)}</b><em>${esc(v.specialty || '')}</em>${v.bio ? `<small>${esc(v.bio)}</small>` : ''}</span>
   ${v.phone ? `<a class="vet-call" href="${telHref(v.phone)}" aria-label="${esc(v.name)} руу залгах">📞</a>` : ''}</div>`;
@@ -1666,7 +1799,6 @@ $('#recsAll').onclick = () => {
   st.filter = curPet().k; renderChips(); renderGrid(); go('shop');
   setTimeout(() => $('#exploreBtn').click(), 450);
 };
-$('#homeAvatar').onclick = () => openProfile();
 
 /* photo upload: shrink to at most 720px on the long side and store as JPEG so it fits in device storage */
 const shrinkImage = (file, max = 720) => new Promise((res, rej) => {
@@ -2652,7 +2784,6 @@ $('#grid').addEventListener('keydown', e => { const c = e.target.closest('.card'
 $('#exploreBtn').onclick = () => { const h = $('#shop'); h.scrollTo({ top: $('#arrivals').offsetTop + $('.sec2').offsetTop - 70, behavior: reduce ? 'auto' : 'smooth' }); };
 $('#starBtn').onclick = () => toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
 $('#cartPill').onclick = () => openCart();
-$('#avatarBtn').onclick = () => openProfile();
 $('#menuBtn').onclick = () => openCats();
 $('#searchBtn').onclick = () => openSearch();
 $('#shop').addEventListener('scroll', () => $('#shop .topbar').classList.toggle('scrolled', $('#shop').scrollTop > 4), { passive:true });
@@ -2662,7 +2793,10 @@ const cartTotals = () => {
   let count = 0, sub = 0;
   st.cart.forEach((q, id) => { count += q; sub += q * prodBy(id).price; });
   const ship = sub === 0 || sub >= 50000 ? 0 : 5000;
-  const disc = st.orders ? 0 : Math.round(sub * 0.1 / 100) * 100; // 10% off the first order
+  // 10% off the first order. Signed in, the server decides (it counts the account's non-cancelled orders),
+  // so the cart follows the same rule to show exactly the total the server will charge.
+  const first = cloudOn() ? !st.myOrders.some(o => o.status !== 'cancelled') : !st.orders;
+  const disc = first ? Math.round(sub * 0.1 / 100) * 100 : 0;
   return { count, sub, ship, disc, total: sub - disc + ship };
 };
 const renderCartUI = (bump = true) => {
@@ -2699,7 +2833,7 @@ const setNav = k => {
 const openSheet = (mode, html) => {
   st.sheet = mode; body.innerHTML = html; paintIcons(body); body.scrollTop = 0;
   sheet.classList.add('open'); scrim.classList.add('open');
-  if (mode === 'profile') setNav(mode);
+  setNav(mode === 'profile' ? 'profile' : curTab()); // the menu highlight sits on Профайл while it is open
   setTimeout(() => sheet.querySelector('button, [tabindex]')?.focus({ preventScroll:true }), 350);
 };
 const closeSheet = () => { sheet.classList.remove('open'); scrim.classList.remove('open'); st.sheet = null; setNav(curTab()); };
@@ -2731,6 +2865,7 @@ const openProduct = id => {
 
 const openCart = () => {
   const t = cartTotals();
+  if (st.user) { if (!st.co.addr) st.co.addr = st.user.address || ''; if (!st.co.phone) st.co.phone = st.user.phone || ''; }
   if (!t.count) {
     openSheet('cart', sheetHead('Миний сагс') + `<div class="empty"><div class="peek" style="width:180px">${dogSVG(true)}</div><h3>Сагс хоосон байна</h3><p>Таны тэжээвэрт таалагдах зүйл олдоно.</p><button class="btn btn-orange" data-close style="justify-content:center; padding:0 24px">Дэлгүүр хэсэх</button></div>`);
     return;
@@ -2743,7 +2878,24 @@ const openCart = () => {
       <div><span>Хүргэлт</span><span class="${t.ship ? '' : 'free'}">${t.ship ? fmt(t.ship) : 'Үнэгүй'}</span></div>
       ${left > 0 ? `<small>Дахиад ${fmt(left)}-ийн бараа авбал Улаанбаатар хотод үнэгүй хүргэнэ.</small>` : ''}
       <div class="tot"><span>Төлөх дүн</span><span>${fmt(t.total)}</span></div></div>
+    <div class="co">
+      <div class="field" id="f-addr"><label for="co-addr">Хүргэх хаяг</label><textarea id="co-addr" rows="2" maxlength="300" placeholder="Дүүрэг, хороо, байр, орц, тоот">${esc(st.co.addr)}</textarea><div class="err">Хүргэх хаягаа оруулна уу.</div></div>
+      <div class="field" id="f-cophone"><label for="co-phone">Утас</label><input id="co-phone" inputmode="numeric" maxlength="9" value="${esc(st.co.phone)}"><div class="err">8 оронтой дугаар оруулна уу.</div></div>
+      <div class="field"><label>Төлбөрийн хэлбэр</label><div class="pay" id="coPay">${PAY_OPTS.map(([k, n, d]) => `<button type="button" data-pay="${k}" aria-pressed="${st.co.pay === k}"><b>${n}</b><span>${d}</span></button>`).join('')}</div></div>
+      <div class="bank-wrap${st.co.pay === 'transfer' ? ' open' : ''}" id="coBank"><div>${bankBox(st.co.phone)}</div></div>
+    </div>
     <button class="btn btn-orange" id="checkout">Захиалах · ${fmt(t.total)} <span class="arr">${ICON.arrow}</span></button>`);
+  // what is typed survives quantity changes (the sheet is redrawn) and the next order
+  $('#co-addr').oninput = e => { st.co.addr = e.target.value; $('#f-addr').classList.remove('bad'); };
+  // the bank box follows the phone field: its number is the transfer reference
+  const redrawBank = () => { $('#coBank > div').innerHTML = bankBox(st.co.phone); };
+  $('#co-phone').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 8); e.target.value = d.length > 4 ? d.slice(0, 4) + ' ' + d.slice(4) : d; st.co.phone = e.target.value; $('#f-cophone').classList.remove('bad'); redrawBank(); };
+  $('#coPay').onclick = e => {
+    const b = e.target.closest('[data-pay]'); if (!b) return;
+    st.co.pay = b.dataset.pay; $('#coPay').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    const open = st.co.pay === 'transfer'; $('#coBank').classList.toggle('open', open);
+    if (open) setTimeout(() => $('#coBank').scrollIntoView({ block:'nearest', behavior: reduce ? 'auto' : 'smooth' }), 250);
+  };
   body.querySelectorAll('.cart-row [data-d]').forEach(b => b.onclick = () => {
     const row = b.closest('.cart-row'), id = row.dataset.id, q = (st.cart.get(id) || 0) + +b.dataset.d;
     if (q <= 0) { st.cart.delete(id); row.classList.add('out'); setTimeout(() => { renderCartUI(); openCart(); }, 300); return; }
@@ -2753,35 +2905,165 @@ const openCart = () => {
   $('#checkout').onclick = checkout;
 };
 
-const checkout = () => {
-  const t = cartTotals(); const earned = Math.max(1, Math.floor(t.total / 10000));
-  st.points += earned; st.orders += 1; st.cart.clear(); closeSheet(); renderCartUI(false);
-  addNote({ type:'box', t:'Захиалга баталгаажлаа', b:`${fmt(t.total)}-ийн захиалга. 24 цагийн дотор хүргэнэ.`, action:'none' }, false);
+/* ---------- orders on the server ----------
+   The server works out prices, discount and delivery itself (place_order), so the total on the confirmation
+   is the real one. The admin panel hears about the order instantly; status changes come back here live. */
+const PAY_OPTS = [['cod', 'Хүргэлтээр төлөх', 'Бэлэн, карт эсвэл QPay-ээр хүргэлтийн үед'], ['transfer', 'Дансаар шилжүүлэх', 'Захиалгын дараа дансаар шилжүүлнэ']];
+/* where bank transfers go. "copy" is what a banking app wants pasted: no MN, no spaces */
+const BANK = { account:'MN22 0005 00 5419091432', copy:'220005005419091432', holder:'Батмөнх Молор' };
+const bankBox = phone => {
+  const ref = String(phone || '').replace(/\D/g, '');
+  return `<div class="bank"><div class="bk-h">🏦 Дансаар шилжүүлэх</div>
+    <div class="bk-row"><span>Дансны дугаар</span><b>${BANK.account}</b><button type="button" class="bk-copy" data-copy="${BANK.copy}" aria-label="Дансны дугаар хуулах">${ICON.copy}<i>Хуулах</i></button></div>
+    <div class="bk-row"><span>Данс эзэмшигч</span><b>${BANK.holder}</b></div>
+    <div class="bk-row"><span>Гүйлгээний утга</span><b>${ref ? ref : 'таны утасны дугаар'}</b>${ref ? `<button type="button" class="bk-copy" data-copy="${ref}" aria-label="Гүйлгээний утга хуулах">${ICON.copy}<i>Хуулах</i></button>` : ''}</div>
+    <p class="bk-note">Гүйлгээний утга дээр утасны дугаараа бичнэ үү.</p></div>`;
+};
+// copy buttons anywhere in the app: clipboard first, older phones fall back to a hidden text box
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-copy]'); if (!b) return;
+  const v = b.dataset.copy;
+  let ok = await copyText(v);
+  if (!ok) { try { const t = document.createElement('textarea'); t.value = v; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); ok = document.execCommand('copy'); t.remove(); } catch (_) {} }
+  if (!ok) { toast('Хуулж чадсангүй. Дугаарыг гараар бичнэ үү.'); return; }
+  const lab = b.querySelector('i'); b.classList.add('done'); if (lab) lab.textContent = 'Хуулсан';
+  setTimeout(() => { b.classList.remove('done'); if (lab) lab.textContent = 'Хуулах'; }, 1600);
+  toast(`Хуулагдлаа: ${v}`);
+});
+const ORDER_STATUS = { new:['Хүлээн авсан', '#2F8FD0'], paid:['Төлөгдсөн', '#2E7D32'], delivering:['Хүргэлтэд гарсан', '#6B4FB8'], done:['Хүргэгдсэн', '#0F4C17'], cancelled:['Цуцлагдсан', '#C7361B'] };
+st.co = { addr:'', phone:'', pay:'cod' }; st.myOrders = [];
+const loadMyOrders = async () => {
+  if (!cloudOn()) return;
+  const { data, error } = await sb.from('orders').select('id, number, total, status, payment_method, created_at, items').eq('user_id', st.user.id).order('created_at', { ascending:false }).limit(20);
+  if (!error) { st.myOrders = data; save(); }
+};
+let ordChan = null;
+const startOrdersLive = () => {
+  if (!cloudOn() || ordChan) return;
+  ordChan = sb.channel('my-orders').on('postgres_changes', { event:'UPDATE', schema:'public', table:'orders', filter:`user_id=eq.${st.user.id}` }, ({ new:o, old }) => {
+    const was = (st.myOrders.find(x => x.id === o.id) || {}).status;
+    loadMyOrders().then(() => { if (st.sheet === 'profile') openProfile(); });
+    if (o.status && o.status !== was) {
+      const msg = { paid:`#${o.number} захиалгын төлбөр баталгаажлаа.`, delivering:`#${o.number} захиалга хүргэлтэд гарлаа. Удахгүй холбогдоно.`, done:`#${o.number} захиалга хүргэгдлээ. Баярлалаа!`, cancelled:`#${o.number} захиалга цуцлагдлаа.` }[o.status];
+      if (msg) { addNote({ type:o.status === 'delivering' ? 'truck' : 'box', t:ORDER_STATUS[o.status][0], b:msg, action:'none' }); toast(msg); }
+    }
+  }).subscribe();
+};
+const stopOrdersLive = () => { if (ordChan) { sb.removeChannel(ordChan); ordChan = null; } };
+const checkout = async () => {
+  const addr = st.co.addr.trim(), phone = st.co.phone.trim();
+  const bad = id => { const f = $('#' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); f.scrollIntoView({ block:'center', behavior: reduce ? 'auto' : 'smooth' }); };
+  if (addr.length < 3) return bad('f-addr');
+  if (phone.replace(/\D/g, '').length !== 8) return bad('f-cophone');
+  if (!cloudOn()) { toast('Захиалга өгөхийн тулд нэвтэрч, интернэтэд холбогдсон байх хэрэгтэй.'); return; }
+  const b = $('#checkout'); b.disabled = true; b.innerHTML = 'Илгээж байна… <span class="spin" style="margin-left:10px"></span>';
+  const items = [...st.cart].map(([id, qty]) => ({ id, qty }));
+  const res = await Promise.resolve(sb.rpc('place_order', { p_items:items, p_address:addr, p_phone:phone, p_payment:st.co.pay })).catch(err => ({ error:err }));
+  if (res.error) {
+    b.disabled = false; b.innerHTML = `Захиалах <span class="arr">${ICON.arrow}</span>`;
+    const gone = /unavailable/i.test(res.error.message || '');
+    toast(gone ? 'Сагсанд байгаа зарим бараа одоо худалдаанд байхгүй байна. Сагсаа шалгана уу.' : 'Захиалга илгээж чадсангүй. Дахин оролдоно уу.');
+    if (gone) refreshCatalog();
+    return;
+  }
+  const o = res.data, earned = Math.max(1, Math.floor(o.total / 10000));
+  st.points += earned; st.orders += 1; st.cart.clear(); st.user.phone = st.user.phone || phone; st.user.address = addr; // remembered for next time
+  st.myOrders.unshift(o); save(); closeSheet(); renderCartUI(false);
+  addNote({ type:'box', t:`#${o.number} захиалга илгээгдлээ`, b:`${fmt(o.total)}-ийн захиалгыг хүлээн авлаа. Удахгүй холбогдоно.`, action:'none' }, false);
   addNote({ type:'star', t:`+${earned} бонус од`, b:`Одоо танд ${st.points} од байна. 10 од = 10,000₮ хөнгөлөлт.`, action:'stars' }, false);
-  // a little later the order "leaves the warehouse"
-  setTimeout(() => { if (st.user) { addNote({ type:'truck', t:'Захиалга хүргэлтэд гарлаа', b:'Жолооч тантай 30 минутын дотор холбогдоно.', action:'none' }); toast('Таны захиалга хүргэлтэд гарлаа.'); } }, 20000);
-  $('#doneText').textContent = `${st.user.name}, таны ${fmt(t.total)}-ийн захиалгыг 24 цагийн дотор ${st.user.phone} дугаарт залгаж хүргэнэ.`;
+  $('#doneText').textContent = `${st.user.name}, таны #${o.number} дугаартай ${fmt(o.total)}-ийн захиалгыг хүлээн авлаа. ${o.phone} дугаарт залгаж хүргэнэ.`;
   $('#doneAward').textContent = `+${earned} бонус од авлаа`;
+  // bank transfer: the account details were shown in the cart; here only a short reminder
+  if (o.payment_method === 'transfer') $('#doneText').textContent = `${st.user.name}, таны #${o.number} захиалгыг хүлээн авлаа. Төлбөр орсны дараа ${o.phone} дугаарт залгаж хүргэнэ.`;
   const c = $('#confetti'); const cols = ['#F26B12', '#A8E09E', '#FFF4E6', '#E7B53B', '#6EC6E8'];
   c.innerHTML = reduce ? '' : Array.from({ length: 46 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${cols[i % 5]};animation-duration:${2.2 + Math.random() * 2}s;animation-delay:${Math.random() * .8}s;transform:rotate(${Math.random() * 360}deg)"></i>`).join('');
   setTimeout(() => go('done'), 250);
 };
 $('#doneBtn').onclick = () => { go('home', true); };
 
+/* delete my account (App Store / Google Play requirement). The password is asked again so an unlocked phone
+   in someone else's hands cannot do it. Order: check password → delete my photo files (Storage API) →
+   delete the account on the server (cascades to profile, pets, logs, memos, friendships) → wipe this phone. */
+const signOutLocal = () => {
+  if (sb) { stopRealtime(); stopOrdersLive(); sb.auth.signOut({ scope:'local' }).catch(() => {}); }
+  st.user = null; st.pw = null; st.signedIn = false; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4; st.profiles = []; st.cur = null; st.delQ = []; st.delItems = []; st.fr = { reqs:[], cards:{} }; st.myOrders = []; st.co = { addr:'', phone:'', pay:'cod' };
+  $('#suForm').reset(); $('#liForm').reset();
+};
+/* privacy policy inside the app: the text comes from privacy.html (the same page the stores link to),
+   so there is a single copy to keep up to date. Any link marked data-privacy opens it here. */
+const openPrivacy = async () => {
+  openSheet('privacy', sheetHead('Нууцлалын бодлого') + '<div class="pv-doc"><div class="pv-load"><span class="spin"></span></div></div>');
+  let html = '';
+  try {
+    const r = await fetch('privacy.html');
+    if (!r.ok) throw new Error(r.status);
+    const doc = new DOMParser().parseFromString(await r.text(), 'text/html'), art = doc.querySelector('article');
+    art.querySelectorAll('a.back').forEach(a => a.remove());                     // "back to the app": already in the app
+    const date = doc.querySelector('.meta');
+    html = (date ? `<div class="pv-date">${date.textContent}</div>` : '') + art.innerHTML;
+  } catch (_) {
+    html = '<div class="hl-empty">Нууцлалын бодлогыг ачаалж чадсангүй. Интернэт холболтоо шалгаад дахин нээнэ үү.</div>';
+  }
+  if (st.sheet !== 'privacy') return;                                           // closed while loading
+  const box = body.querySelector('.pv-doc'); box.innerHTML = html;
+  // the table of contents scrolls inside the sheet instead of changing the page address
+  box.querySelectorAll('a[href^="#"]').forEach(a => a.onclick = e => { e.preventDefault(); const t = box.querySelector(a.getAttribute('href')); t && t.scrollIntoView({ block:'start', behavior: reduce ? 'auto' : 'smooth' }); });
+  box.querySelectorAll('a[href^="http"]').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+};
+document.addEventListener('click', e => { const a = e.target.closest('a[data-privacy]'); if (a) { e.preventDefault(); openPrivacy(); } });
+const openDeleteAccount = () => {
+  const online = !!(sb && st.user && st.user.id);
+  openSheet('delete', sheetHead('Бүртгэл устгах') + `<div class="del-warn"><span aria-hidden="true">⚠️</span><div>
+      <b>Энэ үйлдлийг буцаах боломжгүй.</b>
+      <p>Дараах бүх мэдээлэл ${online ? 'серверээс болон энэ утаснаас' : 'энэ утаснаас'} бүрмөсөн устна:</p>
+      <ul><li>Таны бүртгэл, нэр, имэйл, утас, профайл зураг</li><li>Тэжээвэр амьтад (${st.profiles.length}) болон тэдний зураг</li><li>Эрүүл мэндийн хөтлөл, тэмдэглэл</li><li>Найзууд, найзын хүсэлтүүд (хоёр талаас)</li><li>Сагс, мэдэгдэл, бонус од</li></ul></div></div>
+    <form class="pe-form" id="delForm" novalidate>
+      ${online ? `<div class="field" id="f-delpw"><label for="in-delpw">Баталгаажуулахын тулд нууц үгээ оруулна уу</label><input id="in-delpw" type="password" autocomplete="current-password"><div class="err">Нууц үг буруу байна.</div></div>`
+        : `<div class="field" id="f-delpw"><label for="in-delpw">Баталгаажуулахын тулд <b>УСТГАХ</b> гэж бичнэ үү</label><input id="in-delpw" autocomplete="off"><div class="err">УСТГАХ гэж бичнэ үү.</div></div>`}
+      <button class="btn btn-danger" type="submit" id="delGo">Бүртгэлээ бүрмөсөн устгах</button>
+      <button class="btn btn-ghost" type="button" data-close>Болих</button>
+    </form>`);
+  $('#in-delpw').addEventListener('input', () => $('#f-delpw').classList.remove('bad'));
+  $('#delForm').onsubmit = async e => {
+    e.preventDefault();
+    const v = $('#in-delpw').value, bad = msg => { const f = $('#f-delpw'); if (msg) f.querySelector('.err').textContent = msg; f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); $('#in-delpw').focus(); };
+    if (!v) return bad(online ? 'Нууц үгээ оруулна уу.' : 'УСТГАХ гэж бичнэ үү.');
+    const b = $('#delGo'); b.disabled = true; b.innerHTML = 'Устгаж байна… <span class="spin"></span>';
+    const fail = msg => { b.disabled = false; b.textContent = 'Бүртгэлээ бүрмөсөн устгах'; bad(msg); };
+    if (online) {
+      const re = await sb.auth.signInWithPassword({ email:st.user.email, password:v }).catch(() => ({ error:{ message:'network' } }));
+      if (re.error) return fail(/network|fetch/i.test(re.error.message) ? 'Интернэт холболтоо шалгана уу.' : 'Нууц үг буруу байна.');
+      const uid = st.user.id;
+      for (const bucket of ['pet-photos', 'avatars']) {                      // my own photo files
+        const ls = await sb.storage.from(bucket).list(uid, { limit:1000 });
+        if (!ls.error && ls.data.length) await sb.storage.from(bucket).remove(ls.data.map(f => `${uid}/${f.name}`));
+      }
+      const del = await Promise.resolve(sb.rpc('delete_my_account')).catch(err => ({ error:err }));
+      if (del.error) return fail('Устгаж чадсангүй. Дахин оролдоно уу.');
+    } else if (v.trim().toUpperCase() !== 'УСТГАХ') return fail();
+    // the server copy is gone: forget everything on this phone too
+    try { localStorage.removeItem(KEY); } catch (_) {}
+    signOutLocal();
+    closeSheet(); setTimeout(() => { go('welcome', true); toast('Таны бүртгэл болон бүх мэдээлэл устгагдлаа.'); }, 250);
+  };
+};
 const openProfile = () => {
   const u = st.user;
   openSheet('profile', sheetHead('Профайл') + `<div class="prof"><button class="av-edit" id="userPhotoBtn" aria-label="${u.photo ? 'Профайл зураг солих' : 'Профайл зураг оруулах'}"><span class="avatar">${avatarHTML()}</span><span class="av-cam">${ICON.camera}</span></button><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span>${u.photo ? '<button class="av-rm" id="userPhotoRm">Зургийг устгах</button>' : ''}</div></div>
     <div><div class="lbl">Миний тэжээвэр</div><div class="mypets">${st.profiles.map(p => `<span>${petPic(p)}${esc(p.name)}</span>`).join('')}</div></div>
     <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
-    <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр амьтан өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>`);
+    ${st.myOrders.length ? `<div><div class="lbl">Миний захиалгууд</div><div class="my-orders">${st.myOrders.slice(0, 6).map(o => { const [label, col] = ORDER_STATUS[o.status] || ORDER_STATUS.new; return `<div class="mo"><div><b>#${o.number}</b><span>${prettyDate(ymd(new Date(o.created_at)))} ·${(o.items || []).reduce((a, x) => a + x.qty, 0)} бараа</span></div><div class="mo-r"><b>${fmt(o.total)}</b><i style="color:${col};background:${col}1A">${label}</i></div></div>`; }).join('')}</div></div>` : ''}
+    <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр амьтан өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>
+    <div class="prof-foot"><a href="privacy.html" data-privacy>Нууцлалын бодлого</a><button type="button" id="delAcc">Бүртгэл устгах</button></div>`);
+  $('#delAcc').onclick = () => openDeleteAccount();
   $('#userPhotoBtn').onclick = () => $('#userPhotoIn').click();
   $('#userPhotoRm') && ($('#userPhotoRm').onclick = () => { delete st.user.photo; st.user.avatarDirty = true; save(); pushAvatar(); openProfile(); renderAvatars(); toast('Профайл зураг устгагдлаа.'); });
   $('#editPets').onclick = () => { closeSheet(); st.editPets = true; setTimeout(openPets, 200); };
   $('#logout').onclick = () => {
     // keep the account on this device so the user can log back in; only end the session
     st.signedIn = false; save();
-    if (sb) { stopRealtime(); sb.auth.signOut().catch(() => {}); }
-    closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4; st.profiles = []; st.cur = null;
+    if (sb) { stopRealtime(); stopOrdersLive(); sb.auth.signOut().catch(() => {}); }
+    closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4; st.profiles = []; st.cur = null; st.myOrders = []; st.co = { addr:'', phone:'', pay:'cod' };
     $('#suForm').reset(); setTimeout(() => go('welcome', true), 200);
   };
 };
@@ -2920,11 +3202,11 @@ const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;
 /* ---------- nav ---------- */
 document.querySelectorAll('.nav button').forEach(b => b.onclick = () => {
   const k = b.dataset.nav;
-  if (k === 'profile') { openProfile(); return; }
+  if (k === 'profile') { if (st.sheet === 'profile') closeSheet(); else openProfile(); return; } // a panel over the current tab
   if (st.sheet) closeSheet();
-  // tapping the tab you are on scrolls it back to the top; otherwise slide to the other tab
+  // tapping the tab you are on scrolls it back to the top; otherwise slide toward the other tab
   if (curTab() === k) $('#' + k).scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' });
-  else go(k, k === 'home');
+  else go(k, TABS.indexOf(k) < TABS.indexOf(curTab()));
 });
 
 /* ---------- swipe-to-confirm for every orange arrow button ---------- */
