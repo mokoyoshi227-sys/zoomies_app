@@ -415,6 +415,34 @@ svg.photo.dog{overflow:hidden}
 .fr b{font-size:12px; font-weight:700; color:var(--ink); max-width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .fr em{font-style:normal; font-size:10.5px; color:var(--muted); max-width:74px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:-3px}
 .fr-hint{font-size:12.5px; color:var(--muted); margin:4px 4px 0; line-height:1.5}
+/* vet clinics */
+.cl-row{display:flex; gap:10px; overflow-x:auto; padding:2px 2px 8px; margin:0 -2px; scrollbar-width:none}
+.cl-row::-webkit-scrollbar{display:none}
+.cl{flex:none; width:210px; background:#fff; border-radius:20px; overflow:hidden; text-align:left; display:flex; flex-direction:column; box-shadow:0 6px 16px rgba(15,76,23,.07); animation:rise .5s var(--ease) both; animation-delay:calc(var(--i) * 50ms); transition:transform .3s var(--spring)}
+.cl:active{transform:scale(.96)}
+.cl-ph{height:104px; background:var(--leaf-soft); display:grid; place-items:center; font-size:40px; overflow:hidden}
+.cl-ph img{width:100%; height:100%; object-fit:cover}
+.cl-tx{display:grid; gap:2px; padding:10px 12px 12px}
+.cl-tx b{font-size:14px; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cl-tx em{font-style:normal; font-size:12px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cl-tx small{font-size:11.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cl-n{justify-self:start; margin-top:4px; font-size:11px; font-weight:800; color:var(--pine); background:var(--mint); border-radius:8px; padding:3px 8px}
+.cl-hero{border-radius:22px; overflow:hidden; height:170px; margin-bottom:12px}
+.cl-hero img{width:100%; height:100%; object-fit:cover}
+.cl-info{display:grid; gap:8px; background:#fff; border-radius:18px; padding:12px 14px}
+.cl-info div{display:flex; gap:10px; align-items:flex-start}
+.cl-info p{margin:0; font-size:14px; line-height:1.45; color:var(--ink)}
+.cl-acts{display:flex; gap:10px; margin:12px 0 4px}
+.cl-acts .btn{flex:1; height:50px; font-size:14px; text-decoration:none}
+.vets{display:grid; gap:8px}
+.vet{display:flex; align-items:center; gap:12px; background:#fff; border-radius:18px; padding:10px 12px}
+.vet-av{width:48px; height:48px; border-radius:50%; background:var(--mint); display:grid; place-items:center; overflow:hidden; flex:none; font-size:22px}
+.vet-av img{width:100%; height:100%; object-fit:cover}
+.vet-tx{flex:1; min-width:0; display:grid; gap:2px}
+.vet-tx b{font-size:14px}
+.vet-tx em{font-style:normal; font-size:12px; color:var(--orange); font-weight:700}
+.vet-tx small{font-size:12px; color:var(--muted); line-height:1.4}
+.vet-call{width:42px; height:42px; border-radius:50%; background:var(--pine); display:grid; place-items:center; text-decoration:none; flex:none; font-size:18px}
 /* home header: bell + avatar */
 .ph-btns{display:flex; align-items:center; gap:8px; flex:none}
 .ph-btns .circle-btn{width:44px; height:44px}
@@ -879,6 +907,7 @@ svg.photo.dog{overflow:hidden}
     <section class="hl" id="friends" aria-label="Найзууд"></section>
     <section class="hl" id="health" aria-label="Эрүүл мэндийн хөтлөл"></section>
     <section class="hl" id="memo" aria-label="Тэмдэглэл"></section>
+    <section class="hl" id="clinics" aria-label="Малын эмнэлэг" hidden></section>
     <div class="recs-h"><h3 id="recsTitle"></h3><button class="textlink" id="recsAll"><b>Бүгдийг үзэх</b></button></div>
     <div class="pet-recs" id="petRecs"></div>
     <input type="file" id="petPhotoIn" accept="image/*" hidden>
@@ -1103,22 +1132,36 @@ let PRODUCTS = [
 ];
 const prodBy = id => PRODUCTS.find(p => p.id === id);
 
-/* products.json: {id, name, description, price, pets[], new, photo, art} → internal shape */
+/* {id, name, description, price, pets[], new, photo, art} → internal shape (products.json and server rows alike) */
+const toProducts = raw => (Array.isArray(raw) ? raw : []).map((x, i) => ({
+  id: String(x.id || 'item' + (i + 1)),
+  n: String(x.name || '').trim(),
+  d: String(x.description || '').trim(),
+  price: Math.max(0, Math.round(Number(String(x.price).replace(/[^\d.]/g, '')) || 0)),
+  pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PETS.some(p => p.k === k)),
+  isNew: x.new === true || x.new === 'true',
+  photo: String(x.photo || '').trim(),
+  art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
+})).filter(p => p.n && p.price > 0);
+// The catalog lives on the server and is edited in the admin panel; the last copy is kept on the phone
+// for offline use. products.json is only the fallback for a phone that has never reached the server.
+const CAT_KEY = 'zoomies.catalog.v1';
 const loadProducts = async () => {
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active').order('sort').order('created_at');
+      if (!error && Array.isArray(data)) {
+        PRODUCTS = toProducts(data.filter(x => x.active).map(x => ({ ...x, new:x.is_new })));
+        try { localStorage.setItem(CAT_KEY, JSON.stringify({ products:PRODUCTS, at:Date.now() })); } catch (_) {}
+        return;
+      }
+    } catch (_) {}
+    try { const c = JSON.parse(localStorage.getItem(CAT_KEY) || 'null'); if (c && Array.isArray(c.products)) { PRODUCTS = c.products; return; } } catch (_) {}
+  }
   try {
     const r = await fetch('products.json', { cache:'no-cache' });
     if (!r.ok) throw new Error(r.status);
-    const raw = await r.json();
-    const list = (Array.isArray(raw) ? raw : []).map((x, i) => ({
-      id: String(x.id || 'item' + (i + 1)),
-      n: String(x.name || '').trim(),
-      d: String(x.description || '').trim(),
-      price: Math.max(0, Math.round(Number(String(x.price).replace(/[^\d.]/g, '')) || 0)),
-      pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PETS.some(p => p.k === k)),
-      isNew: x.new === true || x.new === 'true',
-      photo: String(x.photo || '').trim(),
-      art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
-    })).filter(p => p.n && p.price > 0);
+    const list = toProducts(await r.json());
     if (list.length) PRODUCTS = list;
   } catch (_) { /* offline or no file: keep the built-in list */ }
 };
@@ -1347,7 +1390,10 @@ const loadItems = async () => {
 };
 // keep in step: retry after coming back online, refresh when the app returns to the foreground
 window.addEventListener('online', () => { if (cloudOn()) cloudLoad().then(() => st.profiles.length && renderHome()).catch(() => {}); });
+let lastCat = Date.now();
 document.addEventListener('visibilitychange', () => {
+  // back from the background: catch up on catalog changes missed while the phone slept
+  if (document.visibilityState === 'visible' && Date.now() - lastCat > 60000) { lastCat = Date.now(); refreshCatalog().catch(() => {}); }
   if (document.visibilityState === 'visible' && cloudOn() && Date.now() - lastLoad > 60000 && !st.sheet)
     cloudLoad().then(() => { if (st.profiles.length && curTab()) renderHome(); }).catch(() => {});
 });
@@ -1516,13 +1562,88 @@ const renderPetHome = () => {
     <div class="pet-meta"><div><h2>${esc(p.name)}</h2></div><button class="circle-btn" id="petEdit" aria-label="${esc(p.name)}-ийн мэдээлэл засах">${ICON.edit}</button></div>`;
   const fact = (label, val) => `<button class="fact" data-edit><small>${label}</small><b class="${val ? '' : 'unset'}">${val ? esc(val) : '+ Нэмэх'}</b></button>`;
   $('#petFacts').innerHTML = fact('Нас', ageText(p.birth)) + fact('Хүйс', p.sex) + fact('Үүлдэр', p.breed) + fact('Жин', p.weight ? `${p.weight} кг` : '');
+  renderRecs(); renderFriends(); renderHealth(); renderMemo(); renderClinics();
+};
+/* ---------- vet clinics and vets (managed in the admin panel) ---------- */
+let CLINICS = [], VETS = [];
+const CLIN_KEY = 'zoomies.clinics.v1';
+const loadClinics = async () => {
+  if (sb) {
+    try {
+      const [c, v] = await Promise.all([
+        sb.from('clinics').select('*').eq('active', true).order('sort').order('created_at'),
+        sb.from('vets').select('*').eq('active', true).order('sort').order('created_at')
+      ]);
+      if (!c.error && !v.error) { CLINICS = c.data; VETS = v.data; try { localStorage.setItem(CLIN_KEY, JSON.stringify({ CLINICS, VETS })); } catch (_) {} return; }
+    } catch (_) {}
+  }
+  try { const s = JSON.parse(localStorage.getItem(CLIN_KEY) || 'null'); if (s) { CLINICS = s.CLINICS || []; VETS = s.VETS || []; } } catch (_) {}
+};
+const telHref = p => 'tel:' + String(p || '').replace(/[^\d+]/g, '');
+const mapHref = c => c.lat != null && c.lng != null ? `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([c.name, c.address, c.district, 'Улаанбаатар'].filter(Boolean).join(', '))}`;
+const safeImg = u => /^https:\/\//.test(u || '') ? u : ''; // only server photos
+const renderClinics = () => {
+  const box = $('#clinics'), loose = VETS.filter(v => !v.clinic_id || !CLINICS.some(c => c.id === v.clinic_id));
+  box.hidden = !CLINICS.length && !loose.length;
+  if (box.hidden) return;
+  box.innerHTML = `<div class="hl-h"><h3>Малын эмнэлэг</h3><span>${CLINICS.length ? CLINICS.length + ' эмнэлэг' : ''}</span></div>
+    <div class="cl-row">${CLINICS.map((c, i) => `<button class="cl" data-cl="${c.id}" style="--i:${i}">
+        <span class="cl-ph">${safeImg(c.photo) ? `<img src="${esc(c.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🏥</span>'}</span>
+        <span class="cl-tx"><b>${esc(c.name)}</b><em>${esc(c.district || c.address || '')}</em><small>${esc(c.hours || '')}</small>
+        <span class="cl-n">${VETS.filter(v => v.clinic_id === c.id).length} эмч</span></span></button>`).join('')}
+      ${loose.length ? `<button class="cl" data-cl="" style="--i:${CLINICS.length}"><span class="cl-ph"><span aria-hidden="true">🩺</span></span><span class="cl-tx"><b>Эмч нар</b><em>Эмнэлэгт харьяалагдаагүй</em><span class="cl-n">${loose.length} эмч</span></span></button>` : ''}
+    </div>`;
+};
+$('#clinics').addEventListener('click', e => { const b = e.target.closest('[data-cl]'); if (b) openClinic(b.dataset.cl); });
+const vetRow = v => `<div class="vet"><span class="vet-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="">` : '🩺'}</span>
+  <span class="vet-tx"><b>${esc(v.name)}</b><em>${esc(v.specialty || '')}</em>${v.bio ? `<small>${esc(v.bio)}</small>` : ''}</span>
+  ${v.phone ? `<a class="vet-call" href="${telHref(v.phone)}" aria-label="${esc(v.name)} руу залгах">📞</a>` : ''}</div>`;
+const openClinic = id => {
+  if (!id) { // vets without a clinic
+    const loose = VETS.filter(v => !v.clinic_id || !CLINICS.some(c => c.id === v.clinic_id));
+    openSheet('clinic', sheetHead('Эмч нар') + `<div class="vets">${loose.map(vetRow).join('')}</div>`);
+    return;
+  }
+  const c = CLINICS.find(x => x.id === id); if (!c) { toast('Энэ эмнэлгийн мэдээлэл шинэчлэгдсэн байна.'); return; }
+  const vets = VETS.filter(v => v.clinic_id === c.id);
+  openSheet('clinic', sheetHead(esc(c.name)) +
+    (safeImg(c.photo) ? `<div class="cl-hero"><img src="${esc(c.photo)}" alt="${esc(c.name)}"></div>` : '') +
+    `<div class="cl-info">
+      ${c.address || c.district ? `<div><span>📍</span><p>${esc([c.address, c.district].filter(Boolean).join(', '))}</p></div>` : ''}
+      ${c.hours ? `<div><span>🕘</span><p>${esc(c.hours)}</p></div>` : ''}
+      ${c.phone ? `<div><span>📞</span><p>${esc(c.phone)}</p></div>` : ''}
+    </div>
+    <div class="cl-acts">${c.phone ? `<a class="btn btn-plain" href="${telHref(c.phone)}">📞 Залгах</a>` : ''}<a class="btn btn-ghost" href="${mapHref(c)}" target="_blank" rel="noopener">🗺️ Газрын зураг</a></div>
+    ${(c.services || []).length ? `<div class="lbl">Үйлчилгээ</div><div class="pd-tags">${c.services.map(s => `<span>${esc(s)}</span>`).join('')}</div>` : ''}
+    ${c.description ? `<p class="pd-desc">${esc(c.description)}</p>` : ''}
+    ${vets.length ? `<div class="lbl">Эмч нар</div><div class="vets">${vets.map(vetRow).join('')}</div>` : ''}`);
+};
+
+/* the catalog updates live: anything saved in the admin panel reaches open apps within a second */
+let catChan = null, catT = 0;
+const refreshCatalog = async () => {
+  await Promise.all([loadProducts(), loadClinics()]);
+  let gone = false; st.cart.forEach((q, id) => { if (!prodBy(id)) { st.cart.delete(id); gone = true; } });
+  if (!st.user || !st.profiles.length) return;
+  renderChips(); renderGrid(); renderCartUI(false); renderRecs(); renderClinics();
+  if (gone && st.sheet === 'cart') openCart();
+};
+const startCatalogLive = () => {
+  if (!sb || catChan) return;
+  catChan = sb.channel('catalog');
+  ['products', 'clinics', 'vets'].forEach(t => catChan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(catT); catT = setTimeout(refreshCatalog, 400); }));
+  catChan.subscribe();
+};
+
+// products for the current pet; re-drawn on its own when the catalog changes live
+const renderRecs = () => {
+  const p = curPet(); if (!p) return;
   const recs = PRODUCTS.filter(x => x.pets.includes(p.k));
   $('#recsTitle').textContent = `${p.name}-д зориулсан`;
   $('#petRecs').innerHTML = recs.length ? recs.map((x, i) => `<article class="card" style="--i:${i}" data-id="${x.id}" tabindex="0" aria-label="${esc(x.n)}, ${fmt(x.price)}">
     ${x.isNew ? '<span class="tag">Шинэ</span>' : ''}<button class="add" aria-label="${esc(x.n)} сагсанд нэмэх">${ICON.plus}</button>
     <div class="art">${pic(x)}</div><div class="nm">${esc(x.n)}</div><div class="pr">${fmt(x.price)}</div></article>`).join('')
     : `<p style="color:var(--muted);font-size:13px;margin:4px 4px 0">Одоогоор бараа алга.</p>`;
-  renderFriends(); renderHealth(); renderMemo();
 };
 $('#petTabs').addEventListener('click', e => {
   if (e.target.closest('#addPet')) { openPetEdit(null); return; }
@@ -2598,6 +2719,7 @@ body.addEventListener('click', e => { if (e.target.closest('[data-close]')) clos
 
 const openProduct = id => {
   const p = prodBy(id); let q = 1;
+  if (!p) { toast('Энэ бараа одоо худалдаанд байхгүй байна.'); return; } // removed in the admin panel meanwhile
   openSheet('product', `<div class="pd-art">${pic(p)}</div>
     <div><div class="pd-name">${p.n}</div><div class="pd-tags">${p.pets.map(k => `<span>${petBy(k).n}</span>`).join('')}${p.isNew ? '<span style="color:#F26B12">Шинэ</span>' : ''}</div></div>
     <p class="pd-desc">${p.d}</p>
@@ -2703,9 +2825,9 @@ const seedNotes = () => {
   const fresh = PRODUCTS.find(p => p.isNew && p.pets.some(k => st.pets.has(k))) || PRODUCTS.find(p => p.isNew);
   st.notes = [
     { id:'seed-gift', type:'gift', t:'Эхний захиалгад 10% хөнгөлөлт', b:`${st.user.name}, Zoomies-д тавтай морил! Хөнгөлөлт сагсанд автоматаар тооцогдоно.`, action:'cart', time:now, read:false },
-    { id:'seed-new', type:'new', t:'Бүтээгдэхүүнүүд', b:`${fresh.n} одоо худалдаанд гарлаа.`, action:'product:' + fresh.id, time:now - 60000, read:false },
+    fresh && { id:'seed-new', type:'new', t:'Бүтээгдэхүүнүүд', b:`${fresh.n} одоо худалдаанд гарлаа.`, action:'product:' + fresh.id, time:now - 60000, read:false },
     { id:'seed-star', type:'star', t:`Танд ${st.points} бонус од байна`, b:'10 од цуглуулбал 10,000₮ хөнгөлөлт эдэлнэ.', action:'stars', time:now - 120000, read:false }
-  ];
+  ].filter(Boolean);
   save();
 };
 const noteRow = (n, i) => {
@@ -2856,7 +2978,8 @@ if (wasIn) {
   $('#welcome').classList.remove('active');
 }
 const settle = () => requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
-Promise.all([loadProducts(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).then(([, s]) => {
+Promise.all([loadProducts(), loadClinics(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).then(([, , s]) => {
+  startCatalogLive(); // products, clinics and vets follow the admin panel live, signed in or not
   const session = s && s.data && s.data.session;
   if (sb && session) {
     // signed in: show the phone's copy at once, then refresh from the server in the background

@@ -1,5 +1,5 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v4';
+const CACHE = 'zoomies-v5';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'products.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
@@ -21,12 +21,14 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // also: the pinned Supabase library and pet photos on Supabase (both never change at the same address).
+  // the admin panel is never cached: always the live page, and it must never replace the app's offline copy
+  if (url.origin === location.origin && url.pathname.includes('/admin/')) return;
+  // also: the pinned Supabase library and pet / catalog photos on Supabase (they never change at the same address).
   // Supabase API and login calls (/rest, /auth, private files) are never cached.
   const cacheable = url.origin === location.origin || url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com'
     || (url.host === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/@supabase/supabase-js@'))
     || (url.host === 'cdnjs.cloudflare.com' && url.pathname.startsWith('/ajax/libs/qrcode-generator/'))
-    || (url.host.endsWith('.supabase.co') && url.pathname.startsWith('/storage/v1/object/public/pet-photos/'));
+    || (url.host.endsWith('.supabase.co') && /^\/storage\/v1\/object\/public\/(pet-photos|catalog)\//.test(url.pathname));
   if (!cacheable) return;
   // server pet photos: always fetched and stored in CORS mode, so the same cached copy serves both <img> tags
   // and the share-card canvas (an opaque copy would break the canvas)
@@ -45,7 +47,7 @@ self.addEventListener('fetch', e => {
   }
   // pages: network first so updates show up, cache as fallback offline
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).then(r => { caches.open(CACHE).then(c => c.put('index.html', r.clone())); return r; })
+    e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('index.html', copy)); return r; })
       .catch(() => caches.match('index.html')));
     return;
   }

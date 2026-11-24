@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F4C17">
+<title>Zoomies Админ</title>
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --pine:#0F4C17; --forest:#0A3A0E; --mint:#E7F7E3; --leaf:#A8E09E; --leaf-soft:#CDEFC6;
+  --orange:#F26B12; --ink:#0E2E12; --muted:#4F6E52; --line:#D6EBD2; --danger:#C7361B; --card:#fff;
+  --f-ui:"Montserrat","Segoe UI",system-ui,sans-serif; --f-logo:"Fredoka","Montserrat",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1); --spring:cubic-bezier(.34,1.56,.64,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0; min-height:100%}
+body{background:var(--mint); color:var(--ink); font-family:var(--f-ui); font-size:14px; -webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit; color:inherit}
+button{border:0; background:none; cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--orange); outline-offset:2px}
+[hidden]{display:none!important}
+.wm{font-family:var(--f-logo); font-weight:700; letter-spacing:-.01em}
+
+/* login */
+.login{min-height:100vh; display:grid; place-items:center; padding:24px 16px; background:radial-gradient(120% 90% at 50% 0%, #11521a 0%, var(--forest) 60%)}
+.login-card{width:100%; max-width:380px; background:#fff; border-radius:28px; padding:28px 24px; box-shadow:0 30px 70px rgba(0,0,0,.35); animation:rise .6s var(--ease) both}
+.login-card .wm{font-size:38px; color:var(--pine)}
+.login-card .sub{display:inline-block; margin:4px 0 20px; font-weight:700; color:var(--orange); letter-spacing:.06em; text-transform:uppercase; font-size:12px}
+.lf{display:grid; gap:12px}
+.lerr{color:var(--danger); font-weight:600; font-size:13px; min-height:18px}
+@keyframes rise{from{transform:translateY(18px); opacity:0}}
+
+/* fields */
+.fld{display:grid; gap:6px}
+.fld > label,.fld > .lbl{font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.02em}
+.fld input:not([type=checkbox]):not([type=file]),.fld textarea,.fld select{width:100%; border-radius:14px; border:2px solid transparent; background:var(--mint); padding:12px 14px; font-size:15px; font-weight:500; transition:border-color .2s, background .2s}
+.fld textarea{min-height:96px; resize:vertical; line-height:1.5}
+.fld input:focus,.fld textarea:focus,.fld select:focus{outline:none; border-color:var(--pine); background:#fff}
+.fld .hint{font-size:11.5px; color:var(--muted); line-height:1.4}
+.fld.bad input,.fld.bad textarea{border-color:var(--danger); background:#FFF5F2}
+.fld .err{font-size:12px; color:var(--danger); font-weight:600; display:none}
+.fld.bad .err{display:block}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start}
+.btn{height:46px; border-radius:23px; padding:0 20px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform .25s var(--spring), background .2s, opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.55; pointer-events:none}
+.btn-main{background:var(--orange); color:#fff; box-shadow:0 8px 20px rgba(242,107,18,.3)}
+.btn-dark{background:var(--pine); color:#fff}
+.btn-ghost{background:#fff; color:var(--pine); box-shadow:inset 0 0 0 2px var(--leaf)}
+.btn-danger{background:transparent; color:var(--danger); box-shadow:inset 0 0 0 2px #F3C6BA}
+.btn-danger.sure{background:var(--danger); color:#fff; box-shadow:none}
+.spin{width:18px; height:18px; border-radius:50%; border:3px solid rgba(255,255,255,.4); border-top-color:#fff; animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* shell */
+.top{position:sticky; top:0; z-index:20; background:var(--pine); color:#fff; box-shadow:0 6px 24px rgba(6,40,10,.25)}
+.top-in{max-width:1200px; margin:0 auto; display:flex; align-items:center; gap:16px; padding:12px 16px; flex-wrap:wrap}
+.brand{display:flex; align-items:baseline; gap:8px}
+.brand .wm{font-size:26px}
+.brand span{font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--leaf)}
+.tabs{position:relative; display:flex; gap:4px; background:rgba(255,255,255,.1); border-radius:16px; padding:4px}
+.tabs .ind{position:absolute; top:4px; left:0; height:38px; border-radius:12px; background:#fff; transition:transform .5s var(--spring), width .5s var(--spring)}
+.tabs button{position:relative; z-index:1; height:38px; padding:0 14px; border-radius:12px; font-weight:700; color:#D4EFCF; display:flex; align-items:center; gap:7px; transition:color .3s}
+.tabs button[aria-selected="true"]{color:var(--pine)}
+.tabs .cnt{font-size:11px; background:rgba(255,255,255,.18); border-radius:9px; padding:1px 7px}
+.tabs button[aria-selected="true"] .cnt{background:var(--mint)}
+.top .grow{flex:1}
+.who{font-size:12px; color:#C6E8BF; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.top a.lnk{color:#fff; font-weight:700; font-size:13px; text-decoration:none; padding:8px 12px; border-radius:12px; background:rgba(255,255,255,.1)}
+.top .out{color:#fff; font-weight:700; font-size:13px; padding:8px 12px; border-radius:12px; box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
+.bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px}
+.bar h1{font-size:24px; font-weight:600; margin:0 8px 0 0; letter-spacing:-.02em; color:var(--pine)}
+.search{flex:1; min-width:180px; max-width:360px; display:flex; align-items:center; gap:8px; background:#fff; border-radius:14px; padding:0 12px; height:44px; border:2px solid transparent}
+.search:focus-within{border-color:var(--pine)}
+.search input{flex:1; border:0; outline:0; background:transparent; font-size:14px; min-width:0}
+.seg{display:flex; background:#fff; border-radius:14px; padding:4px; gap:2px}
+.seg button{height:36px; padding:0 12px; border-radius:10px; font-weight:700; font-size:12.5px; color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--pine); color:#fff}
+.bar .btn-main{margin-left:auto}
+.grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:14px}
+.item{background:#fff; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; text-align:left; box-shadow:0 4px 16px rgba(15,76,23,.06); transition:transform .3s var(--spring), box-shadow .3s; animation:rise .45s var(--ease) both; animation-delay:calc(var(--i) * 25ms); position:relative}
+.item:hover{box-shadow:0 14px 30px rgba(15,76,23,.14); transform:translateY(-2px)}
+.item.off{opacity:.55}
+.item .ph{height:150px; background:var(--mint); display:grid; place-items:center; overflow:hidden}
+.item .ph img{width:100%; height:100%; object-fit:contain; padding:10px}
+.item.round .ph img{object-fit:cover; padding:0}
+.item .ph .noimg{font-size:42px; opacity:.5}
+.item .bd{padding:12px 14px 14px; display:grid; gap:4px}
+.item b{font-size:15px; line-height:1.3}
+.item .pr{font-size:18px; font-weight:800; font-variant-numeric:tabular-nums}
+.item .meta{font-size:12px; color:var(--muted); line-height:1.4}
+.tags{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
+.tag{font-size:11px; font-weight:700; background:var(--mint); color:var(--pine); border-radius:8px; padding:3px 8px}
+.tag.new{background:#FFE9DA; color:#C45110}
+.tag.hid{background:#FDE3DC; color:var(--danger)}
+.item .eye{position:absolute; top:10px; right:10px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); display:grid; place-items:center; box-shadow:0 4px 12px rgba(0,0,0,.12); color:var(--pine)}
+.empty{grid-column:1/-1; text-align:center; padding:50px 10px; color:var(--muted)}
+.empty b{display:block; font-size:16px; color:var(--pine); margin-bottom:4px}
+
+/* editor drawer */
+.scrim{position:fixed; inset:0; background:rgba(6,30,9,.45); opacity:0; pointer-events:none; transition:opacity .35s; z-index:40}
+.scrim.open{opacity:1; pointer-events:auto}
+.drawer{position:fixed; top:0; right:0; bottom:0; width:min(480px, 100%); background:var(--mint); z-index:41; transform:translateX(104%); transition:transform .5s cubic-bezier(.32,.72,0,1); display:flex; flex-direction:column; box-shadow:-20px 0 50px rgba(0,0,0,.2)}
+.drawer.open{transform:none}
+.dh{display:flex; align-items:center; justify-content:space-between; padding:18px 20px 10px}
+.dh h2{margin:0; font-size:20px; color:var(--pine)}
+.x{width:40px; height:40px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:18px; color:var(--pine)}
+.db{flex:1; overflow-y:auto; padding:6px 20px 20px; display:grid; gap:14px; align-content:start}
+.df{display:flex; gap:10px; padding:14px 20px 18px; border-top:1px solid var(--line); background:var(--mint)}
+.df .btn-main{flex:1}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chips button{height:36px; border-radius:18px; padding:0 14px; background:#fff; font-weight:700; font-size:13px; color:var(--pine); transition:background .2s, color .2s}
+.chips button[aria-pressed="true"]{background:var(--pine); color:#fff}
+.sw{display:flex; align-items:center; justify-content:space-between; gap:12px; background:#fff; border-radius:14px; padding:12px 14px}
+.sw b{font-size:14px}
+.sw span{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+.tog{position:relative; width:48px; height:28px; border-radius:14px; background:#C9D8C6; flex:none; transition:background .25s}
+.tog::after{content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.2); transition:transform .35s var(--spring)}
+.tog[aria-checked="true"]{background:var(--pine)}
+.tog[aria-checked="true"]::after{transform:translateX(20px)}
+.photo{display:flex; gap:12px; align-items:center}
+.photo .pv{width:110px; height:110px; border-radius:18px; background:#fff; display:grid; place-items:center; overflow:hidden; flex:none; box-shadow:inset 0 0 0 2px var(--line)}
+.photo .pv img{width:100%; height:100%; object-fit:cover}
+.photo .pa{display:grid; gap:8px}
+.photo .pa .btn{height:38px; font-size:13px}
+.toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); background:var(--ink); color:#fff; padding:12px 18px; border-radius:16px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .3s, transform .4s var(--spring); z-index:60; max-width:90vw}
+.toast.show{opacity:1; transform:translate(-50%, 0)}
+.toast.bad{background:var(--danger)}
+.live{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--muted); font-weight:600}
+.live i{width:8px; height:8px; border-radius:50%; background:#2E9E44; box-shadow:0 0 0 0 rgba(46,158,68,.6); animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(46,158,68,0)}100%{box-shadow:0 0 0 0 rgba(46,158,68,0)}}
+@media (max-width:640px){
+  .top-in{gap:10px}
+  .tabs{order:3; width:100%}
+  .tabs button{flex:1; justify-content:center; padding:0 6px}
+  .who{display:none}
+  .bar .btn-main{margin-left:0}
+  .row2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms!important; transition-duration:.01ms!important} }
+</style>
+</head>
+<body>
+
+<section class="login" id="login">
+  <div class="login-card">
+    <div class="wm">Zoomies</div>
+    <span class="sub">Админ хэсэг</span>
+    <form class="lf" id="lf" novalidate>
+      <div class="fld"><label for="le">Имэйл</label><input id="le" type="email" autocomplete="username" required></div>
+      <div class="fld"><label for="lp">Нууц үг</label><input id="lp" type="password" autocomplete="current-password" required></div>
+      <div class="lerr" id="lerr" role="alert"></div>
+      <button class="btn btn-main" id="lb" type="submit">Нэвтрэх</button>
+    </form>
+  </div>
+</section>
+
+<div id="shell" hidden>
+  <header class="top"><div class="top-in">
+    <div class="brand"><span class="wm">Zoomies</span><span>Админ</span></div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Хэсгүүд"><span class="ind" aria-hidden="true"></span></nav>
+    <div class="grow"></div>
+    <span class="who" id="who"></span>
+    <a class="lnk" href="../" target="_blank" rel="noopener">Апп нээх ↗</a>
+    <button class="out" id="out">Гарах</button>
+  </div></header>
+  <main>
+    <div class="bar">
+      <h1 id="title"></h1>
+      <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="Хайх…" aria-label="Хайх"></label>
+      <div class="seg" id="show" role="group" aria-label="Шүүлтүүр">
+        <button data-s="all" aria-pressed="true">Бүгд</button><button data-s="on" aria-pressed="false">Харагдаж буй</button><button data-s="off" aria-pressed="false">Нуусан</button>
+      </div>
+      <span class="live" title="Энд хадгалсан өөрчлөлт апп дээр шууд харагдана"><i></i>Апп-тай шууд холбоотой</span>
+      <button class="btn btn-main" id="add">+ Нэмэх</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dt">
+  <div class="dh"><h2 id="dt"></h2><button class="x" id="dx" aria-label="Хаах">✕</button></div>
+  <form class="db" id="form" novalidate></form>
+  <div class="df"><button class="btn btn-danger" id="del" type="button">Устгах</button><button class="btn btn-main" id="save" type="button">Хадгалах</button></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="file" accept="image/*" hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const SB_URL = 'https://wwmwubwphslhjlstdgcn.supabase.co';
+const SB_KEY = 'sb_publishable_JMYBtktz0O-tLJpoYH-mQQ_dgDtACaL'; // publishable: the database rules decide who may write (only the admin)
+// its own session, separate from the app's login on the same site
+const sb = supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:false, storageKey:'zoomies.admin.auth' } });
+const APP = new URL('../', location.href).href;
+const CAT_URL = path => `${SB_URL}/storage/v1/object/public/catalog/${path}`;
+const imgSrc = p => !p ? '' : /^(https?:|blob:|data:)/.test(p) ? p : APP + p.replace(/^\/+/, ''); // app-relative paths like photos/x.png
+const fmt = n => Number(n || 0).toLocaleString('en-US') + '₮';
+const PETS = [['dog', 'Нохой'], ['cat', 'Муур'], ['bird', 'Шувуу'], ['fish', 'Загас'], ['rabbit', 'Туулай'], ['hamster', 'Шишүүхэй']];
+const petName = k => (PETS.find(p => p[0] === k) || [, k])[1];
+
+let tt; const toast = (msg, bad = false) => { const t = $('#toast'); t.textContent = msg; t.classList.toggle('bad', bad); t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 3200); };
+
+/* ---------- what each section edits ---------- */
+const S = {
+  products:{
+    title:'Бараа', one:'Бараа', icon:'🛍️', order:'sort',
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:60 },
+      { k:'price', label:'Үнэ (₮)', type:'price', req:true },
+      { k:'pets', label:'Аль амьтанд', type:'pets', req:true },
+      { k:'description', label:'Тайлбар', type:'textarea', max:500 },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'is_new', label:'"Шинэ" тэмдэг', type:'toggle', hint:'Картан дээр "Шинэ" гэж гарна' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', hint:'Унтраавал устгалгүйгээр нууна', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number', hint:'Бага тоо түрүүлж гарна' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="pr">${fmt(r.price)}</div>
+      <div class="tags">${(r.pets || []).map(k => `<span class="tag">${petName(k)}</span>`).join('')}${r.is_new ? '<span class="tag new">Шинэ</span>' : ''}${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => `${r.name} ${r.description} ${(r.pets || []).map(petName).join(' ')}`
+  },
+  clinics:{
+    title:'Малын эмнэлэг', one:'Эмнэлэг', icon:'🏥', order:'sort',
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:80 },
+      { k:'phone', label:'Утас', type:'text', max:40, ph:'7711 2233' },
+      { k:'district', label:'Дүүрэг', type:'text', max:60, ph:'Сүхбаатар дүүрэг' },
+      { k:'address', label:'Хаяг', type:'text', max:200, ph:'1-р хороо, Энхтайваны өргөн чөлөө 15' },
+      { k:'hours', label:'Ажлын цаг', type:'text', max:100, ph:'Даваа–Баасан 09:00–20:00' },
+      { k:'services', label:'Үйлчилгээ', type:'tags', hint:'Таслалаар тусгаарлана: Вакцин, Мэс засал, Шүд' },
+      { k:'description', label:'Тайлбар', type:'textarea', max:800 },
+      { k:'latlng', label:'Байршил (өргөрөг, уртраг)', type:'latlng', hint:'Google Maps дээр байршил дээр баруун товч дараад гарч ирэх тоог хуулна. Жишээ: 47.9184, 106.9177' },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="meta">${esc([r.district, r.address].filter(Boolean).join(', '))}</div>
+      <div class="meta">${esc([r.phone, r.hours].filter(Boolean).join(' · '))}</div>
+      <div class="tags">${(r.services || []).slice(0, 4).map(s => `<span class="tag">${esc(s)}</span>`).join('')}<span class="tag">${vetsOf(r.id)} эмч</span>${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => `${r.name} ${r.district} ${r.address} ${r.phone} ${(r.services || []).join(' ')}`
+  },
+  vets:{
+    title:'Эмч', one:'Эмч', icon:'🩺', order:'sort', round:true,
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:80 },
+      { k:'specialty', label:'Мэргэжил', type:'text', max:80, ph:'Мэс заслын эмч' },
+      { k:'clinic_id', label:'Эмнэлэг', type:'clinic' },
+      { k:'phone', label:'Утас', type:'text', max:40 },
+      { k:'bio', label:'Танилцуулга', type:'textarea', max:800 },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="meta">${esc(r.specialty || '')}</div><div class="meta">${esc(clinicName(r.clinic_id))}</div>
+      <div class="tags">${r.phone ? `<span class="tag">${esc(r.phone)}</span>` : ''}${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => `${r.name} ${r.specialty} ${r.phone} ${clinicName(r.clinic_id)}`
+  }
+};
+const st = { tab:'products', rows:{ products:[], clinics:[], vets:[] }, q:'', show:'all', edit:null, draft:{}, newPhoto:null };
+const vetsOf = cid => st.rows.vets.filter(v => v.clinic_id === cid).length;
+const clinicName = id => (st.rows.clinics.find(c => c.id === id) || {}).name || 'Эмнэлэггүй';
+
+/* ---------- sign in: only an account on the admin list gets past this screen ---------- */
+const showLogin = msg => { $('#shell').hidden = true; $('#login').hidden = false; $('#lerr').textContent = msg || ''; };
+const enter = async session => {
+  const { data:ok, error } = await sb.rpc('is_admin');
+  if (error) { showLogin('Сервертэй холбогдож чадсангүй: ' + error.message); return; }
+  if (!ok) { await sb.auth.signOut(); showLogin('Энэ бүртгэлд админ эрх алга.'); return; }
+  $('#who').textContent = session.user.email;
+  $('#login').hidden = true; $('#shell').hidden = false;
+  await loadAll(); renderTabs(); render(); live();
+};
+$('#lf').onsubmit = async e => {
+  e.preventDefault();
+  const email = $('#le').value.trim(), password = $('#lp').value;
+  if (!email || !password) { $('#lerr').textContent = 'Имэйл, нууц үгээ оруулна уу.'; return; }
+  const b = $('#lb'); b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  b.disabled = false; b.textContent = 'Нэвтрэх';
+  if (error) { $('#lerr').textContent = /invalid|credentials/i.test(error.message) ? 'Имэйл эсвэл нууц үг буруу байна.' : error.message; return; }
+  $('#lp').value = '';
+  enter(data.session);
+};
+$('#out').onclick = async () => { await sb.auth.signOut(); if (chan) { sb.removeChannel(chan); chan = null; } showLogin(); };
+
+/* ---------- data ---------- */
+const loadAll = async () => {
+  const res = await Promise.all(Object.keys(S).map(t => sb.from(t).select('*').order('sort').order('created_at')));
+  Object.keys(S).forEach((t, i) => { if (res[i].error) toast(res[i].error.message, true); else st.rows[t] = res[i].data; });
+};
+// keep the lists in step if something changes elsewhere (another tab, another admin device)
+let chan = null, lt = 0;
+const live = () => {
+  if (chan) return;
+  chan = sb.channel('admin-catalog');
+  Object.keys(S).forEach(t => chan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(lt); lt = setTimeout(async () => { await loadAll(); renderTabs(); render(); }, 300); }));
+  chan.subscribe();
+};
+
+/* ---------- list ---------- */
+const renderTabs = () => {
+  const tabs = $('#tabs');
+  tabs.querySelectorAll('button').forEach(b => b.remove());
+  tabs.insertAdjacentHTML('beforeend', Object.entries(S).map(([t, s]) => `<button role="tab" data-t="${t}" aria-selected="${t === st.tab}">${s.icon} ${s.title}<span class="cnt">${st.rows[t].length}</span></button>`).join(''));
+  const b = tabs.querySelector(`[data-t="${st.tab}"]`), ind = tabs.querySelector('.ind');
+  ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`;
+};
+$('#tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (!b || b.dataset.t === st.tab) return; st.tab = b.dataset.t; st.q = ''; $('#q').value = ''; renderTabs(); render(); };
+$('#q').oninput = e => { st.q = e.target.value.trim().toLowerCase(); render(); };
+$('#show').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; st.show = b.dataset.s; $('#show').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); };
+const render = () => {
+  const s = S[st.tab];
+  $('#title').textContent = s.title;
+  $('#add').textContent = `+ ${s.one} нэмэх`;
+  const rows = st.rows[st.tab].filter(r => (st.show === 'all' || (st.show === 'on') === !!r.active) && (!st.q || s.text(r).toLowerCase().includes(st.q)));
+  $('#grid').innerHTML = rows.length ? rows.map((r, i) => `<button class="item${r.active ? '' : ' off'}${s.round ? ' round' : ''}" data-id="${r.id}" style="--i:${i}">
+      <span class="ph">${r.photo ? `<img src="${esc(imgSrc(r.photo))}" alt="" loading="lazy">` : `<span class="noimg">${s.icon}</span>`}</span>
+      <span class="bd">${s.card(r)}</span>
+      <span class="eye" data-eye title="${r.active ? 'Нуух' : 'Харуулах'}" role="button" aria-label="${r.active ? 'Апп дээр нуух' : 'Апп дээр харуулах'}">${r.active ? '👁' : '🚫'}</span></button>`).join('')
+    : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : `${s.title} алга`}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : `"+ ${s.one} нэмэх" дээр дарж эхлээрэй.`}</div>`;
+};
+$('#grid').onclick = async e => {
+  const item = e.target.closest('.item'); if (!item) return;
+  const r = st.rows[st.tab].find(x => String(x.id) === item.dataset.id); if (!r) return;
+  if (e.target.closest('[data-eye]')) { // quick show/hide without opening the editor
+    const { error } = await sb.from(st.tab).update({ active:!r.active }).eq('id', r.id);
+    if (error) return toast(error.message, true);
+    r.active = !r.active; render(); toast(r.active ? 'Апп дээр харагдаж байна.' : 'Апп дээр нуулаа.');
+    return;
+  }
+  openEditor(r);
+};
+$('#add').onclick = () => openEditor(null);
+
+/* ---------- editor ---------- */
+const field = f => {
+  const v = st.draft[f.k];
+  const wrap = (inner, extra = '') => `<div class="fld" data-k="${f.k}">${f.type === 'toggle' ? '' : `<label${['pets', 'tags', 'photo', 'latlng'].includes(f.type) ? '' : ` for="f_${f.k}"`}>${f.label}${f.req ? ' *' : ''}</label>`}${inner}${f.hint && f.type !== 'toggle' ? `<span class="hint">${f.hint}</span>` : ''}<span class="err">${extra || 'Энэ талбарыг бөглөнө үү.'}</span></div>`;
+  switch (f.type) {
+    case 'textarea': return wrap(`<textarea id="f_${f.k}" maxlength="${f.max || 800}">${esc(v)}</textarea>`);
+    case 'price': return wrap(`<input id="f_${f.k}" inputmode="numeric" value="${v != null && v !== '' ? Number(v).toLocaleString('en-US') : ''}" placeholder="24,900">`, 'Үнийг тоогоор оруулна уу.');
+    case 'number': return wrap(`<input id="f_${f.k}" type="number" step="1" value="${esc(v ?? 0)}">`);
+    case 'pets': return wrap(`<div class="chips" id="f_pets">${PETS.map(([k, n]) => `<button type="button" data-v="${k}" aria-pressed="${(v || []).includes(k)}">${n}</button>`).join('')}</div>`, 'Дор хаяж нэг амьтан сонгоно уу.');
+    case 'tags': return wrap(`<input id="f_${f.k}" value="${esc((v || []).join(', '))}" placeholder="Вакцин, Мэс засал, Шүд">`);
+    case 'latlng': return wrap(`<input id="f_${f.k}" value="${st.draft.lat != null ? esc(st.draft.lat + ', ' + st.draft.lng) : ''}" placeholder="47.9184, 106.9177">`, 'Жишээ: 47.9184, 106.9177');
+    case 'clinic': return wrap(`<select id="f_${f.k}"><option value="">— Эмнэлэггүй —</option>${st.rows.clinics.map(c => `<option value="${c.id}"${c.id === v ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`);
+    case 'toggle': return `<div class="sw" data-k="${f.k}"><div><b>${f.label}</b>${f.hint ? `<span>${f.hint}</span>` : ''}</div><button type="button" class="tog" role="switch" id="f_${f.k}" aria-checked="${!!v}" aria-label="${f.label}"></button></div>`;
+    case 'photo': return wrap(`<div class="photo"><span class="pv" id="pv">${v ? `<img src="${esc(imgSrc(v))}" alt="">` : `<span class="noimg" style="font-size:34px;opacity:.5">${S[st.tab].icon}</span>`}</span>
+        <span class="pa"><button type="button" class="btn btn-dark" id="pick">${v ? 'Зураг солих' : 'Зураг оруулах'}</button>${v ? '<button type="button" class="btn btn-ghost" id="unpick">Зураг устгах</button>' : ''}<span class="hint">JPG, PNG. Автоматаар жижигрүүлнэ.</span></span></div>`);
+    default: return wrap(`<input id="f_${f.k}" maxlength="${f.max || 200}" value="${esc(v)}" placeholder="${esc(f.ph || '')}">`);
+  }
+};
+const openEditor = r => {
+  const s = S[st.tab];
+  st.edit = r; st.newPhoto = null; st.removePhoto = false;
+  st.draft = r ? { ...r } : Object.fromEntries(s.fields.map(f => [f.k, f.type === 'toggle' ? !!f.def : f.type === 'pets' || f.type === 'tags' ? [] : f.type === 'number' ? (Math.max(0, ...st.rows[st.tab].map(x => x.sort || 0)) + 1) : '']));
+  $('#dt').textContent = r ? `${s.one} засах` : `${s.one} нэмэх`;
+  drawForm();
+  $('#del').hidden = !r; $('#del').classList.remove('sure'); $('#del').textContent = 'Устгах';
+  $('#drawer').classList.add('open'); $('#scrim').classList.add('open');
+  setTimeout(() => $('#f_name')?.focus(), 350);
+};
+const drawForm = () => {
+  $('#form').innerHTML = S[st.tab].fields.map(field).join('');
+  $('#f_pets') && ($('#f_pets').onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; const k = b.dataset.v, cur = st.draft.pets || []; st.draft.pets = cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k]; b.setAttribute('aria-pressed', st.draft.pets.includes(k)); b.closest('.fld').classList.remove('bad'); });
+  $('#form').querySelectorAll('.tog').forEach(t => t.onclick = () => { const k = t.closest('[data-k]').dataset.k; st.draft[k] = !st.draft[k]; t.setAttribute('aria-checked', st.draft[k]); });
+  $('#f_price') && ($('#f_price').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 9); e.target.value = d ? Number(d).toLocaleString('en-US') : ''; });
+  $('#pick') && ($('#pick').onclick = () => $('#file').click());
+  $('#unpick') && ($('#unpick').onclick = () => { st.removePhoto = true; st.newPhoto = null; st.draft.photo = ''; drawForm(); });
+  $('#form').oninput = e => e.target.closest('.fld')?.classList.remove('bad');
+};
+const closeEditor = () => { $('#drawer').classList.remove('open'); $('#scrim').classList.remove('open'); st.edit = null; };
+$('#dx').onclick = closeEditor; $('#scrim').onclick = closeEditor;
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#drawer').classList.contains('open')) closeEditor(); });
+
+// photos: shrink to 900px JPEG in the browser before uploading
+const shrink = file => new Promise((res, rej) => {
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => { const s = Math.min(1, 900 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error('image')), 'image/jpeg', .86); };
+  img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('image')); };
+  img.src = url;
+});
+$('#file').onchange = async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+  if (!/^image\//.test(f.type)) return toast('Зөвхөн зураг оруулна уу.', true);
+  try { st.newPhoto = await shrink(f); st.removePhoto = false; st.draft.photo = URL.createObjectURL(st.newPhoto); drawForm(); }
+  catch (_) { toast('Энэ зургийг уншиж чадсангүй.', true); }
+};
+
+// read the form back, check it, save it
+const readForm = () => {
+  const s = S[st.tab], d = { ...st.draft }; let bad = null;
+  s.fields.forEach(f => {
+    const el = $('#f_' + f.k);
+    if (['text', 'textarea'].includes(f.type)) d[f.k] = el.value.trim();
+    if (f.type === 'price') d.price = el.value.replace(/\D/g, '') === '' ? null : Number(el.value.replace(/\D/g, ''));
+    if (f.type === 'number') d[f.k] = parseInt(el.value, 10) || 0;
+    if (f.type === 'tags') d[f.k] = el.value.split(/[,،\n]/).map(x => x.trim()).filter(Boolean).slice(0, 20);
+    if (f.type === 'clinic') d[f.k] = el.value || null;
+    if (f.type === 'latlng') {
+      const t = el.value.trim();
+      if (!t) { d.lat = null; d.lng = null; }
+      else { const m = t.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/); if (m && Math.abs(+m[1]) <= 90 && Math.abs(+m[2]) <= 180) { d.lat = +m[1]; d.lng = +m[2]; } else bad = bad || f.k; }
+    }
+    const empty = f.type === 'pets' ? !(d.pets || []).length : f.type === 'price' ? d.price == null : f.req && !String(d[f.k] ?? '').trim();
+    if (f.req && empty) bad = bad || f.k;
+  });
+  return { d, bad };
+};
+$('#save').onclick = async () => {
+  const { d, bad } = readForm();
+  if (bad) { const fl = $(`.fld[data-k="${bad}"]`); fl.classList.add('bad'); fl.scrollIntoView({ block:'center', behavior:'smooth' }); return; }
+  const b = $('#save'); b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+  const t = st.tab, old = st.edit;
+  try {
+    // only the columns this section owns
+    const row = {}; S[t].fields.forEach(f => { if (f.type === 'latlng') { row.lat = d.lat; row.lng = d.lng; } else if (f.type !== 'photo') row[f.k] = d[f.k]; });
+    if (t === 'products') row.description = row.description || '';
+    if (st.newPhoto) {
+      const path = `${t}/${crypto.randomUUID()}.jpg`;
+      const up = await sb.storage.from('catalog').upload(path, st.newPhoto, { contentType:'image/jpeg' });
+      if (up.error) throw up.error;
+      row.photo = CAT_URL(path);
+    } else if (st.removePhoto) row.photo = null;
+    const q = old ? sb.from(t).update(row).eq('id', old.id).select().single() : sb.from(t).insert(row).select().single();
+    const { data, error } = await q;
+    if (error) throw error;
+    // an old uploaded photo that was replaced or removed is deleted from storage
+    if (old && old.photo && old.photo !== data.photo && old.photo.includes('/object/public/catalog/')) sb.storage.from('catalog').remove([old.photo.split('/object/public/catalog/')[1]]);
+    if (old) Object.assign(old, data); else st.rows[t].push(data);
+    st.rows[t].sort((a, b2) => (a.sort - b2.sort) || String(a.created_at).localeCompare(String(b2.created_at)));
+    closeEditor(); renderTabs(); render();
+    toast(old ? 'Хадгаллаа. Апп дээр шууд шинэчлэгдлээ.' : 'Нэмлээ. Апп дээр шууд гарлаа.');
+  } catch (err) {
+    toast('Хадгалж чадсангүй: ' + (err.message || err), true);
+  } finally { b.disabled = false; b.textContent = 'Хадгалах'; }
+};
+$('#del').onclick = async () => {
+  const b = $('#del'), r = st.edit; if (!r) return;
+  if (!b.classList.contains('sure')) { b.classList.add('sure'); b.textContent = 'Дахин дарж устгана'; setTimeout(() => { b.classList.remove('sure'); b.textContent = 'Устгах'; }, 3000); return; }
+  const { error } = await sb.from(st.tab).delete().eq('id', r.id);
+  if (error) return toast('Устгаж чадсангүй: ' + error.message, true);
+  if (r.photo && r.photo.includes('/object/public/catalog/')) sb.storage.from('catalog').remove([r.photo.split('/object/public/catalog/')[1]]);
+  st.rows[st.tab] = st.rows[st.tab].filter(x => x.id !== r.id);
+  closeEditor(); renderTabs(); render(); toast('Устгалаа. Апп дээрээс хасагдлаа.');
+};
+
+/* ---------- start ---------- */
+sb.auth.getSession().then(({ data }) => data.session ? enter(data.session) : showLogin());
+window.addEventListener('resize', () => { if (!$('#shell').hidden) renderTabs(); });
+})();
+</script>
+</body>
+</html>
