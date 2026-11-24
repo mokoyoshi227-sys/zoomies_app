@@ -363,6 +363,12 @@ svg.photo.dog{overflow:hidden}
 .cart-row.out{opacity:0; transform:translateX(40px)}
 .cart-row .th{width:62px; height:62px; border-radius:16px; background:var(--mint); display:grid; place-items:center; flex:none}
 .cart-row .th svg{width:54px; height:auto}
+/* product photos from products.json */
+.photo-img{display:block; object-fit:contain}
+.card .art .photo-img{height:88px; width:100%; transition:transform .5s var(--spring)}
+.card:hover .art .photo-img{transform:translateY(-4px) scale(1.03)}
+.pd-art .photo-img{position:relative; height:180px; width:86%; animation:float 3.6s ease-in-out infinite}
+.cart-row .th .photo-img{width:54px; height:54px}
 .cart-row .info{flex:1; min-width:0}
 .cart-row .info b{display:block; font-size:13.5px; font-weight:600; line-height:1.3}
 .cart-row .info span{font-size:15px; font-weight:800; font-variant-numeric:tabular-nums}
@@ -749,7 +755,8 @@ const ART = {
 };
 const art = a => `<svg viewBox="0 0 120 100" aria-hidden="true">${ART[a[0]](...a.slice(1))}</svg>`;
 
-const PRODUCTS = [
+// Built-in fallback list. The real list is products.json (edited on GitHub) and replaces this at start-up.
+let PRODUCTS = [
   {id:'p1', n:'Нарлаг муурын аяга', pets:['cat'], price:24900, art:['bowl','#F26B12','#FF9A55',true], d:'Керамик аяга, гулсдаггүй ёроолтой. Багтаамж 350 мл. Аяга угаагчинд угааж болно.', isNew:true},
   {id:'p2', n:'Гаа ногоон аяга', pets:['cat','dog'], price:29900, art:['bowl','#CFE6D2','#E4F3E6',false], d:'Хоёр давхар ханатай, дулаан тогтоодог. Жижиг нохой, мууранд тохиромжтой. 500 мл.', isNew:true},
   {id:'p3', n:'Судалтай хулгана', pets:['cat'], price:9900, art:['mouse'], d:'Зөөлөн нэхмэл тоглоом, дотроо муурын өвстэй. Муурыг идэвхтэй байлгана.'},
@@ -764,6 +771,30 @@ const PRODUCTS = [
   {id:'p12', n:'Лууван зажлуур', pets:['rabbit'], price:7900, art:['carrot'], d:'Байгалийн модоор хийсэн зажлах тоглоом. Шүдийг хэт ургахаас сэргийлнэ.'}
 ];
 const prodBy = id => PRODUCTS.find(p => p.id === id);
+
+/* products.json: {id, name, description, price, pets[], new, photo, art} → internal shape */
+const loadProducts = async () => {
+  try {
+    const r = await fetch('products.json', { cache:'no-cache' });
+    if (!r.ok) throw new Error(r.status);
+    const raw = await r.json();
+    const list = (Array.isArray(raw) ? raw : []).map((x, i) => ({
+      id: String(x.id || 'item' + (i + 1)),
+      n: String(x.name || '').trim(),
+      d: String(x.description || '').trim(),
+      price: Math.max(0, Math.round(Number(String(x.price).replace(/[^\d.]/g, '')) || 0)),
+      pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PETS.some(p => p.k === k)),
+      isNew: x.new === true || x.new === 'true',
+      photo: String(x.photo || '').trim(),
+      art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
+    })).filter(p => p.n && p.price > 0);
+    if (list.length) PRODUCTS = list;
+  } catch (_) { /* offline or no file: keep the built-in list */ }
+};
+// product picture: the photo when one is set, otherwise the drawn illustration
+const pic = p => p.photo
+  ? `<img class="photo-img" src="${esc(p.photo)}" alt="${esc(p.n)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='icons/icon-192.png'">`
+  : art(p.art || ['bag', '#0F4C17', '#F26B12']);
 
 /* ---------- state ---------- */
 const st = { user:null, pets:new Set(), cart:new Map(), points:4, filter:'all', editPets:false, sheet:null };
@@ -902,7 +933,7 @@ const renderGrid = () => {
   $('#grid').innerHTML = list.map((p, i) => `<article class="card" style="--i:${i}" data-id="${p.id}" tabindex="0" aria-label="${p.n}, ${fmt(p.price)}">
     ${p.isNew ? '<span class="tag">Шинэ</span>' : ''}
     <button class="add" aria-label="${p.n} сагсанд нэмэх">${ICON.plus}</button>
-    <div class="art">${art(p.art)}</div><div class="nm">${p.n}</div><div class="pr">${fmt(p.price)}</div></article>`).join('');
+    <div class="art">${pic(p)}</div><div class="nm">${p.n}</div><div class="pr">${fmt(p.price)}</div></article>`).join('');
   // odd count: let the last card span both columns so nothing sits alone
   const last = $('#grid').lastElementChild; if (list.length % 2 && last) last.style.gridColumn = '1 / -1';
 };
@@ -917,7 +948,7 @@ $('#chips').addEventListener('click', e => {
 });
 $('#grid').addEventListener('click', e => {
   const card = e.target.closest('.card'); if (!card) return;
-  if (e.target.closest('.add')) { addToCart(card.dataset.id, 1, card.querySelector('.art svg')); return; }
+  if (e.target.closest('.add')) { addToCart(card.dataset.id, 1, card.querySelector('.art > *')); return; }
   openProduct(card.dataset.id);
 });
 $('#grid').addEventListener('keydown', e => { const c = e.target.closest('.card'); if (c && e.target === c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(c.dataset.id); } });
@@ -992,13 +1023,13 @@ body.addEventListener('click', e => { if (e.target.closest('[data-close]')) clos
 
 const openProduct = id => {
   const p = prodBy(id); let q = 1;
-  openSheet('product', `<div class="pd-art">${art(p.art)}</div>
+  openSheet('product', `<div class="pd-art">${pic(p)}</div>
     <div><div class="pd-name">${p.n}</div><div class="pd-tags">${p.pets.map(k => `<span>${petBy(k).n}</span>`).join('')}${p.isNew ? '<span style="color:#F26B12">Шинэ</span>' : ''}</div></div>
     <p class="pd-desc">${p.d}</p>
     <div class="pd-buy"><div class="stepper"><button data-q="-1" aria-label="Хасах">${ICON.minus}</button><output id="pdQ">1</output><button data-q="1" aria-label="Нэмэх">${ICON.plus}</button></div>
       <button class="btn btn-orange" id="pdAdd">Сагсанд · <span id="pdSum">${fmt(p.price)}</span></button></div>`);
   body.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { q = Math.min(20, Math.max(1, q + +b.dataset.q)); $('#pdQ').textContent = q; $('#pdSum').textContent = fmt(q * p.price); });
-  $('#pdAdd').onclick = () => { const svg = body.querySelector('.pd-art svg'); closeSheet(); setTimeout(() => addToCart(id, q, svg), 60); };
+  $('#pdAdd').onclick = () => { const svg = body.querySelector('.pd-art > *'); closeSheet(); setTimeout(() => addToCart(id, q, svg), 60); };
 };
 
 const openCart = () => {
@@ -1007,7 +1038,7 @@ const openCart = () => {
     openSheet('cart', sheetHead('Миний сагс') + `<div class="empty"><div class="peek" style="width:180px">${dogSVG(true)}</div><h3>Сагс хоосон байна</h3><p>Таны тэжээвэрт таалагдах зүйл олдоно.</p><button class="btn btn-orange" data-close style="justify-content:center; padding:0 24px">Дэлгүүр хэсэх</button></div>`);
     return;
   }
-  const rows = [...st.cart].map(([id, q]) => { const p = prodBy(id); return `<div class="cart-row" data-id="${id}"><div class="th">${art(p.art)}</div><div class="info"><b>${p.n}</b><span>${fmt(p.price * q)}</span></div><div class="stepper sm"><button data-d="-1" aria-label="Хасах">${ICON.minus}</button><output>${q}</output><button data-d="1" aria-label="Нэмэх">${ICON.plus}</button></div></div>`; }).join('');
+  const rows = [...st.cart].map(([id, q]) => { const p = prodBy(id); return `<div class="cart-row" data-id="${id}"><div class="th">${pic(p)}</div><div class="info"><b>${p.n}</b><span>${fmt(p.price * q)}</span></div><div class="stepper sm"><button data-d="-1" aria-label="Хасах">${ICON.minus}</button><output>${q}</output><button data-d="1" aria-label="Нэмэх">${ICON.plus}</button></div></div>`; }).join('');
   const left = 50000 - t.sub;
   openSheet('cart', sheetHead('Миний сагс') + `<div id="rows">${rows}</div>
     <div class="sum"><div><span>Барааны дүн</span><span>${fmt(t.sub)}</span></div>
@@ -1135,7 +1166,7 @@ const highlight = (text, q) => {
   return i < 0 ? esc(text) : esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
 };
 const resultRow = (p, q, i) => `<div class="cart-row res" data-id="${p.id}" style="--i:${i}" tabindex="0" role="button" aria-label="${esc(p.n)}, ${fmt(p.price)}">
-  <div class="th">${art(p.art)}</div><div class="info"><b>${highlight(p.n, q)}</b><span>${fmt(p.price)}</span></div>
+  <div class="th">${pic(p)}</div><div class="info"><b>${highlight(p.n, q)}</b><span>${fmt(p.price)}</span></div>
   <button class="res-add" aria-label="${esc(p.n)} сагсанд нэмэх">${ICON.plus}</button></div>`;
 const renderResults = () => {
   const q = norm($('#q').value);
@@ -1164,7 +1195,7 @@ const openSearch = () => {
   $('#sugg').onclick = e => { const b = e.target.closest('[data-w]'); if (b) { q.value = b.dataset.w; renderResults(); } };
   $('#results').addEventListener('click', e => {
     const row = e.target.closest('.res'); if (!row) return;
-    if (e.target.closest('.res-add')) { addToCart(row.dataset.id, 1, row.querySelector('.th svg')); toast(`${prodBy(row.dataset.id).n} сагсанд нэмэгдлээ.`); return; }
+    if (e.target.closest('.res-add')) { addToCart(row.dataset.id, 1, row.querySelector('.th > *')); toast(`${prodBy(row.dataset.id).n} сагсанд нэмэгдлээ.`); return; }
     openProduct(row.dataset.id);
   });
   $('#results').addEventListener('keydown', e => { const row = e.target.closest('.res'); if (row && e.target === row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openProduct(row.dataset.id); } });
@@ -1216,13 +1247,19 @@ let tt; const toast = msg => { $('#toastText').textContent = msg; const t = $('#
 
 /* ---------- returning user: skip sign-up ---------- */
 const saved = loadSaved();
-if (saved && saved.user && saved.user.name && saved.signedIn !== false) {
+const returning = saved && saved.user && saved.user.name && saved.signedIn !== false;
+const screens = document.querySelectorAll('.screen');
+if (returning) {
   // open straight on the app without playing the welcome→home slide
-  const screens = document.querySelectorAll('.screen');
   screens.forEach(s => s.style.transition = 'none');
-  restore(saved); st.signedIn = true; enterApp();
-  requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
+  $('#welcome').classList.remove('active');
 }
+loadProducts().then(() => {
+  if (returning) {
+    restore(saved); st.signedIn = true; enterApp();
+    requestAnimationFrame(() => requestAnimationFrame(() => screens.forEach(s => s.style.transition = '')));
+  }
+});
 
 /* ---------- log in ---------- */
 $('#peekLoginDog').innerHTML = dogSVG();
