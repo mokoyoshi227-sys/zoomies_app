@@ -954,6 +954,170 @@ svg.photo.custom{overflow:hidden}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; animation-delay:0s !important; transition-duration:.01ms !important}
 }
+/* ═════ services: six tabs in the bottom bar ═════ */
+.nav{gap:2px; padding:6px}
+.nav .ind{top:6px; left:6px; width:50px; height:48px}
+.nav button{min-width:50px; height:48px}
+.nav .nb{right:7px; top:5px}
+
+/* food stock card on the pet page */
+.fd-empty{display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:#fff; border-radius:20px; padding:14px; box-shadow:inset 0 0 0 2px var(--leaf-soft); transition:transform .3s var(--spring)}
+.fd-empty:active{transform:scale(.98)}
+.fd-empty b{display:block; font-size:15px}
+.fd-empty small{display:block; font-size:12.5px; color:var(--muted); line-height:1.45; margin-top:2px}
+.fd-ic{width:46px; height:46px; border-radius:15px; background:#FFF1E2; color:var(--orange-deep); display:grid; place-items:center; flex:none}
+.fd-ic svg{width:24px; height:24px}
+.fd-card{background:#fff; border-radius:22px; padding:14px; display:grid; gap:10px}
+.fd-card.low{box-shadow:inset 0 0 0 2px var(--orange)}
+.fd-top{display:flex; gap:12px; align-items:center}
+.fd-tx{min-width:0}
+.fd-tx b{display:block; font-size:15px}
+.fd-tx small{display:block; font-size:12px; color:var(--muted); margin-top:2px}
+.fd-bar{height:10px; border-radius:5px; background:var(--mint); overflow:hidden}
+.fd-bar i{display:block; height:100%; border-radius:5px; background:linear-gradient(90deg, var(--leaf), #3E9B47); transition:width .6s var(--ease)}
+.fd-card.low .fd-bar i{background:linear-gradient(90deg, #FFB27A, var(--orange))}
+.fd-days{font-size:13px; color:var(--muted)}
+.fd-days b{color:var(--ink); font-size:15px}
+.fd-card.low .fd-days b{color:var(--orange-deep)}
+.fd-acts{display:flex; gap:8px; flex-wrap:wrap}
+.fd-acts .btn{height:44px; font-size:13.5px; flex:1 1 auto; padding:0 14px; width:auto}
+.btn-reorder{background:var(--orange); color:#fff; box-shadow:0 8px 18px rgba(242,107,18,.3)}
+.btn-reorder svg{width:18px; height:18px}
+.fd-pick{display:grid; gap:8px; margin-bottom:12px}
+.fd-pick button{display:flex; align-items:center; gap:12px; text-align:left; background:#fff; border-radius:18px; padding:8px 12px 8px 8px; box-shadow:inset 0 0 0 2px transparent; transition:box-shadow .25s}
+.fd-pick button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--orange)}
+.fd-pick .th{width:52px; height:52px; border-radius:14px; background:var(--mint); display:grid; place-items:center; flex:none; overflow:hidden}
+.fd-pick .th svg,.fd-pick .th img{width:46px; height:46px; object-fit:contain}
+.fd-pick b{display:block; font-size:14px}
+.fd-pick small{font-size:12px; color:var(--muted)}
+
+/* vet appointments */
+.appts:empty{display:none}
+.appts{display:grid; gap:8px; margin:0 20px 14px}
+.ap-h{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.ap-card{display:flex; align-items:center; gap:12px; background:#fff; border-radius:20px; padding:10px 8px 10px 10px; box-shadow:0 6px 18px rgba(15,76,23,.06)}
+.ap-date{width:60px; flex:none; border-radius:16px; background:var(--pine); color:#fff; display:grid; justify-items:center; padding:6px 0; line-height:1.1}
+.ap-date b{font-size:22px}
+.ap-date span{font-size:10.5px; color:var(--leaf)}
+.ap-date i{font-style:normal; font-size:11px; font-weight:700}
+.ap-tx{flex:1; min-width:0; display:grid; gap:3px; justify-items:start}
+.ap-tx b{font-size:14.5px}
+.ap-tx span{font-size:12.5px; color:var(--muted)}
+.ap-tx i{font-style:normal; font-size:11px; font-weight:800; border-radius:8px; padding:3px 8px}
+.ap-x{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; color:var(--muted); flex:none; transition:background .2s, color .2s}
+.ap-x.sure{background:#FFE3E0; color:var(--danger)}
+.btn-book{background:var(--pine); color:#fff; margin:12px 0 0; gap:8px}
+.btn-book svg{width:20px; height:20px}
+.bk-cl{display:flex; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px; color:var(--pine)}
+.bk-cl svg{flex:none}
+.bk-row{display:flex; flex-wrap:wrap; gap:8px}
+.bk-row button{display:flex; align-items:center; gap:8px; height:44px; border-radius:22px; background:#fff; padding:0 14px 0 6px; font-weight:700; font-size:13.5px; transition:background .25s, color .25s}
+.bk-row button:not(:has(img,svg)){padding:0 14px}
+.bk-row button img,.bk-row button svg{width:32px; height:32px; border-radius:50%; object-fit:cover}
+.bk-row button[aria-pressed="true"]{background:var(--pine); color:#fff}
+.bk-days{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 -20px; padding:2px 20px 4px; scroll-snap-type:x proximity}
+.bk-days::-webkit-scrollbar{display:none}
+.bk-days button{flex:none; width:64px; border-radius:18px; background:#fff; padding:8px 0; display:grid; justify-items:center; gap:1px; scroll-snap-align:start; transition:background .25s, color .25s}
+.bk-days i{font-style:normal; font-size:10.5px; font-weight:700; color:var(--muted); white-space:nowrap}
+.bk-days b{font-size:22px}
+.bk-days small{font-size:10.5px; color:var(--muted)}
+.bk-days button[aria-pressed="true"]{background:var(--orange); color:#fff}
+.bk-days button[aria-pressed="true"] i,.bk-days button[aria-pressed="true"] small{color:#FFE2CC}
+.bk-hours{font-weight:600; letter-spacing:0; text-transform:none; margin-left:6px}
+.bk-slots{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; min-height:48px}
+.bk-slots button{height:42px; border-radius:14px; background:#fff; font-weight:700; font-variant-numeric:tabular-nums; transition:background .25s, color .25s, transform .3s var(--spring)}
+.bk-slots button:active{transform:scale(.94)}
+.bk-slots button[aria-pressed="true"]{background:var(--pine); color:#fff}
+.bk-none{grid-column:1/-1; margin:6px 0; font-size:13px; color:var(--muted)}
+.bk-wait{grid-column:1/-1; display:grid; place-items:center; height:48px}
+.bk-wait .spin{border-color:var(--leaf-soft); border-top-color:var(--pine)}
+.sheet .field textarea{width:100%; border-radius:16px; border:2px solid transparent; background:#fff; padding:12px 14px; font:inherit; font-size:14.5px; resize:none; color:var(--ink)}
+.sheet .field textarea:focus{outline:none; border-color:var(--pine)}
+
+/* QR collar tab */
+.qt-intro{margin:0 20px 14px; font-size:13.5px; color:var(--muted); line-height:1.55}
+.qt-list{display:grid; gap:14px; padding:0 20px 120px}
+.qt-push{display:flex; align-items:center; gap:12px; text-align:left; background:var(--pine); color:#fff; border-radius:20px; padding:12px 14px}
+.qt-push svg{width:24px; height:24px; flex:none}
+.qt-push b{display:block; font-size:14px}
+.qt-push small{color:var(--leaf); font-size:12px}
+.qt-card{background:#fff; border-radius:24px; padding:14px; display:grid; gap:10px; box-shadow:0 8px 24px rgba(15,76,23,.07)}
+.qt-card.lost{box-shadow:inset 0 0 0 3px #E5484D, 0 8px 24px rgba(229,72,77,.15)}
+.qt-card .su{margin:0; background:var(--mint)}
+.qt-h{display:flex; align-items:center; gap:10px}
+.qt-h img,.qt-h svg{width:44px; height:44px; border-radius:50%; object-fit:cover; background:var(--mint)}
+.qt-h b{font-size:17px; flex:1}
+.qt-lost{font-style:normal; font-size:11px; font-weight:800; color:#fff; background:#E5484D; border-radius:9px; padding:4px 9px}
+.qt-code{display:flex; gap:14px; align-items:center}
+.qt-svg{width:140px; height:140px; flex:none; background:#fff; border-radius:16px; padding:10px; box-shadow:inset 0 0 0 2px var(--mint)}
+.qt-svg svg{width:100%; height:100%; display:block}
+.qt-side{display:grid; gap:8px; min-width:0; flex:1}
+.qt-side small{font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.qt-side code{font-family:inherit; font-size:18px; font-weight:800; letter-spacing:.08em; color:var(--pine)}
+.qt-side .btn{height:40px; font-size:13px; width:100%}
+.qt-wait{margin:0; font-size:13px; color:var(--muted)}
+.qt-note{display:grid; gap:8px}
+.qt-note textarea{width:100%; border-radius:14px; border:2px solid var(--mint); padding:10px 12px; font:inherit; font-size:14px; resize:none}
+.qt-note .btn{height:40px; font-size:13px}
+.qt-rep{display:flex; gap:8px; align-items:flex-start; background:var(--mint); border-radius:16px; padding:10px 6px 10px 12px}
+.qt-rep.new{background:#FFF1E2; box-shadow:inset 0 0 0 2px #FFB27A}
+.qt-rep > div{flex:1; min-width:0}
+.qt-rep b{font-size:12px; color:var(--muted)}
+.qt-rep p{margin:3px 0 0; font-size:14px; line-height:1.45; overflow-wrap:anywhere}
+.qt-rep-a{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; font-size:13px; font-weight:700}
+.qt-rep-a a{color:var(--pine)}
+
+/* the page a finder sees */
+.tagpage{position:absolute; inset:0; z-index:95; background:var(--mint); overflow-y:auto; opacity:0; transform:translateY(30px); transition:opacity .35s, transform .5s var(--ease)}
+.tagpage.open{opacity:1; transform:none}
+.tg-in{padding:calc(var(--sb) + 14px) 22px 40px; display:grid; gap:12px; justify-items:center; text-align:center; position:relative}
+.tg-x{position:absolute; right:18px; top:calc(var(--sb) + 10px)}
+.tg-alert{width:100%; background:#E5484D; color:#fff; border-radius:18px; padding:12px 14px; font-weight:800; font-size:15px; display:grid; gap:4px; margin-top:44px; animation:pulseRed 1.6s ease-in-out infinite}
+.tg-alert small{font-weight:600; font-size:13px; opacity:.95}
+@keyframes pulseRed{50%{box-shadow:0 0 0 8px rgba(229,72,77,.18)}}
+.tg-pic{width:180px; height:180px; border-radius:50%; overflow:hidden; background:#fff; display:grid; place-items:center; box-shadow:0 0 0 6px #fff, 0 16px 40px rgba(15,76,23,.18); margin-top:20px}
+.tg-pic img{width:100%; height:100%; object-fit:cover}
+.tg-pic svg{width:140px; height:140px}
+.tagpage h1{margin:6px 0 0; font-size:32px; color:var(--pine)}
+.tg-own{margin:0; color:var(--muted); font-size:14px}
+.tagpage .btn-book{width:100%}
+.tg-form{width:100%; display:grid; gap:10px; text-align:left; margin-top:6px}
+.tg-form textarea,.tg-form input[type=text],.tg-form #tg-c{width:100%; border-radius:16px; border:2px solid transparent; background:#fff; padding:12px 14px; font:inherit; font-size:15px; color:var(--ink)}
+.tg-loc{display:flex; gap:8px; align-items:center; font-size:13.5px; font-weight:600; color:var(--pine)}
+.tg-loc input{width:20px; height:20px; accent-color:var(--orange)}
+.tg-done{width:100%; background:#fff; border-radius:22px; padding:22px; display:grid; gap:6px}
+.tg-done b{font-size:20px; color:var(--pine)}
+.tg-done p{margin:0; color:var(--muted); line-height:1.5}
+
+/* adoption tab */
+.ad-chips{margin:0 0 12px; padding:2px 20px 6px}
+.ad-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 20px 120px}
+.ad-card{background:#fff; border-radius:22px; overflow:hidden; text-align:left; display:grid; box-shadow:0 8px 22px rgba(15,76,23,.07); animation:cardIn .55s var(--ease) both; animation-delay:calc(var(--i) * 50ms); transition:transform .35s var(--spring)}
+.ad-card:active{transform:scale(.97)}
+.ad-ph{position:relative; aspect-ratio:1; background:var(--mint); display:grid; place-items:center; overflow:hidden}
+.ad-ph img{width:100%; height:100%; object-fit:cover}
+.ad-ph svg{width:70%; height:70%}
+.ad-res,.ad-mine{position:absolute; left:8px; top:8px; font-style:normal; font-size:10.5px; font-weight:800; border-radius:8px; padding:4px 8px; color:#fff; background:var(--orange)}
+.ad-mine{top:auto; bottom:8px; background:var(--pine)}
+.ad-tx{padding:10px 12px 12px; display:grid; gap:2px}
+.ad-tx b{font-size:15px}
+.ad-tx small{font-size:12px; color:var(--muted)}
+.ad-tx em{font-style:normal; font-size:11.5px; color:var(--pine); font-weight:700; margin-top:3px}
+.ad-hero{border-radius:24px; overflow:hidden; background:var(--leaf); aspect-ratio:4/3; display:grid; place-items:center}
+.ad-hero img{width:100%; height:100%; object-fit:cover}
+.ad-hero svg{width:60%; height:60%}
+.ad-facts{display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px; margin:12px 0 8px}
+.ad-facts div{background:#fff; border-radius:16px; padding:10px 12px}
+.ad-facts small{display:block; font-size:10.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+.ad-facts b{font-size:14px}
+.ad-sh{background:#fff; border-radius:20px; padding:12px 14px; display:grid; gap:6px}
+.ad-sh b{font-size:15px}
+.ad-sh span{font-size:13px; color:var(--muted)}
+.ad-sh .cl-acts{margin-top:4px}
+.ad-state{margin-top:14px; background:#fff; border-radius:20px; padding:14px; display:grid; gap:4px; box-shadow:inset 4px 0 0 var(--c)}
+.ad-state b{color:var(--c); font-size:16px}
+.ad-state span{font-size:13px; color:var(--muted)}
+.ad-state .textlink{justify-self:start; padding-left:0}
 </style>
 
 <aside class="aside">
@@ -1062,6 +1226,7 @@ svg.photo.custom{overflow:hidden}
     <div class="pet-hero" id="petHero"></div>
     <div class="pet-facts" id="petFacts"></div>
     <section class="hl" id="friends" aria-label="Найзууд"></section>
+    <section class="hl" id="food" aria-label="Хоолны нөөц"></section>
     <section class="hl" id="health" aria-label="Эрүүл мэндийн хөтлөл"></section>
     <section class="hl" id="memo" aria-label="Тэмдэглэл"></section>
     <div class="recs-h"><h3 id="recsTitle"></h3><button class="textlink" id="recsAll"><b>Бүгдийг үзэх</b></button></div>
@@ -1075,11 +1240,30 @@ svg.photo.custom{overflow:hidden}
     <div class="ph-top">
       <div><div class="ph-hi">Мэргэжлийн тусламж</div><h1>Малын эмнэлэг, эмч</h1></div>
     </div>
+    <div class="appts" id="myAppts"></div>
     <div class="vt-tools">
       <label class="search-box"><span class="sicon" data-i="search"></span><input id="vq" type="search" placeholder="Эмнэлэг, эмч, үйлчилгээ хайх…" autocomplete="off" aria-label="Эмнэлэг, эмч хайх"></label>
       <div class="vt-seg" id="vtSeg" role="group" aria-label="Харах"><span class="ind" aria-hidden="true"></span><button data-v="clinics" aria-pressed="true">Эмнэлэг</button><button data-v="vets" aria-pressed="false">Эмч</button></div>
     </div>
     <div class="vt-list" id="vtList"></div>
+  </section>
+
+  <!-- 4c. QR collar tags: a code per pet that finders scan; lost mode and messages from finders -->
+  <section class="screen" id="qr" aria-label="QR хүзүүвч">
+    <div class="ph-top">
+      <div><div class="ph-hi">Төөрвөл олдоно</div><h1>QR хүзүүвч</h1></div>
+    </div>
+    <p class="qt-intro">Хүзүүвчинд нь QR код зүүгээрэй. Олсон хүн утасныхаа камераар уншуулахад таны амьтны мэдээлэл гарч, танд шууд мэдэгдэл ирнэ. Таны хаяг, имэйл хэзээ ч харагдахгүй.</p>
+    <div class="qt-list" id="qtList"></div>
+  </section>
+
+  <!-- 4d. Adoption: animals from shelters, request to adopt -->
+  <section class="screen" id="adopt" aria-label="Үрчлэлт">
+    <div class="ph-top">
+      <div><div class="ph-hi">Асрамжийн газраас</div><h1>Үрчлэлт</h1></div>
+    </div>
+    <div class="chips ad-chips" id="adChips" role="group" aria-label="Амьтны төрөл"></div>
+    <div class="ad-grid" id="adGrid"></div>
   </section>
 
   <!-- 5. Shop (the former home screen) -->
@@ -1124,6 +1308,8 @@ svg.photo.custom{overflow:hidden}
     <button class="on" data-nav="home" aria-label="Миний тэжээвэр амьтад" data-i="home"></button>
     <button data-nav="shop" aria-label="Дэлгүүр" data-i="shop"></button>
     <button data-nav="vets" aria-label="Малын эмнэлэг, эмч" data-i="clinic"></button>
+    <button data-nav="qr" aria-label="QR хүзүүвч" data-i="qr"><span class="nb" id="qrBadge">0</span></button>
+    <button data-nav="adopt" aria-label="Үрчлэлт" data-i="adopt"></button>
     <button data-nav="profile" aria-label="Профайл"><span class="nav-av" id="navAvatar"></span></button>
   </nav>
 
@@ -1166,6 +1352,11 @@ const ICON = {
   pill: S('<path d="M10.5 3.5a4.95 4.95 0 0 1 7 7l-7 7a4.95 4.95 0 0 1-7-7z"/><path d="M7 7l7 7"/>'),
   chev: S('<path d="M6 9l6 6 6-6"/>', 18, 2.4),
   clinic: S('<path d="M4 20.5V9.5L12 4l8 5.5v11z"/><path d="M12 10v6.5M8.75 13.25h6.5"/>', 22),
+  qr: S('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5zM14 20h1M20 14v1"/>', 22),
+  adopt: S('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M9.5 12.5l1.8 1.8 3.4-3.6"/>', 22),
+  cal: S('<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>', 20),
+  bowl: S('<path d="M3.5 11h17a8.5 7 0 0 1-17 0z"/><path d="M8 7.5c0-1 1-1 1-2M12 7.5c0-1 1-1 1-2M16 7.5c0-1 1-1 1-2"/>', 20),
+  pin: S('<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>', 18),
   phone: S('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>', 19),
   share: S('<path d="M12 3.5v11M7.5 8L12 3.5 16.5 8"/><path d="M5 12.5V19a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6.5"/>', 20, 2.2),
   link: S('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>', 20),
@@ -1297,6 +1488,7 @@ const toProducts = raw => (Array.isArray(raw) ? raw : []).map((x, i) => ({
   price: Math.max(0, Math.round(Number(String(x.price).replace(/[^\d.]/g, '')) || 0)),
   pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PET_ALL.has(k)),
   isNew: x.new === true || x.new === 'true',
+  pack: Math.max(0, parseInt(x.pack_g ?? x.pack, 10) || 0),   // food bag size in grams (0 = not food)
   photo: String(x.photo || '').trim(),
   art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
 })).filter(p => p.n && p.price > 0);
@@ -1329,7 +1521,9 @@ const loadPetTypes = async () => {
 const loadProducts = async () => {
   if (sb) {
     try {
-      const { data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active').order('sort').order('created_at');
+      // pack_g (food bag size) comes with features.sql; before that, load without it
+      let { data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active, pack_g').order('sort').order('created_at');
+      if (error) ({ data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active').order('sort').order('created_at'));
       if (!error && Array.isArray(data)) {
         PRODUCTS = toProducts(data.filter(x => x.active).map(x => ({ ...x, new:x.is_new })));
         try { localStorage.setItem(CAT_KEY, JSON.stringify({ products:PRODUCTS, at:Date.now() })); } catch (_) {}
@@ -1415,9 +1609,13 @@ const PHOTO_URL = path => `${SB_URL}/storage/v1/object/public/pet-photos/${path}
 const cloudOn = () => !!(sb && st.user && st.user.id && st.signedIn);
 const toBlob = dataUrl => fetch(dataUrl).then(r => r.blob());
 const blobToDataURL = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(b); });
-const petRow = p => ({ id:p.id, kind:p.k, name:p.name, sex:p.sex || null, birth:p.birth || null, breed:p.breed || null, weight:p.weight ? Number(p.weight) : null, photo_path:p.photoPath || null });
+// which optional server features exist (each comes with an SQL file; until it is run the app works without it)
+const HAS = { tags:false };
+const petRow = p => ({ id:p.id, kind:p.k, name:p.name, sex:p.sex || null, birth:p.birth || null, breed:p.breed || null, weight:p.weight ? Number(p.weight) : null, photo_path:p.photoPath || null,
+  ...(HAS.tags ? { lost:!!p.lost, lost_note:p.lostNote || null, tag_phone:!!p.tagPhone } : {}) });
 const fromRow = r => ({ id:r.id, k:r.kind, name:r.name, sex:r.sex || '', birth:r.birth || '', breed:r.breed || '', weight:r.weight != null ? String(+r.weight) : '',
-  photoPath:r.photo_path || '', photo:r.photo_path ? PHOTO_URL(r.photo_path) : '', code:r.share_code, cloud:true, dirty:false });
+  photoPath:r.photo_path || '', photo:r.photo_path ? PHOTO_URL(r.photo_path) : '', code:r.share_code, cloud:true, dirty:false,
+  tag:r.tag_code || '', lost:!!r.lost, lostNote:r.lost_note || '', tagPhone:!!r.tag_phone });
 let queue = Promise.resolve(); // one server write at a time, in order
 const enqueue = job => (queue = queue.then(job).catch(err => { console.warn('cloud', err); return false; }));
 const pushPet = p => {
@@ -1432,9 +1630,9 @@ const pushPet = p => {
       const old = p.photoPath; p.photoPath = path; p.photo = PHOTO_URL(path);
       if (old) sb.storage.from('pet-photos').remove([old]);
     }
-    const { data, error } = await sb.from('pets').upsert(petRow(p)).select('share_code').single();
+    const { data, error } = await sb.from('pets').upsert(petRow(p)).select(HAS.tags ? 'share_code, tag_code' : 'share_code').single();
     if (error) throw error;
-    p.code = data.share_code; p.cloud = true; p.dirty = false; save();
+    p.code = data.share_code; if (data.tag_code) p.tag = data.tag_code; p.cloud = true; p.dirty = false; save();
     if ([...(p.logs || []), ...(p.memos || [])].some(x => x.dirty || !x.synced)) { (p.logs || []).concat(p.memos || []).forEach(x => { if (!x.synced) x.dirty = true; }); pushItems(); }
     return true;
   });
@@ -1468,10 +1666,14 @@ const cloudLoad = async () => {
   lastLoad = Date.now();
   const uid = st.user.id;
   for (const id of st.delQ.splice(0)) { const { error } = await sb.from('pets').delete().eq('id', id); if (error) { st.delQ.push(id); throw error; } }
-  const [prof, pets] = await Promise.all([
+  const BASE = 'id, kind, name, sex, birth, breed, weight, photo_path, share_code';
+  let [prof, pets] = await Promise.all([
     sb.from('profiles').select('name, phone, avatar_path').eq('id', uid).maybeSingle(),
-    sb.from('pets').select('id, kind, name, sex, birth, breed, weight, photo_path, share_code').order('created_at')
+    sb.from('pets').select(BASE + ', tag_code, lost, lost_note, tag_phone').order('created_at')
   ]);
+  // QR-tag columns come with supabase/features.sql; before that file is run, load the pets without them
+  HAS.tags = !pets.error;
+  if (pets.error) pets = await sb.from('pets').select(BASE).order('created_at');
   if (prof.error) throw prof.error;
   if (pets.error) throw pets.error;
   if (prof.data) {
@@ -1500,6 +1702,7 @@ const cloudLoad = async () => {
   if (!next.some(p => p.id === st.cur)) st.cur = next[0]?.id || null;
   save();
   toPush.forEach(pushPet);
+  svcAfterLoad().catch(err => console.warn('services', err)); // on its own, so a slow or failed step below never holds it back
   await loadItems();
   await loadFriends().catch(err => console.warn('friends', err));
   await loadMyOrders().catch(() => {});
@@ -1603,7 +1806,7 @@ const go = (id, back = false, fromBack = false) => {
   $('#nav').classList.toggle('hide', !TABS.includes(id));
   if (TABS.includes(id)) setNav(id);
 };
-const TABS = ['home', 'shop', 'vets'];
+const TABS = ['home', 'shop', 'vets', 'qr', 'adopt'];
 const curTab = () => { const a = document.querySelector('.screen.active'); return a && TABS.includes(a.id) ? a.id : 'home'; };
 document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => go(b.dataset.back, true));
 
@@ -1809,7 +2012,7 @@ const renderPetHome = () => {
     <div class="pet-meta"><div><h2>${esc(p.name)}</h2></div><button class="circle-btn" id="petEdit" aria-label="${esc(p.name)}-ийн мэдээлэл засах">${ICON.edit}</button></div>`;
   const fact = (label, val) => `<button class="fact" data-edit><small>${label}</small><b class="${val ? '' : 'unset'}">${val ? esc(val) : '+ Нэмэх'}</b></button>`;
   $('#petFacts').innerHTML = fact('Нас', ageText(p.birth)) + fact('Хүйс', p.sex) + fact('Үүлдэр', p.breed) + fact('Жин', p.weight ? `${p.weight} кг` : '');
-  renderRecs(); renderFriends(); renderHealth(); renderMemo(); renderClinics();
+  renderRecs(); renderFriends(); renderHealth(); renderMemo(); renderClinics(); renderFood(); renderAppts(); renderQR(); renderAdopt();
 };
 /* ---------- vet clinics and vets (managed in the admin panel) ---------- */
 let CLINICS = [], VETS = [];
@@ -1877,6 +2080,7 @@ const openVet = id => {
     ${v.bio ? `<p class="pd-desc">${esc(v.bio)}</p>` : ''}
     <div class="cl-acts">${v.phone ? `<a class="btn btn-plain" href="${telHref(v.phone)}">📞 Залгах</a>` : ''}${c ? `<button class="btn btn-ghost" id="vetClinic">🏥 ${esc(c.name)}</button>` : ''}</div>`);
   $('#vetClinic') && ($('#vetClinic').onclick = () => openClinic(c.id));
+  if (c && canBook(c)) { body.querySelector('.cl-acts').insertAdjacentHTML('beforebegin', `<button class="btn btn-book" id="bookVet">${ICON.cal} Цаг захиалах</button>`); $('#bookVet').onclick = () => openBooking(c.id, v.id); }
 };
 const vetRow = v => `<div class="vet"><span class="vet-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="">` : '🩺'}</span>
   <span class="vet-tx"><b>${esc(v.name)}</b><em>${esc(v.specialty || '')}</em>${v.bio ? `<small>${esc(v.bio)}</small>` : ''}</span>
@@ -1896,26 +2100,27 @@ const openClinic = id => {
       ${c.hours ? `<div><span>🕘</span><p>${esc(c.hours)}</p></div>` : ''}
       ${c.phone ? `<div><span>📞</span><p>${esc(c.phone)}</p></div>` : ''}
     </div>
-    <div class="cl-acts">${c.phone ? `<a class="btn btn-plain" href="${telHref(c.phone)}">📞 Залгах</a>` : ''}<a class="btn btn-ghost" href="${mapHref(c)}" target="_blank" rel="noopener">🗺️ Газрын зураг</a></div>
+    ${canBook(c) ? `<button class="btn btn-book" id="bookClinic">${ICON.cal} Цаг захиалах</button>` : ''}<div class="cl-acts">${c.phone ? `<a class="btn btn-plain" href="${telHref(c.phone)}">📞 Залгах</a>` : ''}<a class="btn btn-ghost" href="${mapHref(c)}" target="_blank" rel="noopener">🗺️ Газрын зураг</a></div>
     ${(c.services || []).length ? `<div class="lbl">Үйлчилгээ</div><div class="pd-tags">${c.services.map(s => `<span>${esc(s)}</span>`).join('')}</div>` : ''}
     ${c.description ? `<p class="pd-desc">${esc(c.description)}</p>` : ''}
     ${vets.length ? `<div class="lbl">Эмч нар</div><div class="vets">${vets.map(vetRow).join('')}</div>` : ''}`);
+  $('#bookClinic') && ($('#bookClinic').onclick = () => openBooking(c.id, null));
 };
 
 /* the catalog updates live: anything saved in the admin panel reaches open apps within a second */
 let catChan = null, catT = 0;
 const refreshCatalog = async () => {
-  await Promise.all([loadPetTypes().then(loadProducts), loadClinics()]);
+  await Promise.all([loadPetTypes().then(loadProducts), loadClinics(), loadAdopt()]);
   if ($('#pets').classList.contains('active')) renderPetGrid(); // the picker follows added / hidden types
   let gone = false; st.cart.forEach((q, id) => { if (!prodBy(id)) { st.cart.delete(id); gone = true; } });
   if (!st.user || !st.profiles.length) return;
-  renderChips(); renderGrid(); renderCartUI(false); renderRecs(); renderClinics();
+  renderChips(); renderGrid(); renderCartUI(false); renderRecs(); renderClinics(); renderAdopt();
   if (gone && st.sheet === 'cart') openCart();
 };
 const startCatalogLive = () => {
   if (!sb || catChan) return;
   catChan = sb.channel('catalog');
-  ['products', 'clinics', 'vets', 'pet_types'].forEach(t => catChan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(catT); catT = setTimeout(refreshCatalog, 400); }));
+  ['products', 'clinics', 'vets', 'pet_types', 'adoptions', 'shelters'].forEach(t => catChan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(catT); catT = setTimeout(refreshCatalog, 400); }));
   catChan.subscribe();
 };
 
@@ -3239,18 +3444,20 @@ const openProfile = () => {
   const u = st.user;
   openSheet('profile', sheetHead('Профайл') + `<div class="prof"><button class="av-edit" id="userPhotoBtn" aria-label="${u.photo ? 'Профайл зураг солих' : 'Профайл зураг оруулах'}"><span class="avatar">${avatarHTML()}</span><span class="av-cam">${ICON.camera}</span></button><div style="min-width:0"><b>${esc(u.name)}</b><span>${esc(u.email)}</span><span>${esc(u.phone)}</span>${u.photo ? '<button class="av-rm" id="userPhotoRm">Зургийг устгах</button>' : ''}</div></div>
     <div><div class="lbl">Миний тэжээвэр амьтад</div><div class="mypets">${st.profiles.map(p => `<span>${petPic(p)}${esc(p.name)}</span>`).join('')}</div></div>
+    ${pushRowHTML()}
     <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
     ${st.myOrders.length ? `<div><div class="lbl">Миний захиалгууд</div><div class="my-orders">${st.myOrders.slice(0, 6).map(o => { const [label, col] = ORDER_STATUS[o.status] || ORDER_STATUS.new; return `<div class="mo"><div><b>#${o.number}</b><span>${prettyDate(ymd(new Date(o.created_at)))} ·${(o.items || []).reduce((a, x) => a + x.qty, 0)} бараа</span></div><div class="mo-r"><b>${fmt(o.total)}</b><i style="color:${col};background:${col}1A">${label}</i></div></div>`; }).join('')}</div></div>` : ''}
     <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр амьтан өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>
     <div class="prof-foot"><a href="privacy.html" data-privacy>Нууцлалын бодлого</a><button type="button" id="delAcc">Бүртгэл устгах</button></div>`);
   $('#delAcc').onclick = () => openDeleteAccount();
+  bindPushRow();
   $('#userPhotoBtn').onclick = () => $('#userPhotoIn').click();
   $('#userPhotoRm') && ($('#userPhotoRm').onclick = () => { delete st.user.photo; st.user.avatarDirty = true; save(); pushAvatar(); openProfile(); renderAvatars(); toast('Профайл зураг устгагдлаа.'); });
   $('#editPets').onclick = () => { closeSheet(); st.editPets = true; setTimeout(openPets, 200); };
   $('#logout').onclick = () => {
     // keep the account on this device so the user can log back in; only end the session
     st.signedIn = false; save();
-    if (sb) { stopRealtime(); stopOrdersLive(); sb.auth.signOut().catch(() => {}); }
+    if (sb) { stopRealtime(); stopOrdersLive(); stopSvcLive(); sb.auth.signOut().catch(() => {}); }
     closeSheet(); st.user = null; st.pw = null; st.notes = []; st.orders = 0; st.pets.clear(); st.cart.clear(); st.filter = 'all'; st.points = 4; st.profiles = []; st.cur = null; st.myOrders = []; st.co = { addr:'', phone:'', pay:'cod' };
     $('#suForm').reset(); setTimeout(() => go('welcome', true), 200);
   };
@@ -3325,6 +3532,8 @@ const openNotes = () => {
     const a = n.action || '';
     if (a.startsWith('product:') && prodBy(a.slice(8))) setTimeout(() => openProduct(a.slice(8)), 250);
     else if (a === 'cart') setTimeout(openCart, 250);
+    else if (a.startsWith('reorder:')) setTimeout(() => reorderFood(a.slice(8)), 250);
+    else if (a.startsWith('tab:')) { closeSheet(); setTimeout(() => go(a.slice(4)), 200); }
     else if (a === 'stars') toast(`Танд ${st.points} бонус од байна. 10 од = 10,000₮ хөнгөлөлт.`);
     else if (a.startsWith('freq:')) setTimeout(() => openRequest(a.slice(5)), 250);
     else if (a.startsWith('fpet:')) {
@@ -3386,6 +3595,453 @@ const openSearch = () => {
   setTimeout(() => q.focus({ preventScroll:true }), 420);
 };
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+/* ═══════════════ services: food stock, vet appointments, push notifications, QR tags, adoption ═══════════════
+   Each needs supabase/features.sql on the server. Until that file is run, the parts that need it stay hidden
+   (HAS.svc false) and everything else keeps working. */
+const DAY_MN = ['Ня', 'Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя'];
+const addDays = (s, n) => { const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return ymd(d); };
+const hm = t => String(t || '').slice(0, 5);
+const fmtG = g => g >= 1000 ? `${(g / 1000).toFixed(g % 1000 ? 1 : 0)} кг` : `${Math.round(g)} г`;
+const svc = { food:{}, appts:[], found:[], adopt:[], shelters:[], myReqs:[], chan:null, adFilter:'all' };
+HAS.svc = false;
+
+/* ---------- food stock: when will the bag run out? ---------- */
+const FOOD_LEAD = 5; // remind this many days before the bag is empty (the server's daily push uses the same)
+const foodKey = () => 'zoomies.food.' + ((st.user && (st.user.id || st.user.email)) || 'local');
+const saveFoodLocal = () => { try { localStorage.setItem(foodKey(), JSON.stringify(svc.food)); } catch (_) {} };
+const loadFoodLocal = () => { try { svc.food = JSON.parse(localStorage.getItem(foodKey()) || '{}') || {}; } catch (_) { svc.food = {}; } };
+// grams used since the bag was opened, and the average of the last 7 days that have a food entry
+const foodOutlook = p => {
+  const f = svc.food[p.id]; if (!f) return null;
+  const logs = (p.logs || []).filter(l => l.type === 'food' && +l.amount > 0);
+  const used = logs.filter(l => l.date >= f.opened).reduce((a, l) => a + +l.amount, 0);
+  const since = addDays(todayStr(), -7), recent = logs.filter(l => l.date > since);
+  const days = new Set(recent.map(l => l.date)).size;
+  const perDay = days ? recent.reduce((a, l) => a + +l.amount, 0) / days : 0;
+  const left = Math.max(0, f.pack_g - used);
+  return { ...f, used, left, perDay, daysLeft: perDay > 0 ? Math.floor(left / perDay) : null, pct: f.pack_g ? left / f.pack_g : 0 };
+};
+const renderFood = () => {
+  const el = $('#food'), p = curPet(); if (!el || !p) return;
+  const o = foodOutlook(p);
+  if (!o) {
+    el.innerHTML = `<div class="hl-h"><h3>Хоолны нөөц</h3></div>
+      <button class="fd-empty" id="fdSet"><span class="fd-ic">${ICON.bowl}</span><span><b>Хоолоо бүртгээрэй</b><small>Уутны хэмжээг оруулбал хоол дуусахаас ${FOOD_LEAD} хоногийн өмнө сануулж, нэг товчоор дахин захиална.</small></span></button>`;
+  } else {
+    const low = o.daysLeft != null && o.daysLeft <= FOOD_LEAD, prod = o.product_id && prodBy(o.product_id);
+    el.innerHTML = `<div class="hl-h"><h3>Хоолны нөөц</h3><button class="textlink" id="fdEdit"><b>Засах</b></button></div>
+      <div class="fd-card${low ? ' low' : ''}">
+        <div class="fd-top"><span class="fd-ic">${ICON.bowl}</span><div class="fd-tx"><b>${esc(o.product_name)}</b><small>${fmtG(o.left)} үлдсэн · ${fmtG(o.pack_g)}-ийн уут · ${prettyDate(o.opened)}-нд нээсэн</small></div></div>
+        <div class="fd-bar"><i style="width:${Math.round(o.pct * 100)}%"></i></div>
+        <div class="fd-days">${o.daysLeft == null ? 'Хооллолтоо эрүүл мэндийн хөтлөлд бичвэл хэдэн хоног хүрэхийг тооцоолно.'
+          : o.daysLeft <= 0 ? '<b>Хоол дууссан байна</b>' : `≈ <b>${o.daysLeft}</b> хоногт хүрнэ`}${o.perDay ? ` · өдөрт ~${Math.round(o.perDay)} г` : ''}</div>
+        <div class="fd-acts">${prod ? `<button class="btn btn-reorder" id="fdReorder">${ICON.cart} Дахин захиалах · ${fmt(prod.price)}</button>` : ''}<button class="btn btn-ghost" id="fdNew">Шинэ уут нээсэн</button></div>
+      </div>`;
+    // one reminder a day in the bell (the server also sends a push in the morning)
+    if (low && svc.food[p.id].noted !== todayStr()) {
+      svc.food[p.id].noted = todayStr(); saveFoodLocal();
+      addNote({ type:'box', t:`${p.name}-ийн хоол ${o.daysLeft <= 0 ? 'дууссан' : o.daysLeft + ' хоногийн дараа дуусна'}`, b:`${o.product_name}${prod ? ' · Нэг товчоор дахин захиалаарай' : ''}`, action: prod ? 'reorder:' + p.id : 'tab:home' });
+    }
+  }
+  $('#fdSet') && ($('#fdSet').onclick = () => openFoodSet(p));
+  $('#fdEdit') && ($('#fdEdit').onclick = () => openFoodSet(p));
+  $('#fdReorder') && ($('#fdReorder').onclick = () => reorderFood(p.id));
+  $('#fdNew') && ($('#fdNew').onclick = () => { const f = svc.food[p.id]; saveFood(p, { ...f, opened:todayStr() }); toast('Шинэ уут бүртгэгдлээ.'); });
+};
+const reorderFood = petId => {
+  const f = svc.food[petId], prod = f && f.product_id && prodBy(f.product_id);
+  if (!prod) { toast('Энэ хоол одоо дэлгүүрт алга. Дэлгүүрээс өөр хоол сонгоно уу.'); return; }
+  closeSheet(); addToCart(prod.id, 1); setTimeout(openCart, 350);
+};
+const saveFood = (p, f) => {
+  if (f) svc.food[p.id] = { product_id:f.product_id || null, product_name:f.product_name, pack_g:+f.pack_g, opened:f.opened };
+  else delete svc.food[p.id];
+  saveFoodLocal(); renderFood();
+  if (HAS.svc && cloudOn() && p.cloud) {
+    const q = f ? sb.from('food_stocks').upsert({ pet_id:p.id, product_id:f.product_id || null, product_name:f.product_name, pack_g:+f.pack_g, opened:f.opened, reminded_on:null })
+                : sb.from('food_stocks').delete().eq('pet_id', p.id);
+    Promise.resolve(q).then(r => r && r.error && console.warn('food', r.error)).catch(() => {});
+  }
+};
+const loadFood = async () => {
+  if (!HAS.svc || !cloudOn()) return;
+  const { data, error } = await sb.from('food_stocks').select('pet_id, product_id, product_name, pack_g, opened');
+  if (error) return;
+  const next = {};
+  data.forEach(r => { next[r.pet_id] = { product_id:r.product_id, product_name:r.product_name, pack_g:r.pack_g, opened:r.opened, noted:(svc.food[r.pet_id] || {}).noted }; });
+  svc.food = next; saveFoodLocal();
+};
+const openFoodSet = p => {
+  const cur = svc.food[p.id], foods = PRODUCTS.filter(x => x.pack && x.pets.includes(p.k));
+  let pick = cur ? (cur.product_id && foods.some(x => x.id === cur.product_id) ? cur.product_id : 'own') : (foods[0] ? foods[0].id : 'own');
+  openSheet('food', sheetHead('Хоолны нөөц') + `<p class="pd-desc" style="margin-top:0">${esc(p.name)} ямар хоол иддэг вэ? Уут дуусахаас ${FOOD_LEAD} хоногийн өмнө сануулна.</p>
+    <div class="fd-pick" id="fdPick">${foods.map(x => `<button type="button" data-p="${x.id}" aria-pressed="${pick === x.id}"><span class="th">${pic(x)}</span><span><b>${esc(x.n)}</b><small>${fmtG(x.pack)} · ${fmt(x.price)}</small></span></button>`).join('')}
+      <button type="button" data-p="own" aria-pressed="${pick === 'own'}"><span class="th fd-ic">${ICON.bowl}</span><span><b>Өөр хоол</b><small>Нэр, хэмжээг өөрөө оруулна</small></span></button></div>
+    <div class="fd-own" id="fdOwn"${pick === 'own' ? '' : ' hidden'}>
+      <div class="field" id="f-fdn"><label for="fd-n">Хоолны нэр</label><input id="fd-n" maxlength="60" placeholder="Жишээ: Royal Canin Adult" value="${esc(cur && pick === 'own' ? cur.product_name : '')}"><div class="err">Нэрээ оруулна уу.</div></div>
+      <div class="field" id="f-fdg"><label for="fd-g">Уутны хэмжээ (г)</label><input id="fd-g" inputmode="numeric" maxlength="6" placeholder="3000" value="${cur && pick === 'own' ? cur.pack_g : ''}"><div class="err">50-аас 100,000 грамм.</div></div>
+    </div>
+    <div class="field" id="f-fdo"><label for="fd-o">Уутыг нээсэн өдөр</label><input id="fd-o" type="date" max="${todayStr()}" value="${cur ? cur.opened : todayStr()}"><div class="err">Өнөөдөр эсвэл өмнөх өдөр.</div></div>
+    <div style="display:grid;gap:10px;margin-top:6px"><button class="btn btn-orange" id="fdSave" style="justify-content:center">Хадгалах</button>${cur ? '<button class="btn btn-ghost" id="fdDel">Хоолны нөөцийг устгах</button>' : ''}</div>`);
+  $('#fdPick').onclick = e => { const b = e.target.closest('[data-p]'); if (!b) return; pick = b.dataset.p; $('#fdPick').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#fdOwn').hidden = pick !== 'own'; };
+  $('#fdSave').onclick = () => {
+    const bad = id => { const f = $('#' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); };
+    const opened = $('#fd-o').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(opened) || opened > todayStr()) return bad('f-fdo');
+    let f;
+    if (pick === 'own') {
+      const n = $('#fd-n').value.trim(), g = parseInt($('#fd-g').value.replace(/\D/g, ''), 10);
+      if (!n) return bad('f-fdn'); if (!(g >= 50 && g <= 100000)) return bad('f-fdg');
+      f = { product_id:null, product_name:n, pack_g:g, opened };
+    } else { const x = prodBy(pick); f = { product_id:x.id, product_name:x.n, pack_g:x.pack, opened }; }
+    saveFood(p, f); closeSheet(); toast('Хоолны нөөц хадгалагдлаа.');
+  };
+  $('#fdDel') && ($('#fdDel').onclick = () => { saveFood(p, null); closeSheet(); toast('Хоолны нөөцийг устгалаа.'); });
+};
+
+/* ---------- vet appointments ---------- */
+const AP_STATUS = { requested:['Хүлээгдэж буй', '#D9560A'], confirmed:['Баталгаажсан', '#2E7D32'], cancelled:['Цуцлагдсан', '#C7361B'], done:['Болсон', '#0F4C17'] };
+const cloudPets = () => st.profiles.filter(p => p.cloud);
+const canBook = c => !!(c && c.booking !== false && HAS.svc && cloudOn() && cloudPets().length);
+const loadAppts = async () => {
+  if (!cloudOn()) return;
+  const { data, error } = await sb.from('appointments').select('*').order('day').order('at');
+  HAS.svc = !error;                                // the table exists = features.sql has been run
+  if (!error) svc.appts = data;
+};
+const renderAppts = () => {
+  const el = $('#myAppts'); if (!el) return;
+  const t = todayStr(), up = svc.appts.filter(a => (a.status === 'requested' || a.status === 'confirmed') && a.day >= t);
+  el.innerHTML = up.length ? `<div class="ap-h">Миний захиалсан цаг</div>` + up.map(a => {
+    const c = CLINICS.find(x => x.id === a.clinic_id), v = VETS.find(x => x.id === a.vet_id), [lab, col] = AP_STATUS[a.status], d = new Date(a.day + 'T00:00:00');
+    return `<div class="ap-card"><div class="ap-date"><b>${d.getDate()}</b><span>${pad2(d.getMonth() + 1)}-р сар</span><i>${DAY_MN[d.getDay()]}</i></div>
+      <div class="ap-tx"><b>${hm(a.at)} · ${esc(a.pet_name)}</b><span>${esc(c ? c.name : 'Эмнэлэг')}${v ? ' · ' + esc(v.name) : ''}</span><i style="color:${col};background:${col}1A">${lab}</i></div>
+      <button class="ap-x" data-cancel="${a.id}" aria-label="Цаг цуцлах">${ICON.close}</button></div>`;
+  }).join('') : '';
+};
+$('#myAppts').addEventListener('click', async e => {
+  const b = e.target.closest('[data-cancel]'); if (!b) return;
+  if (!b.classList.contains('sure')) { b.classList.add('sure'); toast('Дахин дарвал цаг цуцлагдана.'); setTimeout(() => b.classList.remove('sure'), 3000); return; }
+  const r = await Promise.resolve(sb.rpc('cancel_appointment', { p_id:b.dataset.cancel })).catch(err => ({ error:err }));
+  if (r.error) { toast('Цуцалж чадсангүй. Дахин оролдоно уу.'); return; }
+  await loadAppts(); renderAppts(); toast('Цаг цуцлагдлаа.');
+});
+const openBooking = (clinicId, vetId) => {
+  const c = CLINICS.find(x => x.id === clinicId); if (!c) return;
+  if (!canBook(c)) { toast('Цаг захиалахын тулд нэвтэрч, интернэтэд холбогдсон байх хэрэгтэй.'); return; }
+  const pets = cloudPets(), vets = VETS.filter(v => v.clinic_id === c.id);
+  const bk = { pet:(pets.find(p => p.id === st.cur) || pets[0]).id, vet:vetId || null, day:todayStr(), at:null };
+  const days = Array.from({ length:14 }, (_, i) => addDays(todayStr(), i));
+  openSheet('booking', sheetHead('Цаг захиалах') + `<div class="bk-cl">${ICON.clinic}<b>${esc(c.name)}</b></div>
+    <div class="lbl">Тэжээвэр</div><div class="bk-row" id="bkPet">${pets.map(p => `<button type="button" data-v="${p.id}" aria-pressed="${p.id === bk.pet}">${petPic(p)}${esc(p.name)}</button>`).join('')}</div>
+    ${vets.length ? `<div class="lbl">Эмч</div><div class="bk-row" id="bkVet"><button type="button" data-v="" aria-pressed="${!bk.vet}">Аль ч эмч</button>${vets.map(v => `<button type="button" data-v="${v.id}" aria-pressed="${v.id === bk.vet}">${esc(v.name)}</button>`).join('')}</div>` : ''}
+    <div class="lbl">Өдөр</div><div class="bk-days" id="bkDay">${days.map((d, i) => { const x = new Date(d + 'T00:00:00'); return `<button type="button" data-v="${d}" aria-pressed="${d === bk.day}"><i>${i === 0 ? 'Өнөөдөр' : i === 1 ? 'Маргааш' : DAY_MN[x.getDay()]}</i><b>${x.getDate()}</b><small>${pad2(x.getMonth() + 1)} сар</small></button>`; }).join('')}</div>
+    <div class="lbl">Цаг <span class="bk-hours">${hm(c.open_time || '09:00')}–${hm(c.close_time || '18:00')}</span></div><div class="bk-slots" id="bkSlots"></div>
+    <div class="field" id="f-bkr"><label for="bk-r">Шалтгаан (заавал биш)</label><textarea id="bk-r" rows="2" maxlength="300" placeholder="Жишээ: Вакцин хийлгэх, ходоод өвдөж байна"></textarea></div>
+    <div class="field" id="f-bkp"><label for="bk-p">Утас</label><input id="bk-p" inputmode="numeric" maxlength="9" value="${esc(st.user.phone || '')}"><div class="err">8 оронтой дугаар оруулна уу.</div></div>
+    <button class="btn btn-orange" id="bkGo" disabled>Цаг захиалах <span class="arr">${ICON.arrow}</span></button>
+    <p class="fine" style="text-align:center">Эмнэлэг баталгаажуулмагц танд мэдэгдэл ирнэ.</p>`);
+  const slots = async () => {
+    const box = $('#bkSlots'); if (!box) return;
+    bk.at = null; $('#bkGo').disabled = true; box.innerHTML = '<span class="bk-wait"><span class="spin"></span></span>';
+    const want = `${bk.day}|${bk.vet}`;
+    const r = await Promise.resolve(sb.rpc('free_slots', { p_clinic:c.id, p_vet:bk.vet, p_day:bk.day })).catch(err => ({ error:err }));
+    if (!$('#bkSlots') || want !== `${bk.day}|${bk.vet}`) return; // the person picked another day meanwhile
+    if (r.error) { box.innerHTML = '<p class="bk-none">Сул цагийг ачаалж чадсангүй.</p>'; return; }
+    const list = (r.data || []).map(x => hm(typeof x === 'string' ? x : x.free_slots));
+    box.innerHTML = list.length ? list.map(t => `<button type="button" data-t="${t}">${t}</button>`).join('') : '<p class="bk-none">Энэ өдөр сул цаг алга. Өөр өдөр сонгоно уу.</p>';
+  };
+  const group = (id, key, after) => $(id) && ($(id).onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; bk[key] = b.dataset.v || null; $(id).querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', x === b)); after && after(); });
+  group('#bkPet', 'pet'); group('#bkVet', 'vet', slots); group('#bkDay', 'day', slots);
+  $('#bkSlots').onclick = e => { const b = e.target.closest('[data-t]'); if (!b) return; bk.at = b.dataset.t; $('#bkSlots').querySelectorAll('[data-t]').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#bkGo').disabled = false; };
+  $('#bk-p').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 8); e.target.value = d.length > 4 ? d.slice(0, 4) + ' ' + d.slice(4) : d; $('#f-bkp').classList.remove('bad'); };
+  $('#bkGo').onclick = async () => {
+    const phone = $('#bk-p').value.trim();
+    if (phone.replace(/\D/g, '').length !== 8) { const f = $('#f-bkp'); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); return; }
+    if (!bk.at) return;
+    const b = $('#bkGo'); b.disabled = true; b.innerHTML = 'Илгээж байна… <span class="spin" style="margin-left:10px"></span>';
+    const r = await Promise.resolve(sb.rpc('book_appointment', { p_clinic:c.id, p_vet:bk.vet, p_pet:bk.pet, p_day:bk.day, p_at:bk.at, p_reason:$('#bk-r').value.trim(), p_phone:phone })).catch(err => ({ error:err }));
+    if (r.error) {
+      b.innerHTML = `Цаг захиалах <span class="arr">${ICON.arrow}</span>`;
+      const m = r.error.message || '';
+      toast(/slot taken/.test(m) ? 'Энэ цагийг сая өөр хүн авчихлаа. Өөр цаг сонгоно уу.' : /too many/.test(m) ? 'Хүлээгдэж буй 5 захиалга байна. Эхлээд тэдгээрийг баталгаажтал хүлээнэ үү.' : 'Захиалж чадсангүй. Дахин оролдоно уу.');
+      slots(); return;
+    }
+    const a = r.data, pet = st.profiles.find(p => p.id === bk.pet);
+    closeSheet(); toast('Цаг захиалагдлаа. Эмнэлэг баталгаажуулахыг хүлээнэ үү.');
+    addNote({ type:'new', t:'Цаг захиалагдлаа', b:`${pet ? pet.name : ''} · ${c.name} · ${prettyDate(a.day).slice(5)} ${hm(a.at)}. Баталгаажихыг хүлээж байна.`, action:'tab:vets' });
+    await loadAppts(); renderAppts();
+    if (pushState() === 'off') setTimeout(() => toast('Цаг баталгаажихыг шууд мэдэхийн тулд Профайл → Push мэдэгдлийг асаагаарай.'), 3500);
+  };
+  slots();
+};
+
+/* ---------- push notifications (Web Push; on iPhone only for the app added to the Home Screen) ---------- */
+const PUSH_KEY = 'BHd1FFdsKPMcmEK2URL4JjTeaU0sSfFRvoCLxSm3Ltn2FTKYZhrMf_tRNlpHUUuIM3F3DvSsGur3GmAwKiXPm8o';
+const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent), standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const pushState = () => !pushSupported() ? (isIOS && !standalone ? 'install' : 'unsupported') : Notification.permission === 'denied' ? 'denied'
+  : (Notification.permission === 'granted' && localStorage.getItem('zoomies.push') === '1') ? 'on' : 'off';
+const b64ToBytes = s => { const p = '='.repeat((4 - s.length % 4) % 4), raw = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from(raw, c => c.charCodeAt(0)); };
+const enablePush = async () => {
+  if (!cloudOn()) { toast('Мэдэгдэл авахын тулд нэвтэрч, интернэтэд холбогдсон байх хэрэгтэй.'); return false; }
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') { toast('Мэдэгдлийг зөвшөөрөөгүй байна. Утасныхаа тохиргооноос зөвшөөрнө үү.'); return false; }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:b64ToBytes(PUSH_KEY) });
+    const j = sub.toJSON();
+    const r = await sb.rpc('save_push', { p_endpoint:j.endpoint, p_p256dh:j.keys.p256dh, p_auth:j.keys.auth });
+    if (r.error) throw r.error;
+    localStorage.setItem('zoomies.push', '1'); toast('Push мэдэгдэл асаалаа.'); return true;
+  } catch (err) { console.warn('push', err); toast('Мэдэгдэл асааж чадсангүй. Дахин оролдоно уу.'); return false; }
+};
+const disablePush = async () => {
+  try {
+    const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
+    if (sub) { await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); }
+  } catch (_) {}
+  localStorage.setItem('zoomies.push', '0'); toast('Push мэдэгдэл унтраалаа.');
+};
+const pushRowHTML = () => {
+  const s = pushState(); if (s === 'unsupported' || !HAS.svc) return '';
+  const sub = { on:'Захиалга, эмчийн цаг, хоол, олдсон амьтны мэдээ утсанд ирнэ', off:'Апп хаалттай үед ч мэдэгдэл авах', denied:'Утасны тохиргооноос Zoomies-ийн мэдэгдлийг зөвшөөрнө үү', install:'iPhone дээр эхлээд Share → "Add to Home Screen"-ээр суулгана' }[s];
+  return `<div class="su${s === 'on' ? ' on' : ''}${s === 'denied' || s === 'install' ? ' off' : ''}" id="pushRow"><span class="su-ic">${ICON.bell}</span>
+    <div class="su-tx"><b>Push мэдэгдэл</b><span>${sub}</span></div>
+    <button type="button" class="sw" id="pushSw" role="switch" aria-checked="${s === 'on'}" aria-label="Push мэдэгдэл"${s === 'denied' || s === 'install' ? ' disabled' : ''}><i></i></button></div>`;
+};
+const bindPushRow = () => { const b = $('#pushSw'); if (!b) return; b.onclick = async () => { b.disabled = true; if (pushState() === 'on') await disablePush(); else await enablePush(); if (st.sheet === 'profile') openProfile(); }; };
+
+/* ---------- QR collar tags ---------- */
+const appBase = () => location.origin + location.pathname.replace(/index\.html$/, '');
+const tagUrl = code => appBase() + '#t=' + code;
+const loadFound = async () => {
+  if (!HAS.svc || !cloudOn()) return;
+  const { data, error } = await sb.from('found_reports').select('*').order('created_at', { ascending:false }).limit(60);
+  if (!error) svc.found = data;
+};
+const renderQrBadge = () => { const n = svc.found.filter(r => !r.seen).length, b = $('#qrBadge'); if (!b) return; b.textContent = n > 9 ? '9+' : n; b.classList.toggle('show', n > 0); };
+const renderQR = () => {
+  const L = $('#qtList'); if (!L) return;
+  renderQrBadge();
+  if (!HAS.tags) { L.innerHTML = `<div class="vt-empty"><span aria-hidden="true">🏷️</span><b>Удахгүй нээгдэнэ</b><p>QR хүзүүвч сервер дээр тохируулагдсаны дараа энд гарч ирнэ.</p></div>`; return; }
+  const ps = pushState();
+  L.innerHTML = (ps === 'off' ? `<button class="qt-push" id="qtPush">${ICON.bell}<span><b>Олдсон мэдээг шууд авах</b><small>Push мэдэгдэл асаах</small></span></button>` : '') + st.profiles.map(p => {
+    if (!p.cloud || !p.tag) return `<div class="qt-card"><div class="qt-h">${petPic(p)}<b>${esc(p.name)}</b></div><p class="qt-wait">Интернэтэд холбогдсоны дараа QR код үүснэ.</p></div>`;
+    const reps = svc.found.filter(r => r.pet_id === p.id);
+    return `<div class="qt-card${p.lost ? ' lost' : ''}" data-pet="${p.id}">
+      <div class="qt-h">${petPic(p)}<b>${esc(p.name)}</b>${p.lost ? '<i class="qt-lost">Төөрсөн</i>' : ''}</div>
+      <div class="qt-code"><div class="qt-svg">${qrSVG(tagUrl(p.tag))}</div><div class="qt-side"><small>Хүзүүвчний код</small><code>${p.tag.slice(0, 5)} ${p.tag.slice(5)}</code>
+        <button class="btn btn-plain" data-dl>⬇️ Зураг татах</button><button class="btn btn-ghost" data-share>🔗 Холбоос</button></div></div>
+      <div class="su${p.lost ? ' on' : ''}"><span class="su-ic" style="background:#FFE3E0">🚨</span><div class="su-tx"><b>Төөрсөн гэж тэмдэглэх</b><span>${p.lost ? 'QR уншуулсан хүнд улаан анхааруулга гарна' : 'Амьтан алга болвол асаагаарай'}</span></div><button type="button" class="sw" data-lost role="switch" aria-checked="${!!p.lost}" aria-label="Төөрсөн"><i></i></button></div>
+      ${p.lost ? `<div class="qt-note"><textarea data-note rows="2" maxlength="200" placeholder="Жишээ: 11/24-нд Зайсанд алга болсон. Цэнхэр хүзүүвчтэй.">${esc(p.lostNote || '')}</textarea><button class="btn btn-ghost" data-savenote>Тайлбар хадгалах</button></div>` : ''}
+      <div class="su${p.tagPhone ? ' on' : ''}"><span class="su-ic">${ICON.phone}</span><div class="su-tx"><b>Утасны дугаараа харуулах</b><span>${p.tagPhone ? 'Олсон хүн танд шууд залгаж болно' : 'Унтраалттай үед зөвхөн мессеж ирнэ'}</span></div><button type="button" class="sw" data-tagphone role="switch" aria-checked="${!!p.tagPhone}" aria-label="Утасны дугаар харуулах"><i></i></button></div>
+      ${reps.length ? `<div class="lbl">Олсон хүмүүсийн мэдээ</div>${reps.map(r => `<div class="qt-rep${r.seen ? '' : ' new'}"><div><b>${ago(Date.parse(r.created_at))}</b>${r.message ? `<p>${esc(r.message)}</p>` : ''}
+          <div class="qt-rep-a">${r.contact ? (/\d{6,}/.test(r.contact.replace(/\D/g, '')) ? `<a href="${telHref(r.contact)}">📞 ${esc(r.contact)}</a>` : `<span>✉️ ${esc(r.contact)}</span>`) : ''}${r.lat != null ? `<a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}" target="_blank" rel="noopener">📍 Газрын зураг</a>` : ''}</div></div>
+          <button class="ap-x" data-delrep="${r.id}" aria-label="Устгах">${ICON.close}</button></div>`).join('')}` : ''}
+    </div>`;
+  }).join('');
+  $('#qtPush') && ($('#qtPush').onclick = async () => { if (await enablePush()) renderQR(); });
+};
+$('#qtList').addEventListener('click', async e => {
+  const card = e.target.closest('[data-pet]'), p = card && st.profiles.find(x => x.id === card.dataset.pet);
+  const del = e.target.closest('[data-delrep]');
+  if (del) { await sb.from('found_reports').delete().eq('id', del.dataset.delrep); svc.found = svc.found.filter(r => r.id !== del.dataset.delrep); renderQR(); return; }
+  if (!p) return;
+  if (e.target.closest('[data-lost]')) { p.lost = !p.lost; if (!p.lost) p.lostNote = ''; pushPet(p); renderQR(); toast(p.lost ? `${p.name}-г төөрсөн гэж тэмдэглэлээ. QR уншуулсан хүнд анхааруулга гарна.` : `${p.name} олдсонд баяр хүргэе!`); return; }
+  if (e.target.closest('[data-tagphone]')) { p.tagPhone = !p.tagPhone; pushPet(p); renderQR(); return; }
+  if (e.target.closest('[data-savenote]')) { p.lostNote = card.querySelector('[data-note]').value.trim().slice(0, 200); pushPet(p); toast('Тайлбар хадгалагдлаа.'); return; }
+  if (e.target.closest('[data-share]')) {
+    const url = tagUrl(p.tag);
+    try { if (navigator.share) { await navigator.share({ title:`${p.name} · Zoomies`, url }); return; } } catch (_) { return; }
+    toast(await copyText(url) ? 'Холбоос хуулагдлаа.' : url); return;
+  }
+  if (e.target.closest('[data-dl]')) downloadTag(p);
+});
+// a printable tag: QR, name and a short note, as a PNG the owner can print and laminate
+const downloadTag = p => {
+  const q = qrOf(tagUrl(p.tag)); if (!q) { toast('QR код үүсгэж чадсангүй.'); return; }
+  const c = document.createElement('canvas'), W = 900, H = 1180; c.width = W; c.height = H; const g = c.getContext('2d');
+  g.fillStyle = '#0F4C17'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#fff'; g.beginPath(); g.roundRect(60, 230, 780, 780, 48); g.fill();
+  const n = q.getModuleCount(), cell = Math.floor(660 / n), off = 60 + (780 - cell * n) / 2;
+  g.fillStyle = '#0E2E12';
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (q.isDark(r, k)) g.fillRect(off + k * cell, 230 + (780 - cell * n) / 2 + r * cell, cell, cell);
+  g.textAlign = 'center'; g.fillStyle = '#A8E09E'; g.font = '800 44px Montserrat, sans-serif'; g.fillText('НАМАЙГ ОЛСОН УУ?', W / 2, 110);
+  g.fillStyle = '#fff'; g.font = '800 74px Montserrat, sans-serif'; g.fillText(p.name, W / 2, 190);
+  g.fillStyle = '#fff'; g.font = '600 38px Montserrat, sans-serif'; g.fillText('Камераараа уншуулаад эзэнд мэдэгдээрэй', W / 2, 1080);
+  g.fillStyle = '#A8E09E'; g.font = '700 32px Montserrat, sans-serif'; g.fillText('Zoomies · ' + p.tag, W / 2, 1140);
+  c.toBlob(b => { if (!b) return; const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `zoomies-${p.name}.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }, 'image/png');
+};
+// seen when the owner looks at the QR tab
+const markFoundSeen = () => {
+  const ids = svc.found.filter(r => !r.seen).map(r => r.id); if (!ids.length) return;
+  svc.found.forEach(r => r.seen = true); renderQrBadge();
+  Promise.resolve(sb.from('found_reports').update({ seen:true }).in('id', ids)).catch(() => {});
+};
+
+/* the page a finder sees after scanning a collar: works without an account */
+const TAG_RE = /^#t=([A-Za-z0-9]{10})$/;
+const showTagPage = async code => {
+  if (!sb) { toast('Интернэтэд холбогдоод дахин уншуулна уу.'); return; }
+  const r = await Promise.resolve(sb.rpc('tag_card', { code })).catch(err => ({ error:err }));
+  const d = r && !r.error && r.data && r.data[0];
+  if (!d) { toast('Энэ QR код олдсонгүй.'); return; }
+  document.querySelector('.tagpage')?.remove();
+  const el = document.createElement('div'); el.className = 'tagpage'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', d.name);
+  const photo = d.photo_path ? `<img src="${esc(PHOTO_URL(d.photo_path))}" alt="">` : petBy(d.kind).svg;
+  el.innerHTML = `<div class="tg-in"><button class="circle-btn tg-x" aria-label="Хаах">${ICON.close}</button>
+    ${d.lost ? `<div class="tg-alert">🚨 Энэ амьтан төөрсөн байна!${d.lost_note ? `<small>${esc(d.lost_note)}</small>` : ''}</div>` : ''}
+    <div class="tg-pic">${photo}</div><h1>${esc(d.name)}</h1>
+    <div class="pd-tags" style="justify-content:center">${[petBy(d.kind).n, d.sex, d.breed].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('')}</div>
+    <p class="tg-own">${esc(d.owner_name || '')}-ийн тэжээвэр. Олсонд баярлалаа!</p>
+    ${d.owner_phone ? `<a class="btn btn-book" href="${telHref(d.owner_phone)}">📞 Эзэн рүү залгах · ${esc(d.owner_phone)}</a>` : ''}
+    <form class="tg-form" novalidate>
+      <div class="field"><label for="tg-m">Хаана, ямар байдалтай олсон бэ?</label><textarea id="tg-m" rows="3" maxlength="500" placeholder="Жишээ: 13-р хорооллын тоглоомын талбай дээр байна, эрүүл."></textarea></div>
+      <div class="field"><label for="tg-c">Таны утас эсвэл имэйл (заавал биш)</label><input id="tg-c" maxlength="60" placeholder="9911 2233"></div>
+      <label class="tg-loc"><input type="checkbox" id="tg-l" checked> Миний одоогийн байршлыг илгээх</label>
+      <button class="btn btn-orange" type="submit" style="justify-content:center">Эзэнд мэдэгдэх</button>
+      <p class="fine">Таны мессежийг зөвхөн эзэн нь харна.</p>
+    </form></div>`;
+  (document.querySelector('.device') || document.body).appendChild(el);
+  requestAnimationFrame(() => el.classList.add('open'));
+  const close = () => { el.classList.remove('open'); setTimeout(() => el.remove(), 400); };
+  el.querySelector('.tg-x').onclick = close;
+  el.querySelector('form').onsubmit = async e => {
+    e.preventDefault();
+    const btn = el.querySelector('[type=submit]'); btn.disabled = true; btn.innerHTML = 'Илгээж байна… <span class="spin" style="margin-left:10px"></span>';
+    let lat = null, lng = null;
+    if ($('#tg-l').checked && navigator.geolocation) {
+      await new Promise(res => navigator.geolocation.getCurrentPosition(pos => { lat = pos.coords.latitude; lng = pos.coords.longitude; res(); }, () => res(), { timeout:8000, maximumAge:60000 }));
+    }
+    const r2 = await Promise.resolve(sb.rpc('report_found', { code, p_message:$('#tg-m').value.trim(), p_contact:$('#tg-c').value.trim(), p_lat:lat, p_lng:lng })).catch(err => ({ error:err }));
+    if (r2.error || r2.data === 'not_found') { btn.disabled = false; btn.textContent = 'Эзэнд мэдэгдэх'; toast('Илгээж чадсангүй. Дахин оролдоно уу.'); return; }
+    if (r2.data === 'busy') { btn.disabled = false; btn.textContent = 'Эзэнд мэдэгдэх'; toast('Саяхан олон мэдээ илгээгдсэн байна. Түр хүлээгээд дахин оролдоно уу.'); return; }
+    el.querySelector('form').outerHTML = `<div class="tg-done"><b>Баярлалаа! 💚</b><p>${esc(d.name)}-ийн эзэнд мэдэгдлээ. Тантай удахгүй холбогдох байх.</p></div>`;
+  };
+};
+{ const m = TAG_RE.exec(location.hash); if (m) { history.replaceState(history.state, '', location.pathname + location.search); setTimeout(() => showTagPage(m[1].toUpperCase()), 2200); } }
+
+/* ---------- adoption ---------- */
+const REQ_STATUS = { new:['Хүсэлт илгээсэн', '#2F8FD0'], contacted:['Холбогдож байна', '#D9560A'], approved:['Зөвшөөрсөн', '#2E7D32'], declined:['Татгалзсан', '#C7361B'] };
+const AD_KEY = 'zoomies.adopt.v1';
+const loadAdopt = async () => {
+  if (sb) {
+    try {
+      const [a, s] = await Promise.all([
+        sb.from('adoptions').select('*').eq('active', true).neq('status', 'adopted').order('sort').order('created_at', { ascending:false }),
+        sb.from('shelters').select('*').eq('active', true).order('sort')
+      ]);
+      if (!a.error && !s.error) { svc.adopt = a.data.filter(x => s.data.some(h => h.id === x.shelter_id)); svc.shelters = s.data; try { localStorage.setItem(AD_KEY, JSON.stringify({ a:svc.adopt, s:svc.shelters })); } catch (_) {} return; }
+    } catch (_) {}
+  }
+  try { const c = JSON.parse(localStorage.getItem(AD_KEY) || 'null'); if (c) { svc.adopt = c.a || []; svc.shelters = c.s || []; } } catch (_) {}
+};
+const loadMyReqs = async () => {
+  if (!HAS.svc || !cloudOn()) return;
+  const { data, error } = await sb.from('adoption_requests').select('*').eq('user_id', st.user.id).order('created_at', { ascending:false });
+  if (!error) svc.myReqs = data;
+};
+const shelterOf = a => svc.shelters.find(s => s.id === a.shelter_id) || {};
+const adPic = a => safeImg(a.photo) ? `<img src="${esc(a.photo)}" alt="" loading="lazy">` : petBy(a.kind).svg;
+const renderAdopt = () => {
+  const G = $('#adGrid'); if (!G) return;
+  const kinds = PETS.filter(p => svc.adopt.some(a => a.kind === p.k));
+  if (svc.adFilter !== 'all' && !kinds.some(k => k.k === svc.adFilter)) svc.adFilter = 'all';
+  $('#adChips').innerHTML = svc.adopt.length ? `<button class="chip all" data-f="all" aria-pressed="${svc.adFilter === 'all'}">Бүгд · ${svc.adopt.length}</button>` +
+    kinds.map(p => `<button class="chip" data-f="${p.k}" aria-pressed="${svc.adFilter === p.k}">${p.svg}${esc(p.n)}</button>`).join('') : '';
+  const list = svc.adopt.filter(a => svc.adFilter === 'all' || a.kind === svc.adFilter);
+  G.innerHTML = list.length ? list.map((a, i) => {
+    const mine = svc.myReqs.find(r => r.adoption_id === a.id && r.status !== 'declined');
+    return `<button class="ad-card" data-ad="${a.id}" style="--i:${i}"><span class="ad-ph">${adPic(a)}${a.status === 'reserved' ? '<i class="ad-res">Захиалгатай</i>' : ''}${mine ? '<i class="ad-mine">Хүсэлт илгээсэн</i>' : ''}</span>
+      <span class="ad-tx"><b>${esc(a.name)}</b><small>${[petBy(a.kind).n, a.sex, a.age].filter(Boolean).map(esc).join(' · ')}</small><em>🏠 ${esc(shelterOf(a).name || '')}</em></span></button>`;
+  }).join('') : `<div class="vt-empty"><span aria-hidden="true">🐾</span><b>Одоогоор үрчлүүлэх амьтан алга</b><p>Асрамжийн газрууд шинэ гэр хайж буй амьтдаа нэмэхэд энд гарч ирнэ.</p></div>`;
+};
+$('#adChips').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; svc.adFilter = b.dataset.f; renderAdopt(); });
+$('#adGrid').addEventListener('click', e => { const c = e.target.closest('[data-ad]'); if (c) openAdopt(c.dataset.ad); });
+const openAdopt = id => {
+  const a = svc.adopt.find(x => x.id === id); if (!a) { toast('Энэ амьтан аль хэдийн шинэ гэртэй болсон байна.'); return; }
+  const s = shelterOf(a), mine = svc.myReqs.find(r => r.adoption_id === a.id && r.status !== 'declined');
+  const facts = [['Төрөл', petBy(a.kind).n], ['Хүйс', a.sex], ['Нас', a.age], ['Үүлдэр', a.breed]].filter(x => x[1]);
+  openSheet('adopt', sheetHead(esc(a.name)) + `<div class="ad-hero">${adPic(a)}</div>
+    <div class="ad-facts">${facts.map(([k, v]) => `<div><small>${k}</small><b>${esc(v)}</b></div>`).join('')}</div>
+    <div class="pd-tags">${a.vaccinated ? '<span>💉 Вакцинжуулсан</span>' : ''}${a.sterilized ? '<span>✂️ Ариутгасан</span>' : ''}${a.status === 'reserved' ? '<span style="color:#D9560A">Захиалгатай</span>' : ''}</div>
+    ${a.description ? `<p class="pd-desc">${esc(a.description)}</p>` : ''}
+    <div class="lbl">Асрамжийн газар</div>
+    <div class="ad-sh"><b>🏠 ${esc(s.name || '')}</b>${s.district || s.address ? `<span>📍 ${esc([s.district, s.address].filter(Boolean).join(', '))}</span>` : ''}
+      <div class="cl-acts">${s.phone ? `<a class="btn btn-plain" href="${telHref(s.phone)}">📞 Залгах</a>` : ''}${s.address || s.district ? `<a class="btn btn-ghost" href="${mapHref(s)}" target="_blank" rel="noopener">🗺️ Газрын зураг</a>` : ''}</div></div>
+    <div id="adReq">${mine ? `<div class="ad-state" style="--c:${REQ_STATUS[mine.status][1]}"><b>${REQ_STATUS[mine.status][0]}</b><span>${prettyDate(ymd(new Date(mine.created_at)))}-нд илгээсэн. Асрамжийн газар тантай холбогдоно.</span>${mine.status === 'new' ? '<button class="textlink" id="adWithdraw"><b>Хүсэлтээ цуцлах</b></button>' : ''}</div>`
+      : !HAS.svc || !cloudOn() ? `<p class="fine" style="text-align:center">Үрчлэх хүсэлт илгээхийн тулд нэвтэрч, интернэтэд холбогдоно уу.</p>`
+      : `<div class="lbl">Үрчлэх хүсэлт</div>
+        <div class="field" id="f-adn"><label for="ad-n">Таны нэр</label><input id="ad-n" maxlength="40" value="${esc(st.user.name || '')}"><div class="err">Нэрээ оруулна уу.</div></div>
+        <div class="field" id="f-adp"><label for="ad-p">Утас</label><input id="ad-p" inputmode="numeric" maxlength="9" value="${esc(st.user.phone || '')}"><div class="err">8 оронтой дугаар оруулна уу.</div></div>
+        <div class="field"><label for="ad-m">Өөрийнхөө тухай (заавал биш)</label><textarea id="ad-m" rows="3" maxlength="500" placeholder="Жишээ: Хашаа байшинд амьдардаг, өмнө нь нохой тэжээж байсан."></textarea></div>
+        <button class="btn btn-orange" id="adSend">Үрчлэх хүсэлт илгээх <span class="arr">${ICON.arrow}</span></button>`}</div>`);
+  $('#adWithdraw') && ($('#adWithdraw').onclick = async () => { await sb.from('adoption_requests').delete().eq('id', mine.id); await loadMyReqs(); renderAdopt(); openAdopt(a.id); toast('Хүсэлтээ цуцаллаа.'); });
+  $('#ad-p') && ($('#ad-p').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 8); e.target.value = d.length > 4 ? d.slice(0, 4) + ' ' + d.slice(4) : d; $('#f-adp').classList.remove('bad'); });
+  $('#adSend') && ($('#adSend').onclick = async () => {
+    const bad = id => { const f = $('#' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); };
+    const name = $('#ad-n').value.trim(), phone = $('#ad-p').value.trim();
+    if (!name) return bad('f-adn'); if (phone.replace(/\D/g, '').length !== 8) return bad('f-adp');
+    const b = $('#adSend'); b.disabled = true; b.innerHTML = 'Илгээж байна… <span class="spin" style="margin-left:10px"></span>';
+    const { error } = await sb.from('adoption_requests').insert({ adoption_id:a.id, name, phone, message:$('#ad-m').value.trim() });
+    if (error) { b.disabled = false; b.innerHTML = `Үрчлэх хүсэлт илгээх <span class="arr">${ICON.arrow}</span>`; toast(/duplicate|unique/i.test(error.message) ? 'Та энэ амьтанд хүсэлт илгээсэн байна.' : 'Илгээж чадсангүй. Дахин оролдоно уу.'); return; }
+    await loadMyReqs(); renderAdopt(); openAdopt(a.id);
+    toast(`${a.name}-г үрчлэх хүсэлт илгээгдлээ!`);
+    addNote({ type:'friend', t:'Үрчлэх хүсэлт илгээгдлээ', b:`${a.name} · ${s.name || ''}. Асрамжийн газар тантай холбогдоно.`, action:'tab:adopt' });
+  });
+};
+
+/* ---------- loading, live updates, links from notifications ---------- */
+const svcAfterLoad = async () => {
+  loadFoodLocal();
+  await loadAppts().catch(() => {});
+  await Promise.all([loadFood(), loadFound(), loadMyReqs()]).catch(() => {});
+  renderFood(); renderAppts(); renderQR(); renderAdopt();
+  startSvcLive(); routeHash(location.hash);
+};
+const startSvcLive = () => {
+  if (!HAS.svc || svc.chan || !cloudOn()) return;
+  const me = st.user.id;
+  svc.chan = sb.channel('services')
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'found_reports' }, async ({ new:r }) => {
+      const p = st.profiles.find(x => x.id === r.pet_id); if (!p) return;
+      await loadFound(); renderQR();
+      addNote({ type:'friend', t:`${p.name}-г олсон хүн мэдэгдлээ!`, b:r.message || 'QR хүзүүвчийг уншуулсан байна.', action:'tab:qr' }); toast(`${p.name}-г олсон хүн мэдэгдлээ!`);
+    })
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'appointments', filter:`user_id=eq.${me}` }, async ({ new:a }) => {
+      const was = (svc.appts.find(x => x.id === a.id) || {}).status;
+      await loadAppts(); renderAppts();
+      if (a.status !== was && (a.status === 'confirmed' || a.status === 'cancelled')) {
+        const c = CLINICS.find(x => x.id === a.clinic_id), msg = `${a.pet_name} · ${c ? c.name : ''} · ${prettyDate(a.day).slice(5)} ${hm(a.at)}`;
+        addNote({ type:a.status === 'confirmed' ? 'box' : 'new', t:a.status === 'confirmed' ? 'Цаг баталгаажлаа' : 'Цаг цуцлагдлаа', b:msg + (a.note ? ` · ${a.note}` : ''), action:'tab:vets' });
+        toast(a.status === 'confirmed' ? 'Эмчийн цаг баталгаажлаа!' : 'Эмнэлэг цагийг цуцаллаа.');
+      }
+    })
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'adoption_requests', filter:`user_id=eq.${me}` }, async ({ new:r }) => {
+      const was = (svc.myReqs.find(x => x.id === r.id) || {}).status;
+      await loadMyReqs(); renderAdopt();
+      if (r.status !== was && REQ_STATUS[r.status]) {
+        const a = svc.adopt.find(x => x.id === r.adoption_id);
+        addNote({ type:'friend', t:`${a ? a.name : 'Үрчлэлт'}: ${REQ_STATUS[r.status][0]}`, b:r.status === 'approved' ? 'Баяр хүргэе! Асрамжийн газар тантай холбогдоно.' : 'Үрчлэх хүсэлтийн төлөв шинэчлэгдлээ.', action:'tab:adopt' });
+      }
+    })
+    .on('postgres_changes', { event:'*', schema:'public', table:'food_stocks' }, () => loadFood().then(renderFood))
+    .subscribe();
+};
+const stopSvcLive = () => { if (svc.chan) { sb.removeChannel(svc.chan); svc.chan = null; } svc.appts = []; svc.found = []; svc.myReqs = []; };
+// #vets / #qr / #adopt / #shop open that tab (links in push notifications)
+const routeHash = h => {
+  const k = (/^#(home|shop|vets|qr|adopt)$/.exec(h || '') || [])[1]; if (!k) return;
+  history.replaceState(history.state, '', location.pathname + location.search);
+  if (st.user && st.signedIn && st.profiles.length) setTimeout(() => go(k), 300);
+};
+window.addEventListener('hashchange', () => { const m = TAG_RE.exec(location.hash); if (m) { history.replaceState(history.state, '', location.pathname + location.search); showTagPage(m[1].toUpperCase()); } else routeHash(location.hash); });
+// a tap on a push notification while the app is already open
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'open') { const h = new URL(e.data.url, location.href).hash; const m = TAG_RE.exec(h); if (m) showTagPage(m[1]); else routeHash(h); } });
+// opening the QR tab marks finders' messages as read
+new MutationObserver(() => { if ($('#qr').classList.contains('active')) setTimeout(markFoundSeen, 1500); }).observe($('#qr'), { attributes:true, attributeFilter:['class'] });
+
 
 /* ---------- nav ---------- */
 document.querySelectorAll('.nav button').forEach(b => b.onclick = () => {
@@ -3486,7 +4142,7 @@ const splashExit = () => {
 };
 setTimeout(splashExit, 6000); // never longer than this, even on a very slow connection
 
-Promise.all([loadPetTypes().then(loadProducts), loadClinics(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).finally(() => setTimeout(splashExit, 50)).then(([, , s]) => {
+Promise.all([loadPetTypes().then(loadProducts), loadClinics(), loadAdopt(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).finally(() => setTimeout(splashExit, 50)).then(([, , , s]) => {
   startCatalogLive(); // products, clinics and vets follow the admin panel live, signed in or not
   const session = s && s.data && s.data.session;
   if (sb && session) {

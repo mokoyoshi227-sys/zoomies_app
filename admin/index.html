@@ -165,6 +165,17 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
   .row2{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms!important; transition-duration:.01ms!important} }
+/* services */
+.tabs{overflow-x:auto; scrollbar-width:none; max-width:100%; flex:0 1 auto}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none; white-space:nowrap}
+.staff{display:grid; gap:8px}
+.st-row{display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--mint); border-radius:12px; padding:6px 6px 6px 12px; font-size:14px}
+.st-row .btn{height:34px; font-size:12.5px; padding:0 12px}
+.st-add{display:flex; gap:8px}
+.st-add input{flex:1; min-width:0}
+.st-add .btn{height:46px; padding:0 16px}
+.btn.sure{background:var(--danger, #C7361B); color:#fff}
 </style>
 </head>
 <body>
@@ -304,22 +315,240 @@ const S = {
     text:r => `${r.name} ${r.specialty} ${r.phone} ${clinicName(r.clinic_id)}`
   }
 };
-const st = { tab:'orders', rows:{ orders:[], products:[], pet_types:[], clinics:[], vets:[] }, q:'', show:'all', ostat:'open', edit:null, draft:{}, newPhoto:null, unseen:0, mine:new Set() };
+const st = { tab:'orders', rows:{ orders:[], products:[], pet_types:[], clinics:[], vets:[], appointments:[], adoption_requests:[], found_reports:[], shelters:[], adoptions:[] }, flt:{ appointments:'open', adoption_requests:'open' }, lost:[], q:'', show:'all', ostat:'open', edit:null, draft:{}, newPhoto:null, unseen:0, mine:new Set() };
 // orders come first: the tab the shop works from every day
 const OS = { new:['Шинэ', '#2F8FD0'], paid:['Төлөгдсөн', '#2E7D32'], delivering:['Хүргэлтэд', '#6B4FB8'], done:['Хүргэгдсэн', '#0F4C17'], cancelled:['Цуцалсан', '#C7361B'] };
 const PAY = { cod:'Хүргэлтээр төлөх', transfer:'Дансаар шилжүүлэх', qpay:'QPay' };
 const NEXT = { new:[['paid', '💰 Төлөгдсөн'], ['cancelled', 'Цуцлах']], paid:[['delivering', '🚚 Хүргэлтэд гаргах'], ['cancelled', 'Цуцлах']], delivering:[['done', '✅ Хүргэгдсэн']], done:[], cancelled:[] };
-const TABS = () => [['orders', '🧾', 'Захиалга', st.rows.orders.filter(o => o.status === 'new' || o.status === 'paid').length], ...Object.entries(S).map(([t, s]) => [t, s.icon, s.title, st.rows[t].length])];
+const TAB_ORDER = () => ROLE.admin ? ['orders', 'appointments', 'products', 'pet_types', 'clinics', 'vets', 'shelters', 'adoptions', 'adoption_requests', 'found_reports'] : ['adoptions', 'adoption_requests', 'shelters'];
+const LIST_TABS = { orders:['🧾', 'Захиалга'], appointments:['📅', 'Цаг захиалга'], adoption_requests:['📨', 'Үрчлэх хүсэлт'], found_reports:['🔎', 'Олдсон'] };
+const tabCount = t => t === 'orders' ? st.rows.orders.filter(o => o.status === 'new' || o.status === 'paid').length
+  : t === 'appointments' ? st.rows.appointments.filter(a => a.status === 'requested').length
+  : t === 'adoption_requests' ? st.rows.adoption_requests.filter(r => r.status === 'new').length
+  : t === 'found_reports' ? st.rows.found_reports.filter(r => !r.seen).length : visibleRows(t).length;
+const TABS = () => TAB_ORDER().filter(t => LIST_TABS[t] ? (t === 'orders' || HAS_SVC) : S[t]).map(t => LIST_TABS[t] ? [t, ...LIST_TABS[t], tabCount(t)] : [t, S[t].icon, S[t].title, tabCount(t)]);
 const vetsOf = cid => st.rows.vets.filter(v => v.clinic_id === cid).length;
 const clinicName = id => (st.rows.clinics.find(c => c.id === id) || {}).name || 'Эмнэлэггүй';
 
-/* ---------- sign in: only an account on the admin list gets past this screen ---------- */
+/* ═══════════ services (supabase/features.sql): roles, appointments, adoption, shelters, finders' messages ═══════════ */
+const ROLE = { admin:false, shelter:null, shelterName:'' };
+let HAS_SVC = false;
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const hm = t => String(t || '').slice(0, 5);
+// shelter staff see only their own shelter and its animals
+const visibleRows = t => {
+  const rows = st.rows[t] || [];
+  if (ROLE.admin) return rows;
+  if (t === 'shelters') return rows.filter(r => r.id === ROLE.shelter);
+  if (t === 'adoptions') return rows.filter(r => r.shelter_id === ROLE.shelter);
+  return rows;
+};
+const AD_STATUS = [['available', 'Үрчлүүлэхэд бэлэн'], ['reserved', 'Захиалгатай'], ['adopted', 'Үрчлэгдсэн']];
+const shelterName = id => (st.rows.shelters.find(s => s.id === id) || {}).name || '—';
+const setupSvc = () => {
+  if (!HAS_SVC) return;
+  if (!S.products.fields.some(f => f.k === 'pack_g')) S.products.fields.splice(4, 0,
+    { k:'pack_g', label:'Хоолны уутны хэмжээ (г)', type:'grams', hint:'Зөвхөн хоолонд. Оруулбал хэрэглэгчид хоол дуусахаас 5 хоногийн өмнө сануулга авч, нэг товчоор дахин захиална.' });
+  if (!S.clinics.fields.some(f => f.k === 'booking')) S.clinics.fields.splice(S.clinics.fields.length - 2, 0,
+    { k:'booking', label:'Онлайн цаг захиалга', type:'toggle', hint:'Хэрэглэгчид апп-аас цаг захиална', def:true },
+    { k:'open_time', label:'Цаг авч эхлэх', type:'time', def:'09:00' },
+    { k:'close_time', label:'Цаг авч дуусах', type:'time', def:'18:00' },
+    { k:'slot_minutes', label:'Нэг үзлэгийн хугацаа (минут)', type:'int', def:30 });
+  S.shelters = {
+    title:'Асрамж', one:'Асрамжийн газар', icon:'🏠', order:'sort',
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:80 },
+      { k:'phone', label:'Утас', type:'text', max:40, ph:'9911 2233' },
+      { k:'district', label:'Дүүрэг', type:'text', max:60 },
+      { k:'address', label:'Хаяг', type:'text', max:200 },
+      { k:'description', label:'Тайлбар', type:'textarea', max:800 },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'staff', label:'Ажилтнууд', type:'staff', hint:'Ажилтан Zoomies-д бүртгүүлсэн имэйлээрээ энэ админ хэсэгт нэвтэрч, зөвхөн энэ газрын амьтдыг удирдана.' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="meta">${esc([r.district, r.address].filter(Boolean).join(', '))}</div>
+      <div class="tags">${r.phone ? `<span class="tag">${esc(r.phone)}</span>` : ''}<span class="tag">${st.rows.adoptions.filter(a => a.shelter_id === r.id && a.status !== 'adopted').length} амьтан</span>${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => `${r.name} ${r.district} ${r.address} ${r.phone}`
+  };
+  S.adoptions = {
+    title:'Үрчлэлт', one:'Амьтан', icon:'🐶', order:'sort',
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:40, ph:'Бөмбөг' },
+      { k:'shelter_id', label:'Асрамжийн газар', type:'shelter', req:true, def:() => ROLE.shelter || (st.rows.shelters[0] || {}).id || '' },
+      { k:'kind', label:'Төрөл', type:'kind', req:true, def:() => (PETS().find(p => p[2]) || ['dog'])[0] },
+      { k:'sex', label:'Хүйс', type:'sex' },
+      { k:'age', label:'Нас', type:'text', max:30, ph:'2 нас, 6 сар' },
+      { k:'breed', label:'Үүлдэр', type:'text', max:40, ph:'Эрлийз' },
+      { k:'description', label:'Зан төлөв, түүх', type:'textarea', max:1000 },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'vaccinated', label:'Вакцинжуулсан', type:'toggle' },
+      { k:'sterilized', label:'Ариутгасан', type:'toggle' },
+      { k:'status', label:'Төлөв', type:'status', opts:AD_STATUS, def:'available' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="meta">${esc([petName(r.kind), r.sex, r.age].filter(Boolean).join(' · '))}</div>
+      <div class="meta">🏠 ${esc(shelterName(r.shelter_id))}</div>
+      <div class="tags"><span class="tag${r.status === 'available' ? '' : r.status === 'reserved' ? ' new' : ' hid'}">${(AD_STATUS.find(x => x[0] === r.status) || [, r.status])[1]}</span>${st.rows.adoption_requests.filter(q => q.adoption_id === r.id && q.status === 'new').length ? `<span class="tag new">${st.rows.adoption_requests.filter(q => q.adoption_id === r.id && q.status === 'new').length} хүсэлт</span>` : ''}${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => `${r.name} ${petName(r.kind)} ${r.breed} ${shelterName(r.shelter_id)}`
+  };
+};
+const svcField = (f, v, wrap) => {
+  switch (f.type) {
+    case 'grams': return wrap(`<input id="f_${f.k}" inputmode="numeric" value="${v ? esc(v) : ''}" placeholder="Жишээ: 3000 (хоол биш бол хоосон)">`, '50-аас 100,000 грамм.');
+    case 'int': return wrap(`<input id="f_${f.k}" type="number" min="10" max="240" step="5" value="${esc(v ?? f.def)}">`);
+    case 'time': return wrap(`<input id="f_${f.k}" type="time" step="300" value="${esc(String(v || f.def).slice(0, 5))}">`);
+    case 'kind': return wrap(`<select id="f_${f.k}">${PETS().filter(([k, , on]) => on || k === v).map(([k, n]) => `<option value="${k}"${k === v ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`);
+    case 'shelter': return ROLE.admin
+      ? wrap(`<select id="f_${f.k}">${st.rows.shelters.map(s => `<option value="${s.id}"${s.id === v ? ' selected' : ''}>${esc(s.name)}</option>`).join('')}</select>`, 'Эхлээд "Асрамж" табаас асрамжийн газар нэмнэ үү.')
+      : `<input type="hidden" id="f_${f.k}" value="${esc(ROLE.shelter)}">`;
+    case 'sex': return wrap(`<select id="f_${f.k}"><option value="">—</option>${['Эр', 'Эм'].map(s => `<option${s === v ? ' selected' : ''}>${s}</option>`).join('')}</select>`);
+    case 'status': return wrap(`<select id="f_${f.k}">${f.opts.map(([k, n]) => `<option value="${k}"${k === v ? ' selected' : ''}>${n}</option>`).join('')}</select>`);
+    case 'staff': return ROLE.admin && st.edit ? wrap(`<div id="staffBox" class="staff"><span class="hint">Ачаалж байна…</span></div>`) : '';
+  }
+  return '';
+};
+const readSvcField = (f, el, d) => {
+  if (!el) return null;
+  if (f.type === 'grams') { const v = el.value.replace(/\D/g, ''); d[f.k] = v ? parseInt(v, 10) : null; return v && (d[f.k] < 50 || d[f.k] > 100000) ? f.k : null; }
+  if (f.type === 'int') d[f.k] = Math.min(240, Math.max(10, parseInt(el.value, 10) || f.def));
+  if (f.type === 'time') d[f.k] = el.value || f.def;
+  if (['kind', 'shelter', 'sex', 'status'].includes(f.type)) d[f.k] = el.value || null;
+  if (f.type === 'time' && f.k === 'close_time' && d.open_time && d.close_time <= d.open_time) return f.k;
+  return null;
+};
+// staff of a shelter: added by the email they use for Zoomies
+const fillStaff = async () => {
+  const box = $('#staffBox'), sid = st.edit && st.edit.id; if (!box || !sid) return;
+  const { data, error } = await sb.rpc('admin_staff');
+  if (error) { box.innerHTML = `<span class="hint">${esc(error.message)}</span>`; return; }
+  const mine = data.filter(x => x.shelter_id === sid);
+  box.innerHTML = (mine.length ? mine.map(x => `<div class="st-row"><span>👤 ${esc(x.email)}</span><button type="button" class="btn btn-ghost" data-rm="${x.user_id}">Хасах</button></div>`).join('') : '<span class="hint">Ажилтан нэмээгүй байна.</span>')
+    + `<div class="st-add"><input id="stEmail" type="email" placeholder="ajiltan@mail.mn" aria-label="Ажилтны имэйл"><button type="button" class="btn btn-dark" id="stAdd">Нэмэх</button></div>`;
+  box.onclick = async e => {
+    const rm = e.target.closest('[data-rm]');
+    if (rm) { const r = await sb.rpc('admin_remove_staff', { p_user:rm.dataset.rm }); if (r.error) return toast(r.error.message, true); toast('Ажилтныг хаслаа.'); fillStaff(); return; }
+    if (!e.target.closest('#stAdd')) return;
+    const email = $('#stEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('Имэйл хаяг буруу байна.', true);
+    const r = await sb.rpc('admin_add_staff', { p_email:email, p_shelter:sid });
+    if (r.error) return toast(r.error.message, true);
+    if (r.data === 'no_user') return toast('Энэ имэйлээр Zoomies-д бүртгэл алга. Ажилтан эхлээд апп-д бүртгүүлэх хэрэгтэй.', true);
+    toast('Ажилтан нэмэгдлээ. Одоо тэр энэ имэйлээрээ админ хэсэгт нэвтэрнэ.'); fillStaff();
+  };
+};
+
+/* ---- lists: appointments, adoption requests, finders' messages ---- */
+const loadSvcLists = async () => {
+  const [rq, ap, fd, lost] = await Promise.all([
+    sb.from('adoption_requests').select('*').order('created_at', { ascending:false }).limit(300),
+    ROLE.admin ? sb.from('appointments').select('*').order('day').order('at').limit(500) : null,
+    ROLE.admin ? sb.rpc('admin_found') : null,
+    ROLE.admin ? sb.rpc('admin_lost') : null
+  ]);
+  if (rq && !rq.error) st.rows.adoption_requests = rq.data;
+  if (ap && !ap.error) st.rows.appointments = ap.data;
+  if (fd && !fd.error) st.rows.found_reports = fd.data;
+  if (lost && !lost.error) st.lost = lost.data;
+};
+const AP = { requested:['Хүлээгдэж буй', '#D9560A'], confirmed:['Баталгаажсан', '#2E7D32'], cancelled:['Цуцалсан', '#C7361B'], done:['Болсон', '#0F4C17'] };
+const AP_NEXT = { requested:[['confirmed', '✅ Баталгаажуулах'], ['cancelled', 'Цуцлах']], confirmed:[['done', 'Үзлэг болсон'], ['cancelled', 'Цуцлах']], cancelled:[], done:[] };
+const RQ = { new:['Шинэ', '#2F8FD0'], contacted:['Холбогдсон', '#D9560A'], approved:['Зөвшөөрсөн', '#2E7D32'], declined:['Татгалзсан', '#C7361B'] };
+const RQ_NEXT = { new:[['contacted', '📞 Холбогдсон'], ['declined', 'Татгалзах']], contacted:[['approved', '🎉 Зөвшөөрөх'], ['declined', 'Татгалзах']], approved:[], declined:[] };
+const filterBar = (list, filters) => {
+  const cur = st.flt[st.tab];
+  $('#ostat').innerHTML = filters.map(([k, n, f]) => `<button data-o="${k}" aria-pressed="${cur === k}">${n} ${list.filter(f).length}</button>`).join('');
+  return list.filter((filters.find(x => x[0] === cur) || filters[0])[2]);
+};
+const emptyList = (title, text) => `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : title}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : text}</div>`;
+const actBtns = (table, id, next) => next.length ? `<div class="oa">${next.map(([s, n]) => `<button class="btn ${s === 'cancelled' || s === 'declined' ? 'btn-danger' : 'btn-dark'}" data-act="status" data-t="${table}" data-id="${id}" data-v="${s}">${n}</button>`).join('')}</div>` : '';
+const renderAppts = () => {
+  $('#title').textContent = 'Цаг захиалга';
+  const t = today(), F = [['open', 'Идэвхтэй', a => ['requested', 'confirmed'].includes(a.status) && a.day >= t], ['requested', 'Хүлээгдэж буй', a => a.status === 'requested'],
+    ['today', 'Өнөөдөр', a => a.day === t && a.status !== 'cancelled'], ['past', 'Өнгөрсөн', a => a.day < t || ['done', 'cancelled'].includes(a.status)], ['all', 'Бүгд', () => true]];
+  const rows = filterBar(st.rows.appointments, F).filter(a => !st.q || `#${a.number} ${a.pet_name} ${a.customer} ${a.phone} ${clinicName(a.clinic_id)}`.toLowerCase().includes(st.q));
+  $('#grid').innerHTML = rows.length ? rows.map((a, i) => { const [lab, col] = AP[a.status] || AP.requested; const v = st.rows.vets.find(x => x.id === a.vet_id);
+    return `<div class="ord" style="--i:${i}; --c:${col}">
+      <div class="oh"><b>${a.day.slice(5).replace('-', '.')} · ${hm(a.at)}</b><span class="ost" style="color:${col}; background:${col}1A">${lab}</span><time>#${a.number}</time></div>
+      <div class="ow">🐾 <b>${esc(a.pet_name)}</b>${a.pet_kind ? ` · ${esc(petName(a.pet_kind))}` : ''}</div>
+      <div class="ow">👤 ${esc(a.customer)} · <a href="tel:${esc(String(a.phone).replace(/[^\d+]/g, ''))}">📞 ${esc(a.phone)}</a></div>
+      <div class="ow">🏥 ${esc(clinicName(a.clinic_id))}${v ? ` · 🩺 ${esc(v.name)}` : ''}</div>
+      ${a.reason ? `<div class="ow">💬 ${esc(a.reason)}</div>` : ''}
+      ${actBtns('appointments', a.id, AP_NEXT[a.status] || [])}</div>`; }).join('')
+    : emptyList('Цаг захиалга алга', 'Хэрэглэгчид эмнэлгийн хуудаснаас цаг захиалахад энд дуугаран гарч ирнэ.');
+};
+const renderReqs = () => {
+  $('#title').textContent = 'Үрчлэх хүсэлт';
+  const F = [['open', 'Идэвхтэй', r => ['new', 'contacted'].includes(r.status)], ['new', 'Шинэ', r => r.status === 'new'], ['approved', 'Зөвшөөрсөн', r => r.status === 'approved'], ['declined', 'Татгалзсан', r => r.status === 'declined'], ['all', 'Бүгд', () => true]];
+  const adName = id => (st.rows.adoptions.find(a => a.id === id) || {}).name || '—';
+  const rows = filterBar(st.rows.adoption_requests, F).filter(r => !st.q || `${r.name} ${r.phone} ${r.message} ${adName(r.adoption_id)}`.toLowerCase().includes(st.q));
+  $('#grid').innerHTML = rows.length ? rows.map((r, i) => { const [lab, col] = RQ[r.status] || RQ.new, a = st.rows.adoptions.find(x => x.id === r.adoption_id) || {};
+    return `<div class="ord" style="--i:${i}; --c:${col}">
+      <div class="oh"><b>🐶 ${esc(a.name || '—')}</b><span class="ost" style="color:${col}; background:${col}1A">${lab}</span><time>${when(r.created_at)}</time></div>
+      <div class="ow">🏠 ${esc(shelterName(a.shelter_id))}</div>
+      <div class="ow">👤 <b>${esc(r.name)}</b> · <a href="tel:${esc(String(r.phone).replace(/[^\d+]/g, ''))}">📞 ${esc(r.phone)}</a></div>
+      ${r.message ? `<div class="ow">💬 ${esc(r.message)}</div>` : ''}
+      ${actBtns('adoption_requests', r.id, RQ_NEXT[r.status] || [])}
+      ${r.status === 'approved' && a.id && a.status !== 'adopted' ? `<div class="oa"><button class="btn btn-dark" data-act="adopted" data-id="${a.id}">🏡 Үрчлэгдсэн гэж тэмдэглэх</button></div>` : ''}</div>`; }).join('')
+    : emptyList('Хүсэлт алга', 'Хэрэглэгчид "Үрчлэх хүсэлт илгээх" дарахад энд гарч ирнэ.');
+};
+const renderFound = () => {
+  $('#title').textContent = 'Олдсон / төөрсөн амьтад'; $('#ostat').innerHTML = '';
+  const lost = (st.lost || []).filter(p => !st.q || `${p.name} ${p.owner_name} ${p.lost_note}`.toLowerCase().includes(st.q));
+  const reps = st.rows.found_reports.filter(r => !st.q || `${r.pet_name} ${r.owner_name} ${r.message} ${r.contact}`.toLowerCase().includes(st.q));
+  $('#grid').innerHTML = (lost.length ? lost.map((p, i) => `<div class="ord" style="--i:${i}; --c:#E5484D">
+      <div class="oh"><b>🚨 ${esc(p.name)}</b><span class="ost" style="color:#E5484D; background:#E5484D1A">Төөрсөн</span><time>${p.lost_since ? when(p.lost_since) : ''}</time></div>
+      <div class="ow">${esc(petName(p.kind))} · эзэн ${esc(p.owner_name || '')} · код ${esc(p.tag_code || '')}</div>${p.lost_note ? `<div class="ow">💬 ${esc(p.lost_note)}</div>` : ''}</div>`).join('') : '')
+    + (reps.length ? reps.map((r, i) => `<div class="ord" style="--i:${i}; --c:${r.seen ? '#0F4C17' : '#D9560A'}">
+      <div class="oh"><b>🔎 ${esc(r.pet_name)}</b><span class="ost" style="color:${r.seen ? '#0F4C17' : '#D9560A'}; background:${r.seen ? '#0F4C17' : '#D9560A'}1A">${r.seen ? 'Эзэн харсан' : 'Шинэ'}</span><time>${when(r.created_at)}</time></div>
+      <div class="ow">Эзэн: ${esc(r.owner_name || '')}</div>${r.message ? `<div class="ow">💬 ${esc(r.message)}</div>` : ''}
+      <div class="ow">${r.contact ? `✉️ ${esc(r.contact)}` : ''}${r.lat != null ? ` · <a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}" target="_blank" rel="noopener">📍 Газрын зураг</a>` : ''}</div>
+      <div class="oa"><button class="btn btn-danger" data-act="del-found" data-id="${r.id}">Устгах (спам)</button></div></div>`).join('') : '')
+    || emptyList('Мэдээ алга', 'QR хүзүүвч уншуулж эзэнд мэдэгдсэн мэдээ, төөрсөн амьтад энд харагдана.');
+};
+const svcAction = async b => {
+  const { act, id } = b.dataset;
+  const risky = act === 'del-found' || (act === 'status' && ['cancelled', 'declined'].includes(b.dataset.v));
+  if (risky && !b.classList.contains('sure')) { const t0 = b.textContent; b.classList.add('sure'); b.textContent = 'Дахин дарж баталгаажуулна'; setTimeout(() => { b.classList.remove('sure'); b.textContent = t0; }, 3000); return; }
+  b.disabled = true;
+  let res;
+  if (act === 'status') res = await sb.from(b.dataset.t).update({ status:b.dataset.v }).eq('id', id);
+  if (act === 'adopted') res = await sb.from('adoptions').update({ status:'adopted' }).eq('id', id);
+  if (act === 'del-found') res = await sb.from('found_reports').delete().eq('id', id);
+  if (res && res.error) { b.disabled = false; return toast('Өөрчилж чадсангүй: ' + res.error.message, true); }
+  await Promise.all([loadSvcLists(), act === 'adopted' ? sb.from('adoptions').select('*').order('sort').order('created_at').then(r => { if (!r.error) st.rows.adoptions = r.data; }) : null]);
+  renderTabs(); render();
+  toast(act === 'del-found' ? 'Устгалаа.' : act === 'adopted' ? 'Үрчлэгдсэн гэж тэмдэглэлээ. Апп дээрээс хасагдлаа.' : 'Шинэчиллээ. Хэрэглэгчид шууд мэдэгдлээ.');
+};
+const liveSvc = ch => {
+  const upd = (table, row) => { const cur = st.rows[table].find(x => x.id === row.id); if (cur) Object.assign(cur, row); else st.rows[table].unshift(row); renderTabs(); if (st.tab === table) render(); };
+  if (ROLE.admin) {
+    ch.on('postgres_changes', { event:'INSERT', schema:'public', table:'appointments' }, ({ new:a }) => { upd('appointments', a); alertOrder(`📅 Шинэ цаг захиалга`, `${a.pet_name} · ${a.day.slice(5)} ${hm(a.at)} · ${clinicName(a.clinic_id)}`); });
+    ch.on('postgres_changes', { event:'UPDATE', schema:'public', table:'appointments' }, ({ new:a }) => upd('appointments', a));
+    ch.on('postgres_changes', { event:'INSERT', schema:'public', table:'found_reports' }, () => loadSvcLists().then(() => { renderTabs(); if (st.tab === 'found_reports') render(); }));
+  }
+  ch.on('postgres_changes', { event:'INSERT', schema:'public', table:'adoption_requests' }, ({ new:r }) => {
+    upd('adoption_requests', r); const a = st.rows.adoptions.find(x => x.id === r.adoption_id);
+    alertOrder('📨 Шинэ үрчлэх хүсэлт', `${r.name} · ${a ? a.name : ''}`);
+  });
+  ch.on('postgres_changes', { event:'UPDATE', schema:'public', table:'adoption_requests' }, ({ new:r }) => upd('adoption_requests', r));
+};
+
+/* ---------- sign in: admins, and (with features.sql) shelter staff ---------- */
 const showLogin = msg => { $('#shell').hidden = true; $('#login').hidden = false; $('#lerr').textContent = msg || ''; };
 const enter = async session => {
-  const { data:ok, error } = await sb.rpc('is_admin');
-  if (error) { showLogin('Сервертэй холбогдож чадсангүй: ' + error.message); return; }
-  if (!ok) { await sb.auth.signOut(); showLogin('Энэ бүртгэлд админ эрх алга.'); return; }
-  $('#who').textContent = session.user.email;
+  // features.sql adds roles (admin / shelter staff); before that file is run only admins exist
+  const role = await sb.rpc('my_role');
+  if (!role.error && role.data) { HAS_SVC = true; ROLE.admin = !!role.data.admin; ROLE.shelter = role.data.shelter || null; ROLE.shelterName = role.data.shelter_name || ''; }
+  else {
+    const { data:ok, error } = await sb.rpc('is_admin');
+    if (error) { showLogin('Сервертэй холбогдож чадсангүй: ' + error.message); return; }
+    ROLE.admin = !!ok;
+  }
+  if (!ROLE.admin && !ROLE.shelter) { await sb.auth.signOut(); showLogin('Энэ бүртгэлд админ эрх алга.'); return; }
+  setupSvc(); st.tab = ROLE.admin ? 'orders' : 'adoptions';
+  $('#who').textContent = session.user.email + (ROLE.admin ? '' : ' · ' + ROLE.shelterName);
   $('#login').hidden = true; $('#shell').hidden = false;
   await loadAll(); renderTabs(); render(); live();
 };
@@ -347,10 +576,11 @@ const loadAll = async () => {
   Object.keys(S).forEach((t, i) => {
     if (!res[i].error) { st.rows[t] = res[i].data; return; }
     // pet_types.sql not run yet: the tab stays empty and products use the six built-in types
-    if (t === 'pet_types' && /pet_types/.test(res[i].error.message || '')) return;
+    if (/pet_types|does not exist|schema cache|Could not find/i.test(res[i].error.message || '')) return; // that SQL file has not been run yet
     toast(res[i].error.message, true);
   });
   await loadOrders();
+  if (HAS_SVC) await loadSvcLists();
 };
 
 /* ---------- alerts for orders: sound + message + desktop notification + count in the tab title ---------- */
@@ -398,6 +628,7 @@ const live = () => {
     st.mine.delete(o.id);
     renderTabs(); if (st.tab === 'orders') render();
   });
+  if (HAS_SVC) liveSvc(chan);
   chan.subscribe();
 };
 
@@ -405,7 +636,7 @@ const live = () => {
 const renderTabs = () => {
   const tabs = $('#tabs');
   tabs.querySelectorAll('button').forEach(b => b.remove());
-  tabs.insertAdjacentHTML('beforeend', TABS().map(([t, icon, title, n]) => `<button role="tab" data-t="${t}" aria-selected="${t === st.tab}">${icon} ${title}<span class="cnt${t === 'orders' && n ? ' hot' : ''}">${n}</span></button>`).join(''));
+  tabs.insertAdjacentHTML('beforeend', TABS().map(([t, icon, title, n]) => `<button role="tab" data-t="${t}" aria-selected="${t === st.tab}">${icon} ${title}<span class="cnt${LIST_TABS[t] && t !== 'found_reports' && n ? ' hot' : ''}">${n}</span></button>`).join(''));
   const b = tabs.querySelector(`[data-t="${st.tab}"]`), ind = tabs.querySelector('.ind');
   ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`;
 };
@@ -435,7 +666,7 @@ const renderOrders = () => {
     </div>`;
   }).join('') : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : 'Захиалга алга'}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : 'Шинэ захиалга ирэхэд энд дуугаран гарч ирнэ.'}</div>`;
 };
-$('#ostat').onclick = e => { const b = e.target.closest('[data-o]'); if (!b) return; st.ostat = b.dataset.o; render(); };
+$('#ostat').onclick = e => { const b = e.target.closest('[data-o]'); if (!b) return; if (st.tab === 'orders') st.ostat = b.dataset.o; else st.flt[st.tab] = b.dataset.o; render(); };
 const setOrderStatus = async (o, status, btn) => {
   if (status === 'cancelled' && !btn.classList.contains('sure')) { btn.classList.add('sure'); btn.textContent = 'Дахин дарж цуцална'; setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Цуцлах'; }, 3000); return; }
   btn.disabled = true; st.mine.add(o.id);
@@ -445,14 +676,14 @@ const setOrderStatus = async (o, status, btn) => {
   toast(`#${o.number}: ${OS[status][0]}. Худалдан авагчид шууд мэдэгдлээ.`);
 };
 const render = () => {
-  const ord = st.tab === 'orders';
-  $('#ostat').hidden = !ord; $('#show').hidden = ord; $('#add').hidden = ord; showNotifBtn();
+  const ord = !!LIST_TABS[st.tab];
+  $('#ostat').hidden = !ord; $('#show').hidden = ord; $('#add').hidden = ord || (st.tab === 'shelters' && !ROLE.admin); showNotifBtn();
   $('#grid').classList.toggle('orders', ord);
-  if (ord) return renderOrders();
+  if (ord) return ({ orders:renderOrders, appointments:renderAppts, adoption_requests:renderReqs, found_reports:renderFound })[st.tab]();
   const s = S[st.tab];
   $('#title').textContent = s.title;
   $('#add').textContent = `+ ${s.one} нэмэх`;
-  const rows = st.rows[st.tab].filter(r => (st.show === 'all' || (st.show === 'on') === !!r.active) && (!st.q || s.text(r).toLowerCase().includes(st.q)));
+  const rows = visibleRows(st.tab).filter(r => (st.show === 'all' || (st.show === 'on') === !!r.active) && (!st.q || s.text(r).toLowerCase().includes(st.q)));
   $('#grid').innerHTML = rows.length ? rows.map((r, i) => `<button class="item${r.active ? '' : ' off'}${s.round ? ' round' : ''}" data-id="${r.id}" style="--i:${i}">
       <span class="ph">${r.photo ? `<img src="${esc(imgSrc(r.photo))}" alt="" loading="lazy">` : `<span class="noimg">${s.icon}</span>`}</span>
       <span class="bd">${s.card(r)}</span>
@@ -460,6 +691,7 @@ const render = () => {
     : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : `${s.title} алга`}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : `"+ ${s.one} нэмэх" дээр дарж эхлээрэй.`}</div>`;
 };
 $('#grid').onclick = async e => {
+  const sa = e.target.closest('[data-act]'); if (sa) { svcAction(sa); return; }
   const ob = e.target.closest('.ord [data-set]');
   if (ob) { const o = st.rows.orders.find(x => x.id === ob.closest('.ord').dataset.oid); if (o) setOrderStatus(o, ob.dataset.set, ob); return; }
   const item = e.target.closest('.item'); if (!item) return;
@@ -489,21 +721,23 @@ const field = f => {
     case 'toggle': return `<div class="sw" data-k="${f.k}"><div><b>${f.label}</b>${f.hint ? `<span>${f.hint}</span>` : ''}</div><button type="button" class="tog" role="switch" id="f_${f.k}" aria-checked="${!!v}" aria-label="${f.label}"></button></div>`;
     case 'photo': return wrap(`<div class="photo"><span class="pv" id="pv">${v ? `<img src="${esc(imgSrc(v))}" alt="">` : `<span class="noimg" style="font-size:34px;opacity:.5">${S[st.tab].icon}</span>`}</span>
         <span class="pa"><button type="button" class="btn btn-dark" id="pick">${v ? 'Зураг солих' : 'Зураг оруулах'}</button>${v ? '<button type="button" class="btn btn-ghost" id="unpick">Зураг устгах</button>' : ''}<span class="hint">JPG, PNG. Автоматаар жижигрүүлнэ. Тунгалаг арын PNG тунгалаг хэвээрээ үлдэнэ.</span></span></div>`);
+    case 'grams': case 'int': case 'time': case 'kind': case 'shelter': case 'sex': case 'status': case 'staff': return svcField(f, v, wrap);
     default: return wrap(`<input id="f_${f.k}" maxlength="${f.max || 200}" value="${esc(v)}" placeholder="${esc(f.ph || '')}">`);
   }
 };
 const openEditor = r => {
   const s = S[st.tab];
   st.edit = r; st.newPhoto = null; st.removePhoto = false;
-  st.draft = r ? { ...r } : Object.fromEntries(s.fields.map(f => [f.k, f.type === 'toggle' ? !!f.def : f.type === 'pets' || f.type === 'tags' ? [] : f.type === 'number' ? (Math.max(0, ...st.rows[st.tab].map(x => x.sort || 0)) + 1) : '']));
+  st.draft = r ? { ...r } : Object.fromEntries(s.fields.map(f => [f.k, f.type === 'toggle' ? !!f.def : f.type === 'pets' || f.type === 'tags' ? [] : f.type === 'number' ? (Math.max(0, ...st.rows[st.tab].map(x => x.sort || 0)) + 1) : f.def !== undefined ? (typeof f.def === 'function' ? f.def() : f.def) : f.type === 'grams' ? null : '']));
   $('#dt').textContent = r ? `${s.one} засах` : `${s.one} нэмэх`;
   drawForm();
-  $('#del').hidden = !r; $('#del').classList.remove('sure'); $('#del').textContent = 'Устгах';
+  $('#del').hidden = !r || (st.tab === 'shelters' && !ROLE.admin); $('#del').classList.remove('sure'); $('#del').textContent = 'Устгах';
   $('#drawer').classList.add('open'); $('#scrim').classList.add('open');
   setTimeout(() => $('#f_name')?.focus(), 350);
 };
 const drawForm = () => {
   $('#form').innerHTML = S[st.tab].fields.map(field).join('');
+  if ($('#staffBox')) fillStaff();
   $('#f_pets') && ($('#f_pets').onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; const k = b.dataset.v, cur = st.draft.pets || []; st.draft.pets = cur.includes(k) ? cur.filter(x => x !== k) : [...cur, k]; b.setAttribute('aria-pressed', st.draft.pets.includes(k)); b.closest('.fld').classList.remove('bad'); });
   $('#form').querySelectorAll('.tog').forEach(t => t.onclick = () => { const k = t.closest('[data-k]').dataset.k; st.draft[k] = !st.draft[k]; t.setAttribute('aria-checked', st.draft[k]); });
   $('#f_price') && ($('#f_price').oninput = e => { const d = e.target.value.replace(/\D/g, '').slice(0, 9); e.target.value = d ? Number(d).toLocaleString('en-US') : ''; });
@@ -561,6 +795,7 @@ const readForm = () => {
     if (f.type === 'number') d[f.k] = parseInt(el.value, 10) || 0;
     if (f.type === 'tags') d[f.k] = el.value.split(/[,،\n]/).map(x => x.trim()).filter(Boolean).slice(0, 20);
     if (f.type === 'clinic') d[f.k] = el.value || null;
+    { const bs = readSvcField(f, el, d); if (bs) bad = bad || bs; }
     if (f.type === 'latlng') {
       const t = el.value.trim();
       if (!t) { d.lat = null; d.lng = null; }
@@ -578,7 +813,7 @@ $('#save').onclick = async () => {
   const t = st.tab, old = st.edit;
   try {
     // only the columns this section owns
-    const row = {}; S[t].fields.forEach(f => { if (f.type === 'latlng') { row.lat = d.lat; row.lng = d.lng; } else if (f.type !== 'photo') row[f.k] = d[f.k]; });
+    const row = {}; S[t].fields.forEach(f => { if (f.type === 'latlng') { row.lat = d.lat; row.lng = d.lng; } else if (f.type !== 'photo' && f.type !== 'staff') row[f.k] = d[f.k]; });
     if (t === 'products') row.description = row.description || '';
     if (st.newPhoto) {
       const ext = { 'image/webp':'webp', 'image/png':'png' }[st.newPhoto.type] || 'jpg';
