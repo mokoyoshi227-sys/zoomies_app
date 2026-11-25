@@ -1,5 +1,5 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v9';
+const CACHE = 'zoomies-v10';
 
 // push notifications (sent by the "push" Edge Function): show them, and open the app at the right tab on tap
 self.addEventListener('push', e => {
@@ -20,7 +20,7 @@ self.addEventListener('notificationclick', e => {
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'products.json', 'privacy.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
-  'welcome-dog.jpg', 'home-dog.webp', 'home-cat.webp',
+  'photos/welcome-dog.jpg', 'home-dog.webp', 'home-cat.webp',
   'dog.png', 'cat2.webp', 'bird.webp', 'fish.webp', 'rabbit.webp', 'hamster.png'
 ];
 
@@ -56,7 +56,8 @@ self.addEventListener('fetch', e => {
     })));
     return;
   }
-  // product list, photos and the privacy policy: network first so edits on GitHub show up, cache as offline fallback
+  // product list, photos (product photos and the welcome photo) and the privacy policy:
+  // network first so a file replaced on GitHub shows up on every phone, cache as offline fallback
   if (url.origin === location.origin && (url.pathname.endsWith('/products.json') || url.pathname.endsWith('/privacy.html') || url.pathname.includes('/photos/'))) {
     e.respondWith(fetch(req).then(r => { if (r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); } return r; })
       .catch(() => caches.match(req, { ignoreSearch:true })));

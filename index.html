@@ -20,6 +20,15 @@ img{max-width:100%}
 [hidden]{display:none!important}
 @media (max-width:520px){ html{background:#E7F7E3} }
 </style>
+<script>
+/* tablets (iPad and others with a touch screen) and the installed app on a big screen get the full-screen layout
+   (class "tab") instead of the phone frame that desktop browsers show; set before the first paint, follows rotation */
+(function () { try {
+  var m = matchMedia('(min-width:521px) and (any-pointer:coarse), (min-width:521px) and (display-mode:standalone)');
+  var set = function () { document.documentElement.classList.toggle('tab', m.matches); };
+  set(); if (m.addEventListener) m.addEventListener('change', set); else if (m.addListener) m.addListener(set);
+} catch (e) {} })();
+</script>
 </head>
 <body>
 <title>Zoomies</title>
@@ -74,6 +83,37 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--orange); outlin
   .statusbar{display:none}
   :root{--sb:10px}
 }
+/* tablets (class "tab", set in <head>): the app fills the screen like on a phone; each screen keeps its background
+   full width, while its content sits in a centred column (--col) so nothing stretches across a wide screen */
+html.tab{--sb:10px; --col:600px; --gut:max(0px, calc((100% - var(--col)) / 2))}
+html.tab body{padding:0; gap:0}
+html.tab .aside,html.tab .statusbar{display:none}
+html.tab .device{width:100%; height:100%; border-radius:0; box-shadow:none}
+html.tab .screen,html.tab .tagpage{padding-left:var(--gut); padding-right:var(--gut)}
+html.tab #welcome,html.tab #done{padding-left:calc(var(--gut) + 28px); padding-right:calc(var(--gut) + 28px)}
+html.tab .sheet{left:var(--gut); right:var(--gut)}
+html.tab .toast{left:calc(var(--gut) + 16px); right:calc(var(--gut) + 16px)}
+html.tab .w-cta{max-width:440px}
+@media (min-height:600px){                                   /* a bigger logo and text on tall screens (iPad) */
+  html.tab .w-hero .wordmark,html.tab .splash .wordmark{font-size:80px}
+  html.tab .w-hero p{font-size:18px}
+}
+/* landscape: logo, text and buttons on the left over the orange, the photo on the right fading into it,
+   framed on the dog's head (a short phone held sideways would otherwise show only its chest) */
+@media (orientation:landscape){
+  html.tab #welcome{padding-left:max(40px, 6%); padding-right:54%}
+  html.tab .w-photo img{left:auto; width:58%; object-position:50% 85%; -webkit-mask-image:linear-gradient(to right, transparent, #000 26%); mask-image:linear-gradient(to right, transparent, #000 26%)}
+}
+/* phones are portrait only: turned sideways (a short touch screen in landscape) they show a note to turn back.
+   The installed Android app stays upright by itself (manifest "orientation"); browsers and iPhone can't be locked. */
+.rotate-note{display:none}
+@media (orientation:landscape) and (max-height:500px) and (any-pointer:coarse){
+  .rotate-note{display:flex; position:fixed; inset:0; z-index:1000; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:24px; text-align:center; background:var(--pine); color:#fff; font-family:var(--f-ui)}
+  .rotate-note svg{width:64px; height:64px; animation:turnUp 2.4s var(--ease) infinite}
+  .rotate-note b{font-size:18px; font-weight:700}
+  .rotate-note span{font-size:14px; color:#C6E8BF}
+}
+@keyframes turnUp{0%,20%{transform:rotate(-90deg)}55%,100%{transform:rotate(0)}}
 
 /* screens */
 .screen{position:absolute; inset:0; opacity:0; visibility:hidden; transform:translateX(48px); pointer-events:none;
@@ -867,7 +907,11 @@ svg.photo.custom{overflow:hidden}
 .pay button[aria-pressed="true"]::before{box-shadow:inset 0 0 0 6px var(--pine)}
 .pay b{font-size:14px; color:var(--ink)}
 .pay span{font-size:12px; color:var(--muted)}
-.my-orders{display:grid; gap:8px}
+.my-orders{display:grid; gap:8px; position:relative}
+.mo-hint{margin:8px 2px 0; font-size:11.5px; color:var(--muted)}
+.my-orders.scroll{overflow-y:auto; overscroll-behavior-y:contain; scrollbar-width:none; border-radius:16px}
+.my-orders.scroll::-webkit-scrollbar{display:none}
+.my-orders.more{-webkit-mask-image:linear-gradient(to bottom, #000 calc(100% - 34px), transparent); mask-image:linear-gradient(to bottom, #000 calc(100% - 34px), transparent)}
 .mo{display:flex; justify-content:space-between; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px}
 .mo b{font-size:14px; display:block; font-variant-numeric:tabular-nums}
 .mo span{font-size:12px; color:var(--muted)}
@@ -1010,11 +1054,12 @@ svg.photo.custom{overflow:hidden}
 .btn-book svg{width:20px; height:20px}
 .bk-cl{display:flex; align-items:center; gap:10px; background:#fff; border-radius:16px; padding:10px 12px; color:var(--pine)}
 .bk-cl svg{flex:none}
-.bk-row{display:flex; flex-wrap:wrap; gap:8px}
-.bk-row button{display:flex; align-items:center; gap:8px; height:44px; border-radius:22px; background:#fff; padding:0 14px 0 6px; font-weight:700; font-size:13.5px; transition:background .25s, color .25s}
-.bk-row button:not(:has(img,svg)){padding:0 14px}
-.bk-row button img,.bk-row button svg{width:32px; height:32px; border-radius:50%; object-fit:cover}
-.bk-row button[aria-pressed="true"]{background:var(--pine); color:#fff}
+/* "bk-pick", not "bk-row": that name belongs to the bank-transfer box in the cart */
+.bk-pick{display:flex; flex-wrap:wrap; gap:8px}
+.bk-pick button{display:flex; align-items:center; gap:8px; height:44px; border-radius:22px; background:#fff; padding:0 14px 0 6px; font-weight:700; font-size:13.5px; transition:background .25s, color .25s}
+.bk-pick button:not(:has(img,svg)){padding:0 14px}
+.bk-pick button img,.bk-pick button svg{width:32px; height:32px; border-radius:50%; object-fit:cover}
+.bk-pick button[aria-pressed="true"]{background:var(--pine); color:#fff}
 .bk-days{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 -20px; padding:2px 20px 4px; scroll-snap-type:x proximity}
 .bk-days::-webkit-scrollbar{display:none}
 .bk-days button{flex:none; width:64px; border-radius:18px; background:#fff; padding:8px 0; display:grid; justify-items:center; gap:1px; scroll-snap-align:start; transition:background .25s, color .25s}
@@ -1033,6 +1078,7 @@ svg.photo.custom{overflow:hidden}
 .bk-wait .spin{border-color:var(--leaf-soft); border-top-color:var(--pine)}
 .sheet .field textarea{width:100%; border-radius:16px; border:2px solid transparent; background:#fff; padding:12px 14px; font:inherit; font-size:14.5px; resize:none; color:var(--ink)}
 .sheet .field textarea:focus{outline:none; border-color:var(--pine)}
+.sheet .field input{background:#fff}             /* sheets are mint, so their text boxes are white (food stock, booking…) */
 
 /* QR collar tab */
 .qt-intro{margin:0 20px 14px; font-size:13.5px; color:var(--muted); line-height:1.55}
@@ -1092,6 +1138,7 @@ svg.photo.custom{overflow:hidden}
 /* adoption tab */
 .ad-chips{margin:0 0 12px; padding:2px 20px 6px}
 .ad-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 20px 120px}
+.ad-grid .vt-empty{grid-column:1 / -1}
 .ad-card{background:#fff; border-radius:22px; overflow:hidden; text-align:left; display:grid; box-shadow:0 8px 22px rgba(15,76,23,.07); animation:cardIn .55s var(--ease) both; animation-delay:calc(var(--i) * 50ms); transition:transform .35s var(--spring)}
 .ad-card:active{transform:scale(.97)}
 .ad-ph{position:relative; aspect-ratio:1; background:var(--mint); display:grid; place-items:center; overflow:hidden}
@@ -1151,7 +1198,7 @@ svg.photo.custom{overflow:hidden}
       <span class="wordmark wm-anim" role="img" aria-label="Zoomies"><span class="streaks" aria-hidden="true"><b></b><b></b><b></b></span><span class="ch" style="--d:0">Z</span><span class="ch oo" style="--d:1"><i></i><i></i></span><span class="ch" style="--d:2">m</span><span class="ch" style="--d:3">i</span><span class="ch" style="--d:4">e</span><span class="ch" style="--d:5">s</span></span>
       <p>Тэжээвэр амьтныхаа эрүүл мэнд, арчилгаа, хэрэгцээт бүхнийг нэг апп-аас.</p>
     </div>
-    <div class="w-photo"><img src="welcome-dog.jpg" alt="Нарны шил зүүсэн нохой"></div>
+    <div class="w-photo"><img src="photos/welcome-dog.jpg" alt="Нарны шил зүүсэн нохой"></div>
     <div class="w-cta">
       <button class="textlink" id="loginLink">Бүртгэлтэй юу? <b>Нэвтрэх</b></button>
       <button class="btn btn-orange" id="startBtn">Бүртгэл үүсгэх <span class="arr" data-i="arrow"></span></button>
@@ -1317,6 +1364,8 @@ svg.photo.custom{overflow:hidden}
   <div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div class="body" id="sheetBody"></div></div>
   <div class="toast" id="toast" role="status"><span data-i="star"></span><span id="toastText"></span></div>
 </main>
+
+<div class="rotate-note" role="status"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><rect x="19" y="6" width="26" height="52" rx="6"/><path d="M28 50h8"/></svg><b>Утсаа босоо барина уу</b><span>Zoomies утсан дээр босоо байрлалд ажиллана.</span></div>
 
 <!-- Supabase client (accounts + cloud data). Pinned version with an integrity hash; the app still runs on local data if it fails to load. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js" integrity="sha384-TcHRA3zBbn+Lexh5n+Oil4guNPOS3rjNDpGRAN46u/s/mB2IZ50ceC6TYDU2yvgK" crossorigin="anonymous"></script>
@@ -2439,20 +2488,22 @@ const timeWheel = (el, n, val, onChange, label = pad2, loop = true) => {
   return { set, paint, off };
 };
 
-/* Он / Сар / Өдөр date picker, shared by the log form and the pet form.
-   Never later than today; a day that doesn't exist in the month (31 in February, 29 in a non-leap year)
-   or lies in the future is greyed and rolls back on its own. An optional date starts empty and gets its
-   value the moment the wheels open (like iPhone); a "clear" button can empty it again. */
-const dateFieldHTML = (key, fid, label, value, empty = '') => `<div class="field" id="${fid}"><label for="${key}-btn">${label}</label>
+/* Он / Сар / Өдөр date picker, shared by the log form (date, next vaccine) and the pet form (birthday).
+   Never later than today unless "ahead" allows future years (the next vaccine); a day that doesn't exist in the
+   month (31 in February, 29 in a non-leap year) or lies past the limit is greyed and rolls back on its own.
+   An optional date starts empty and gets its value the moment the wheels open (like iPhone), at "suggest"
+   if given; a "clear" button can empty it again. */
+const dateFieldHTML = (key, fid, label, value, empty = '', err = 'Өнөөдөр эсвэл өмнөх өдөр сонгоно уу.') => `<div class="field" id="${fid}"><label for="${key}-btn">${label}</label>
   <button type="button" class="tbtn" id="${key}-btn" aria-expanded="false" aria-controls="${key}-wrap"><span class="tpill${value ? '' : ' empty'}" id="${key}-txt">${value ? prettyDate(value) : empty}</span><span class="chev">${ICON.chev}</span></button>
-  <input type="hidden" id="${key}" value="${value || ''}"><div class="err">Өнөөдөр эсвэл өмнөх өдөр сонгоно уу.</div></div>`;
+  <input type="hidden" id="${key}" value="${value || ''}"><div class="err">${err}</div></div>`;
 const datePanelHTML = (key, left) => `<div class="twrap" id="${key}-wrap"><div><div class="tpanel">
   <div class="wheels"><span class="wband"></span><div class="wheel yr" id="${key}-y" tabindex="0" role="spinbutton" aria-label="Он"></div><div class="wheel mon" id="${key}-m" tabindex="0" role="spinbutton" aria-label="Сар"></div><div class="wheel dy" id="${key}-d" tabindex="0" role="spinbutton" aria-label="Өдөр"></div></div>
   <div class="tfoot"><span class="tf-left">${left}</span><button type="button" data-done>Болсон</button></div></div></div></div>`;
-const dateWheels = (key, fid, start, { back = 30, empty = '' } = {}) => {
-  const [ty] = parts(todayStr()), Y0 = ty - back;
-  let [yy, mo, dd] = parts(start || todayStr()), picked = !!start;
+const dateWheels = (key, fid, start, { back = 30, ahead = 0, empty = '', suggest = '' } = {}) => {
+  const [ty] = parts(todayStr()), Y0 = ty - back, YN = ty + ahead, capToday = !ahead;
+  let [yy, mo, dd] = parts(start || suggest || todayStr()), picked = !!start;
   if (yy < Y0) yy = Y0;
+  if (yy > YN) yy = YN;
   const show = () => {
     $('#' + fid).classList.remove('bad');
     if (!picked) return;
@@ -2461,15 +2512,15 @@ const dateWheels = (key, fid, start, { back = 30, empty = '' } = {}) => {
   };
   const fix = (touch = true) => {
     const [cy, cm, cd] = parts(todayStr());
-    if (yy === cy && mo > cm) { wM.set(cm - 1, true); return; }      // set() calls back into fix
-    const maxD = yy === cy && mo === cm ? cd : daysIn(yy, mo);
+    if (capToday && yy === cy && mo > cm) { wM.set(cm - 1, true); return; }      // set() calls back into fix
+    const maxD = capToday && yy === cy && mo === cm ? cd : daysIn(yy, mo);
     if (dd > maxD) { wD.set(maxD - 1, true); return; }
-    wM.off(i => yy === cy && i + 1 > cm);
+    wM.off(i => capToday && yy === cy && i + 1 > cm);
     wD.off(i => i + 1 > maxD);
     if (touch) picked = true;
     show();
   };
-  const wY = timeWheel($('#' + key + '-y'), ty - Y0 + 1, yy - Y0, v => { yy = Y0 + v; fix(); }, i => String(Y0 + i), false);
+  const wY = timeWheel($('#' + key + '-y'), YN - Y0 + 1, yy - Y0, v => { yy = Y0 + v; fix(); }, i => String(Y0 + i), false);
   const wM = timeWheel($('#' + key + '-m'), 12, mo - 1, v => { mo = v + 1; fix(); }, i => `${i + 1}-р сар`);
   const wD = timeWheel($('#' + key + '-d'), 31, dd - 1, v => { dd = v + 1; fix(); }, i => String(i + 1));
   fix(false);
@@ -2508,7 +2559,10 @@ const openLog = (type, id) => {
     food: `<div class="pe-row">${fld('amount', 'Хэмжээ (г)', 'inputmode="numeric" maxlength="5" placeholder="150"', old && old.type === 'food' ? old.amount : '', '1-ээс их тоо оруулна уу.')}${fld('name', 'Хоол (заавал биш)', 'maxlength="30" placeholder="Хуурай хоол"', old && old.type === 'food' ? old.name : '')}</div>`,
     walk: `<div class="pe-row">${fld('minutes', 'Хугацаа (мин)', 'inputmode="numeric" maxlength="4" placeholder="30"', old && old.type === 'walk' ? old.minutes : '', '1-ээс их тоо оруулна уу.')}${fld('km', 'Зай (км, заавал биш)', 'inputmode="decimal" maxlength="5" placeholder="2.5"', old && old.type === 'walk' && +old.km ? old.km : '', 'Тоо оруулна уу.')}</div>`,
     med: `${fld('name', 'Эм, тарианы нэр', 'maxlength="40" placeholder="Жишээ: Шимэгчийн эм"', old && old.type === 'med' ? old.name : '', 'Нэрийг оруулна уу.')}${fld('dose', 'Тун (заавал биш)', 'maxlength="30" placeholder="1 шахмал"', old && old.type === 'med' ? old.dose : '')}`,
-    vaccine: `${fld('name', 'Вакцины нэр', 'maxlength="40" placeholder="Жишээ: Галзуу өвчний вакцин"', old && old.type === 'vaccine' ? old.name : '', 'Нэрийг оруулна уу.')}${fld('due', 'Дараагийн тариа (заавал биш)', 'type="date"', old && old.type === 'vaccine' ? old.due : '', 'Тарьсан өдрөөс хойш байх ёстой.')}`
+    // next vaccine: the same Он / Сар / Өдөр wheels as the date above, but it can be in the future
+    vaccine: `${fld('name', 'Вакцины нэр', 'maxlength="40" placeholder="Жишээ: Галзуу өвчний вакцин"', old && old.type === 'vaccine' ? old.name : '', 'Нэрийг оруулна уу.')}
+      ${dateFieldHTML('lg-due', 'f-due', 'Дараагийн тариа (заавал биш)', old && old.type === 'vaccine' && /^\d{4}-\d{2}-\d{2}$/.test(old.due || '') ? old.due : '', 'Сонгох', 'Тарьсан өдрөөс хойш байх ёстой.')}
+      ${datePanelHTML('lg-due', '<button type="button" id="dueClear">Арилгах</button>')}`
   })[k];
   openSheet('log', sheetHead(old ? 'Бүртгэл засах' : `${p.name} · бүртгэл нэмэх`) + `<form class="pe-form" id="lgForm" novalidate>
     <div class="pe-types" id="lgTypes">${HKEYS.map(x => `<button type="button" data-k="${x}" aria-pressed="${x === k}"><span class="qi" style="width:28px;height:28px;border-radius:9px;color:${HT[x].c};background:${HT[x].bg}">${ICON[HT[x].i]}</span>${HT[x].n}</button>`).join('')}</div>
@@ -2537,10 +2591,22 @@ const openLog = (type, id) => {
   const wM = timeWheel($('#whM'), 60, mm, v => { mm = v; showT(); });
   // date: shared Он / Сар / Өдөр wheels; the date and time panels open under the row, one at a time
   const dp = dateWheels('lg-date', 'f-date', d0);
-  bindPickers([dp, { wrap:$('#twrap'), btn:$('#lg-time-btn'), wheels:[wH, wM] }]);
+  const tp = { wrap:$('#twrap'), btn:$('#lg-time-btn'), wheels:[wH, wM] };
+  // the vaccine's next date joins the pickers (one open at a time); it is rebuilt when the type changes.
+  // Empty, it opens at one year after the vaccination date (most vaccines are yearly).
+  let openP = null;
+  const plusYear = s => { const [y, m, dd] = parts(s); return `${y + 1}-${pad2(m)}-${pad2(Math.min(dd, daysIn(y + 1, m)))}`; };
+  const bindDue = () => {
+    if (openP) openP(null, false);
+    if (k !== 'vaccine') { openP = bindPickers([dp, tp]); return; }
+    const due = dateWheels('lg-due', 'f-due', $('#lg-due').value, { back:30, ahead:6, empty:'Сонгох', suggest:plusYear($('#lg-date').value || d0) });
+    openP = bindPickers([dp, tp, due]);
+    $('#dueClear').onclick = () => { due.clear(); openP(due, false); };
+  };
+  bindDue();
   $('#tNow').onclick = () => { const [h, m] = nowHM().split(':').map(Number); wH.set(h, true); wM.set(m, true); };
   $('#dToday').onclick = () => dp.today();
-  $('#lgTypes').onclick = e => { const b = e.target.closest('[data-k]'); if (!b || b.dataset.k === k) return; k = b.dataset.k; $('#lgTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#lgFields').innerHTML = typeFields(); bindNum(); };
+  $('#lgTypes').onclick = e => { const b = e.target.closest('[data-k]'); if (!b || b.dataset.k === k) return; k = b.dataset.k; $('#lgTypes').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#lgFields').innerHTML = typeFields(); bindNum(); bindDue(); };
   $('#lgForm').addEventListener('input', e => e.target.closest('.field')?.classList.remove('bad'));
   const bad = id => { const f = $('#f-' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); ($('#lg-' + id + '-btn') || $('#lg-' + id)).focus(); return false; };
   $('#lgForm').addEventListener('submit', e => {
@@ -3312,6 +3378,10 @@ document.addEventListener('click', async e => {
 });
 const ORDER_STATUS = { new:['Хүлээн авсан', '#2F8FD0'], paid:['Төлөгдсөн', '#2E7D32'], delivering:['Хүргэлтэд гарсан', '#6B4FB8'], done:['Хүргэгдсэн', '#0F4C17'], cancelled:['Цуцлагдсан', '#C7361B'] };
 st.co = { addr:'', phone:'', pay:'cod' }; st.myOrders = [];
+/* the customer's list shows the last 3 weeks (plus anything still on its way); older orders stay on the server,
+   where the admin keeps them and the star balance and first-order discount are worked out from them */
+const ORDER_DAYS = 21;
+const recentOrders = () => st.myOrders.filter(o => ['new', 'paid', 'delivering'].includes(o.status) || Date.now() - new Date(o.created_at).getTime() < ORDER_DAYS * 864e5);
 const loadMyOrders = async () => {
   if (!cloudOn()) return;
   const { data, error } = await sb.from('orders').select('id, number, total, status, payment_method, created_at, items').eq('user_id', st.user.id).order('created_at', { ascending:false }).limit(20);
@@ -3446,10 +3516,18 @@ const openProfile = () => {
     <div><div class="lbl">Миний тэжээвэр амьтад</div><div class="mypets">${st.profiles.map(p => `<span>${petPic(p)}${esc(p.name)}</span>`).join('')}</div></div>
     ${pushRowHTML()}
     <div><div class="lbl">Бонус</div><div class="pts"><b>${st.points} ${ICON.star}</b><span>10 од цуглуулбал дараагийн захиалгад 10,000₮ хөнгөлөлт эдэлнэ.</span></div></div>
-    ${st.myOrders.length ? `<div><div class="lbl">Миний захиалгууд</div><div class="my-orders">${st.myOrders.slice(0, 6).map(o => { const [label, col] = ORDER_STATUS[o.status] || ORDER_STATUS.new; return `<div class="mo"><div><b>#${o.number}</b><span>${prettyDate(ymd(new Date(o.created_at)))} ·${(o.items || []).reduce((a, x) => a + x.qty, 0)} бараа</span></div><div class="mo-r"><b>${fmt(o.total)}</b><i style="color:${col};background:${col}1A">${label}</i></div></div>`; }).join('')}</div></div>` : ''}
+    ${recentOrders().length ? `<div><div class="lbl">Миний захиалгууд</div><div class="my-orders" id="myOrders">${recentOrders().map(o => { const [label, col] = ORDER_STATUS[o.status] || ORDER_STATUS.new; return `<div class="mo"><div><b>#${o.number}</b><span>${prettyDate(ymd(new Date(o.created_at)))} ·${(o.items || []).reduce((a, x) => a + x.qty, 0)} бараа</span></div><div class="mo-r"><b>${fmt(o.total)}</b><i style="color:${col};background:${col}1A">${label}</i></div></div>`; }).join('')}</div><p class="mo-hint">Сүүлийн 3 долоо хоногийн захиалгууд харагдана.</p></div>` : ''}
     <div style="display:grid;gap:10px;margin-top:18px"><button class="btn btn-orange" id="editPets">Тэжээвэр амьтан өөрчлөх <span class="arr">${ICON.arrow}</span></button><button class="btn btn-ghost" id="logout">Гарах</button></div>
     <div class="prof-foot"><a href="privacy.html" data-privacy>Нууцлалын бодлого</a><button type="button" id="delAcc">Бүртгэл устгах</button></div>`);
   $('#delAcc').onclick = () => openDeleteAccount();
+  // my orders: five show, the rest scroll inside the list; a soft fade at the bottom says there is more
+  const mo = $('#myOrders'), moItems = mo ? mo.children : [];
+  if (moItems.length > 5) {
+    mo.style.maxHeight = (moItems[4].offsetTop + moItems[4].offsetHeight - moItems[0].offsetTop) + 'px';
+    mo.classList.add('scroll');
+    const fade = () => mo.classList.toggle('more', mo.scrollTop + mo.clientHeight < mo.scrollHeight - 4);
+    mo.addEventListener('scroll', fade, { passive:true }); fade();
+  }
   bindPushRow();
   $('#userPhotoBtn').onclick = () => $('#userPhotoIn').click();
   $('#userPhotoRm') && ($('#userPhotoRm').onclick = () => { delete st.user.photo; st.user.avatarDirty = true; save(); pushAvatar(); openProfile(); renderAvatars(); toast('Профайл зураг устгагдлаа.'); });
@@ -3675,6 +3753,7 @@ const loadFood = async () => {
 const openFoodSet = p => {
   const cur = svc.food[p.id], foods = PRODUCTS.filter(x => x.pack && x.pets.includes(p.k));
   let pick = cur ? (cur.product_id && foods.some(x => x.id === cur.product_id) ? cur.product_id : 'own') : (foods[0] ? foods[0].id : 'own');
+  const opened0 = cur && /^\d{4}-\d{2}-\d{2}$/.test(cur.opened || '') && cur.opened <= todayStr() ? cur.opened : todayStr();
   openSheet('food', sheetHead('Хоолны нөөц') + `<p class="pd-desc" style="margin-top:0">${esc(p.name)} ямар хоол иддэг вэ? Уут дуусахаас ${FOOD_LEAD} хоногийн өмнө сануулна.</p>
     <div class="fd-pick" id="fdPick">${foods.map(x => `<button type="button" data-p="${x.id}" aria-pressed="${pick === x.id}"><span class="th">${pic(x)}</span><span><b>${esc(x.n)}</b><small>${fmtG(x.pack)} · ${fmt(x.price)}</small></span></button>`).join('')}
       <button type="button" data-p="own" aria-pressed="${pick === 'own'}"><span class="th fd-ic">${ICON.bowl}</span><span><b>Өөр хоол</b><small>Нэр, хэмжээг өөрөө оруулна</small></span></button></div>
@@ -3682,9 +3761,14 @@ const openFoodSet = p => {
       <div class="field" id="f-fdn"><label for="fd-n">Хоолны нэр</label><input id="fd-n" maxlength="60" placeholder="Жишээ: Royal Canin Adult" value="${esc(cur && pick === 'own' ? cur.product_name : '')}"><div class="err">Нэрээ оруулна уу.</div></div>
       <div class="field" id="f-fdg"><label for="fd-g">Уутны хэмжээ (г)</label><input id="fd-g" inputmode="numeric" maxlength="6" placeholder="3000" value="${cur && pick === 'own' ? cur.pack_g : ''}"><div class="err">50-аас 100,000 грамм.</div></div>
     </div>
-    <div class="field" id="f-fdo"><label for="fd-o">Уутыг нээсэн өдөр</label><input id="fd-o" type="date" max="${todayStr()}" value="${cur ? cur.opened : todayStr()}"><div class="err">Өнөөдөр эсвэл өмнөх өдөр.</div></div>
+    ${dateFieldHTML('fd-o', 'f-fdo', 'Уутыг нээсэн өдөр', opened0)}
+    ${datePanelHTML('fd-o', '<button type="button" id="foToday">Өнөөдөр</button>')}
     <div style="display:grid;gap:10px;margin-top:6px"><button class="btn btn-orange" id="fdSave" style="justify-content:center">Хадгалах</button>${cur ? '<button class="btn btn-ghost" id="fdDel">Хоолны нөөцийг устгах</button>' : ''}</div>`);
   $('#fdPick').onclick = e => { const b = e.target.closest('[data-p]'); if (!b) return; pick = b.dataset.p; $('#fdPick').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#fdOwn').hidden = pick !== 'own'; };
+  // the day the bag was opened: the same Он / Сар / Өдөр wheels as the other dates, up to today (a bag lasts months, not years)
+  const fo = dateWheels('fd-o', 'f-fdo', opened0, { back:2 });
+  bindPickers([fo]);
+  $('#foToday').onclick = () => fo.today();
   $('#fdSave').onclick = () => {
     const bad = id => { const f = $('#' + id); f.classList.remove('bad'); void f.offsetWidth; f.classList.add('bad'); };
     const opened = $('#fd-o').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(opened) || opened > todayStr()) return bad('f-fdo');
@@ -3733,8 +3817,8 @@ const openBooking = (clinicId, vetId) => {
   const bk = { pet:(pets.find(p => p.id === st.cur) || pets[0]).id, vet:vetId || null, day:todayStr(), at:null };
   const days = Array.from({ length:14 }, (_, i) => addDays(todayStr(), i));
   openSheet('booking', sheetHead('Цаг захиалах') + `<div class="bk-cl">${ICON.clinic}<b>${esc(c.name)}</b></div>
-    <div class="lbl">Тэжээвэр</div><div class="bk-row" id="bkPet">${pets.map(p => `<button type="button" data-v="${p.id}" aria-pressed="${p.id === bk.pet}">${petPic(p)}${esc(p.name)}</button>`).join('')}</div>
-    ${vets.length ? `<div class="lbl">Эмч</div><div class="bk-row" id="bkVet"><button type="button" data-v="" aria-pressed="${!bk.vet}">Аль ч эмч</button>${vets.map(v => `<button type="button" data-v="${v.id}" aria-pressed="${v.id === bk.vet}">${esc(v.name)}</button>`).join('')}</div>` : ''}
+    <div class="lbl">Тэжээвэр</div><div class="bk-pick" id="bkPet">${pets.map(p => `<button type="button" data-v="${p.id}" aria-pressed="${p.id === bk.pet}">${petPic(p)}${esc(p.name)}</button>`).join('')}</div>
+    ${vets.length ? `<div class="lbl">Эмч</div><div class="bk-pick" id="bkVet"><button type="button" data-v="" aria-pressed="${!bk.vet}">Аль ч эмч</button>${vets.map(v => `<button type="button" data-v="${v.id}" aria-pressed="${v.id === bk.vet}">${esc(v.name)}</button>`).join('')}</div>` : ''}
     <div class="lbl">Өдөр</div><div class="bk-days" id="bkDay">${days.map((d, i) => { const x = new Date(d + 'T00:00:00'); return `<button type="button" data-v="${d}" aria-pressed="${d === bk.day}"><i>${i === 0 ? 'Өнөөдөр' : i === 1 ? 'Маргааш' : DAY_MN[x.getDay()]}</i><b>${x.getDate()}</b><small>${pad2(x.getMonth() + 1)} сар</small></button>`; }).join('')}</div>
     <div class="lbl">Цаг <span class="bk-hours">${hm(c.open_time || '09:00')}–${hm(c.close_time || '18:00')}</span></div><div class="bk-slots" id="bkSlots"></div>
     <div class="field" id="f-bkr"><label for="bk-r">Шалтгаан (заавал биш)</label><textarea id="bk-r" rows="2" maxlength="300" placeholder="Жишээ: Вакцин хийлгэх, ходоод өвдөж байна"></textarea></div>
