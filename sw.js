@@ -1,9 +1,9 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v7';
+const CACHE = 'zoomies-v8';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'products.json', 'privacy.html',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png',
-  'pets.jpg', 'home-dog.webp', 'home-cat.webp',
+  'welcome-dog.jpg', 'home-dog.webp', 'home-cat.webp',
   'dog.png', 'cat2.webp', 'bird.webp', 'fish.webp', 'rabbit.webp', 'hamster.png'
 ];
 
