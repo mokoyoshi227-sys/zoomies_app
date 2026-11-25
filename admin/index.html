@@ -229,8 +229,11 @@ const APP = new URL('../', location.href).href;
 const CAT_URL = path => `${SB_URL}/storage/v1/object/public/catalog/${path}`;
 const imgSrc = p => !p ? '' : /^(https?:|blob:|data:)/.test(p) ? p : APP + p.replace(/^\/+/, ''); // app-relative paths like photos/x.png
 const fmt = n => Number(n || 0).toLocaleString('en-US') + '₮';
-const PETS = [['dog', 'Нохой'], ['cat', 'Муур'], ['bird', 'Шувуу'], ['fish', 'Загас'], ['rabbit', 'Туулай'], ['hamster', 'Шишүүхэй']];
-const petName = k => (PETS.find(p => p[0] === k) || [, k])[1];
+// pet types come from the "Амьтан" tab (supabase/pet_types.sql); this list is used until that table exists
+const PETS0 = [['dog', 'Нохой', true], ['cat', 'Муур', true], ['bird', 'Шувуу', true], ['fish', 'Загас', true], ['rabbit', 'Туулай', true], ['hamster', 'Шишүүхэй', true]];
+const PETS = () => (st.rows.pet_types && st.rows.pet_types.length) ? st.rows.pet_types.map(r => [r.id, r.name, r.active]) : PETS0;
+const petName = k => (PETS().find(p => p[0] === k) || [, k])[1];
+const productsOf = k => st.rows.products.filter(p => (p.pets || []).includes(k)).length;
 
 let tt; const toast = (msg, bad = false) => { const t = $('#toast'); t.textContent = msg; t.classList.toggle('bad', bad); t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 3200); };
 
@@ -251,6 +254,18 @@ const S = {
     card:r => `<b>${esc(r.name)}</b><div class="pr">${fmt(r.price)}</div>
       <div class="tags">${(r.pets || []).map(k => `<span class="tag">${petName(k)}</span>`).join('')}${r.is_new ? '<span class="tag new">Шинэ</span>' : ''}${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
     text:r => `${r.name} ${r.description} ${(r.pets || []).map(petName).join(' ')}`
+  },
+  pet_types:{
+    title:'Амьтан', one:'Амьтан', icon:'🐾', order:'sort', round:true,
+    fields:[
+      { k:'name', label:'Нэр', type:'text', req:true, max:30, ph:'Яст мэлхий' },
+      { k:'photo', label:'Зураг', type:'photo' },
+      { k:'active', label:'Апп дээр харагдах', type:'toggle', hint:'Унтраавал шинээр сонгох боломжгүй болно. Бүртгэлтэй амьтад хэвээр үлдэнэ', def:true },
+      { k:'sort', label:'Эрэмбэ', type:'number', hint:'Бага тоо түрүүлж гарна' }
+    ],
+    card:r => `<b>${esc(r.name)}</b><div class="meta">${productsOf(r.id)} бараа</div>
+      <div class="tags">${r.active ? '' : '<span class="tag hid">Нуусан</span>'}</div>`,
+    text:r => r.name
   },
   clinics:{
     title:'Малын эмнэлэг', one:'Эмнэлэг', icon:'🏥', order:'sort',
@@ -289,7 +304,7 @@ const S = {
     text:r => `${r.name} ${r.specialty} ${r.phone} ${clinicName(r.clinic_id)}`
   }
 };
-const st = { tab:'orders', rows:{ orders:[], products:[], clinics:[], vets:[] }, q:'', show:'all', ostat:'open', edit:null, draft:{}, newPhoto:null, unseen:0, mine:new Set() };
+const st = { tab:'orders', rows:{ orders:[], products:[], pet_types:[], clinics:[], vets:[] }, q:'', show:'all', ostat:'open', edit:null, draft:{}, newPhoto:null, unseen:0, mine:new Set() };
 // orders come first: the tab the shop works from every day
 const OS = { new:['Шинэ', '#2F8FD0'], paid:['Төлөгдсөн', '#2E7D32'], delivering:['Хүргэлтэд', '#6B4FB8'], done:['Хүргэгдсэн', '#0F4C17'], cancelled:['Цуцалсан', '#C7361B'] };
 const PAY = { cod:'Хүргэлтээр төлөх', transfer:'Дансаар шилжүүлэх', qpay:'QPay' };
@@ -329,7 +344,12 @@ const loadOrders = async () => {
 };
 const loadAll = async () => {
   const res = await Promise.all(Object.keys(S).map(t => sb.from(t).select('*').order('sort').order('created_at')));
-  Object.keys(S).forEach((t, i) => { if (res[i].error) toast(res[i].error.message, true); else st.rows[t] = res[i].data; });
+  Object.keys(S).forEach((t, i) => {
+    if (!res[i].error) { st.rows[t] = res[i].data; return; }
+    // pet_types.sql not run yet: the tab stays empty and products use the six built-in types
+    if (t === 'pet_types' && /pet_types/.test(res[i].error.message || '')) return;
+    toast(res[i].error.message, true);
+  });
   await loadOrders();
 };
 
@@ -462,7 +482,7 @@ const field = f => {
     case 'textarea': return wrap(`<textarea id="f_${f.k}" maxlength="${f.max || 800}">${esc(v)}</textarea>`);
     case 'price': return wrap(`<input id="f_${f.k}" inputmode="numeric" value="${v != null && v !== '' ? Number(v).toLocaleString('en-US') : ''}" placeholder="24,900">`, 'Үнийг тоогоор оруулна уу.');
     case 'number': return wrap(`<input id="f_${f.k}" type="number" step="1" value="${esc(v ?? 0)}">`);
-    case 'pets': return wrap(`<div class="chips" id="f_pets">${PETS.map(([k, n]) => `<button type="button" data-v="${k}" aria-pressed="${(v || []).includes(k)}">${n}</button>`).join('')}</div>`, 'Дор хаяж нэг амьтан сонгоно уу.');
+    case 'pets': return wrap(`<div class="chips" id="f_pets">${PETS().filter(([k, , on]) => on || (v || []).includes(k)).map(([k, n, on]) => `<button type="button" data-v="${k}" aria-pressed="${(v || []).includes(k)}">${esc(n)}${on ? '' : ' (нуусан)'}</button>`).join('')}</div>`, 'Дор хаяж нэг амьтан сонгоно уу.');
     case 'tags': return wrap(`<input id="f_${f.k}" value="${esc((v || []).join(', '))}" placeholder="Вакцин, Мэс засал, Шүд">`);
     case 'latlng': return wrap(`<input id="f_${f.k}" value="${st.draft.lat != null ? esc(st.draft.lat + ', ' + st.draft.lng) : ''}" placeholder="47.9184, 106.9177">`, 'Жишээ: 47.9184, 106.9177');
     case 'clinic': return wrap(`<select id="f_${f.k}"><option value="">— Эмнэлэггүй —</option>${st.rows.clinics.map(c => `<option value="${c.id}"${c.id === v ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`);
@@ -584,7 +604,11 @@ $('#del').onclick = async () => {
   const b = $('#del'), r = st.edit; if (!r) return;
   if (!b.classList.contains('sure')) { b.classList.add('sure'); b.textContent = 'Дахин дарж устгана'; setTimeout(() => { b.classList.remove('sure'); b.textContent = 'Устгах'; }, 3000); return; }
   const { error } = await sb.from(st.tab).delete().eq('id', r.id);
-  if (error) return toast('Устгаж чадсангүй: ' + error.message, true);
+  if (error) {
+    if (st.tab === 'pet_types' && /foreign key|pets_kind_fk|violates/i.test(error.message)) return toast('Энэ төрлийн амьтныг хэрэглэгчид бүртгүүлсэн тул устгах боломжгүй. Оронд нь "Апп дээр харагдах"-ыг унтрааж нууна уу.', true);
+    return toast('Устгаж чадсангүй: ' + error.message, true);
+  }
+  if (st.tab === 'pet_types') st.rows.products.forEach(p => { p.pets = (p.pets || []).filter(k => k !== r.id); }); // the server took it off products too
   if (r.photo && r.photo.includes('/object/public/catalog/')) sb.storage.from('catalog').remove([r.photo.split('/object/public/catalog/')[1]]);
   st.rows[st.tab] = st.rows[st.tab].filter(x => x.id !== r.id);
   closeEditor(); renderTabs(); render(); toast('Устгалаа. Апп дээрээс хасагдлаа.');

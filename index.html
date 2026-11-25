@@ -275,6 +275,9 @@ svg.photo{overflow:visible}
 .tile .ic svg.photo.rabbit{width:70px; position:relative; top:-6px; left:-3px}
 .tile .ic svg.photo.hamster{width:70px; position:relative; top:-2px}
 svg.photo.dog{overflow:hidden}
+/* pet types added in the admin panel: any picture, fitted into a square */
+.tile .ic svg.photo.custom{width:74px; height:74px}
+svg.photo.custom{overflow:hidden}
 .chip svg.photo,.mypets svg.photo,.catlist svg.photo{background:transparent; border-radius:0}
 .tile .tick{position:absolute; top:9px; right:9px; width:24px; height:24px; border-radius:50%; background:var(--orange); color:#fff; display:grid; place-items:center; transform:scale(0) rotate(-90deg); transition:transform .45s var(--spring)}
 .tile[aria-pressed="true"]{background:var(--pine); color:#fff; box-shadow:0 12px 26px rgba(15,76,23,.28)}
@@ -1229,8 +1232,10 @@ const catSVG = () => { const id = 'cl' + (++uid); return `<svg viewBox="0 0 300 
     <path d="M122 162 L80 154 M122 168 L82 172 M178 162 L220 154 M178 168 L218 172" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".9"/>
   </g></g></g>${paws('#F6B567', '#CF7526')}</svg>`; };
 
-/* ---------- pet icons ---------- */
-const PETS = [
+/* ---------- pet icons ----------
+   The six types the app started with; the live list (names, pictures, new types, hidden ones) comes from the
+   server's pet_types table, edited in the admin panel's "Амьтан" tab. */
+const BUILTIN_PETS = [
   // dog: the user's puppy photo (480×507, transparent), cropped to the puppy without its floor reflection
   {k:'dog', n:'Нохой', svg:`<svg class="photo dog" viewBox="58 60 382 416" aria-hidden="true"><image href="dog.png" width="480" height="507"/></svg>`},
   // cat: the user's whole-cat photo (525×350), framed so the full cat fits inside the circle
@@ -1244,7 +1249,12 @@ const PETS = [
   // hamster: the user's hamster photo (519×475, transparent)
   {k:'hamster', n:'Шишүүхэй', svg:`<svg class="photo hamster" viewBox="0 0 519 475" aria-hidden="true"><image href="hamster.png" width="519" height="475"/></svg>`}
 ];
-const petBy = k => PETS.find(p => p.k === k);
+const BUILTIN_FILE = { dog:'dog.png', cat:'cat2.webp', bird:'bird.webp', fish:'fish.webp', rabbit:'rabbit.webp', hamster:'hamster.png' };
+let PETS = BUILTIN_PETS.slice();                            // shown in pickers and filters (active types)
+let PET_ALL = new Map(BUILTIN_PETS.map(p => [p.k, p]));     // every known type, hidden ones too, so existing pets keep their look
+const pawSvg = () => `<svg class="photo custom" viewBox="36 32 48 34" aria-hidden="true">${pawMark('#0F4C17')}</svg>`;
+const customSvg = url => `<svg class="photo custom" viewBox="0 0 100 100" aria-hidden="true"><image href="${esc(url)}" width="100" height="100" preserveAspectRatio="xMidYMid meet"/></svg>`;
+const petBy = k => PET_ALL.get(k) || (k ? { k, n:'Тэжээвэр', svg:pawSvg() } : undefined);
 
 /* ---------- product art ---------- */
 const shadow = `<ellipse cx="60" cy="92" rx="40" ry="5" fill="#0F4C17" opacity=".1"/>`;
@@ -1284,7 +1294,7 @@ const toProducts = raw => (Array.isArray(raw) ? raw : []).map((x, i) => ({
   n: String(x.name || '').trim(),
   d: String(x.description || '').trim(),
   price: Math.max(0, Math.round(Number(String(x.price).replace(/[^\d.]/g, '')) || 0)),
-  pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PETS.some(p => p.k === k)),
+  pets: (Array.isArray(x.pets) ? x.pets : [x.pets]).map(k => String(k || '').trim().toLowerCase()).filter(k => PET_ALL.has(k)),
   isNew: x.new === true || x.new === 'true',
   photo: String(x.photo || '').trim(),
   art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
@@ -1292,6 +1302,29 @@ const toProducts = raw => (Array.isArray(raw) ? raw : []).map((x, i) => ({
 // The catalog lives on the server and is edited in the admin panel; the last copy is kept on the phone
 // for offline use. products.json is only the fallback for a phone that has never reached the server.
 const CAT_KEY = 'zoomies.catalog.v1';
+// pet types from the server (cached on the phone for offline starts); without the table the built-in six stay
+const PT_KEY = 'zoomies.pettypes.v1';
+const applyPetTypes = rows => {
+  if (!Array.isArray(rows) || !rows.length) return;
+  const all = new Map(BUILTIN_PETS.map(p => [p.k, p])), act = [];
+  rows.forEach(r => {
+    if (!r || !r.id || !r.name) return;
+    const b = BUILTIN_PETS.find(p => p.k === r.id);
+    const ownPic = b && (!r.photo || r.photo === BUILTIN_FILE[r.id]); // the built-in picture, framed by hand
+    const p = { k:r.id, n:String(r.name), svg: ownPic ? b.svg : r.photo ? customSvg(r.photo) : (b ? b.svg : pawSvg()) };
+    all.set(p.k, p); if (r.active !== false) act.push(p);
+  });
+  PET_ALL = all; PETS = act;
+};
+const loadPetTypes = async () => {
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('pet_types').select('id, name, photo, active, sort').order('sort').order('created_at');
+      if (!error && Array.isArray(data) && data.length) { applyPetTypes(data); try { localStorage.setItem(PT_KEY, JSON.stringify(data)); } catch (_) {} return; }
+    } catch (_) {}
+  }
+  try { applyPetTypes(JSON.parse(localStorage.getItem(PT_KEY) || 'null')); } catch (_) {}
+};
 const loadProducts = async () => {
   if (sb) {
     try {
@@ -1871,7 +1904,8 @@ const openClinic = id => {
 /* the catalog updates live: anything saved in the admin panel reaches open apps within a second */
 let catChan = null, catT = 0;
 const refreshCatalog = async () => {
-  await Promise.all([loadProducts(), loadClinics()]);
+  await Promise.all([loadPetTypes().then(loadProducts), loadClinics()]);
+  if ($('#pets').classList.contains('active')) renderPetGrid(); // the picker follows added / hidden types
   let gone = false; st.cart.forEach((q, id) => { if (!prodBy(id)) { st.cart.delete(id); gone = true; } });
   if (!st.user || !st.profiles.length) return;
   renderChips(); renderGrid(); renderCartUI(false); renderRecs(); renderClinics();
@@ -1880,7 +1914,7 @@ const refreshCatalog = async () => {
 const startCatalogLive = () => {
   if (!sb || catChan) return;
   catChan = sb.channel('catalog');
-  ['products', 'clinics', 'vets'].forEach(t => catChan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(catT); catT = setTimeout(refreshCatalog, 400); }));
+  ['products', 'clinics', 'vets', 'pet_types'].forEach(t => catChan.on('postgres_changes', { event:'*', schema:'public', table:t }, () => { clearTimeout(catT); catT = setTimeout(refreshCatalog, 400); }));
   catChan.subscribe();
 };
 
@@ -3451,7 +3485,7 @@ const splashExit = () => {
 };
 setTimeout(splashExit, 6000); // never longer than this, even on a very slow connection
 
-Promise.all([loadProducts(), loadClinics(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).finally(() => setTimeout(splashExit, 50)).then(([, , s]) => {
+Promise.all([loadPetTypes().then(loadProducts), loadClinics(), sb ? sb.auth.getSession().catch(() => ({ data:{} })) : null]).finally(() => setTimeout(splashExit, 50)).then(([, , s]) => {
   startCatalogLive(); // products, clinics and vets follow the admin panel live, signed in or not
   const session = s && s.data && s.data.session;
   if (sb && session) {
