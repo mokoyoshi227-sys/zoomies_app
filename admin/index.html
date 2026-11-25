@@ -410,7 +410,7 @@ const renderOrders = () => {
       <div class="ow">📍 ${esc(o.address)}</div>
       ${o.note ? `<div class="ow">💬 ${esc(o.note)}</div>` : ''}
       <ul class="oi">${(o.items || []).map(it => `<li><span>${esc(it.name)} × ${it.qty}</span><span>${fmt(it.price * it.qty)}</span></li>`).join('')}</ul>
-      <div class="ot"><span>${PAY[o.payment_method] || o.payment_method}${o.discount ? ` · хөнгөлөлт −${fmt(o.discount)}` : ''}${o.shipping ? ` · хүргэлт ${fmt(o.shipping)}` : ' · хүргэлт үнэгүй'}</span><b>${fmt(o.total)}</b></div>
+      <div class="ot"><span>${PAY[o.payment_method] || o.payment_method}${o.discount ? ` · хөнгөлөлт −${fmt(o.discount)}` : ''}${o.stars_discount ? ` · бонус од (${o.stars_used}) −${fmt(o.stars_discount)}` : ''}${o.shipping ? ` · хүргэлт ${fmt(o.shipping)}` : ' · хүргэлт үнэгүй'}</span><b>${fmt(o.total)}</b></div>
       ${NEXT[o.status].length ? `<div class="oa">${NEXT[o.status].map(([s, n]) => `<button class="btn ${s === 'cancelled' ? 'btn-danger' : 'btn-dark'}" data-set="${s}">${n}</button>`).join('')}</div>` : ''}
     </div>`;
   }).join('') : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : 'Захиалга алга'}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : 'Шинэ захиалга ирэхэд энд дуугаран гарч ирнэ.'}</div>`;

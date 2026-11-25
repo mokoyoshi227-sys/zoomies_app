@@ -788,6 +788,23 @@ svg.photo.dog{overflow:hidden}
 .ndot{position:absolute; top:17px; right:14px; width:9px; height:9px; border-radius:50%; background:var(--orange); transition:transform .35s var(--spring)}
 .note:not(.unread) .ndot{transform:scale(0)}
 .sum .disc{color:var(--orange-deep); font-weight:700}
+/* bonus stars in the cart */
+.su{display:flex; align-items:center; gap:12px; background:#fff; border-radius:20px; padding:12px 14px; margin:6px 0 0; transition:background .3s, box-shadow .3s}
+.su.on{box-shadow:inset 0 0 0 2px var(--orange)}
+.su .su-ic{width:42px; height:42px; border-radius:14px; background:#FFF1E2; display:grid; place-items:center; flex:none}
+.su .su-ic svg{width:24px; height:24px}
+.su.off .su-ic{filter:grayscale(1); opacity:.55}
+.su-tx{flex:1; min-width:0; display:grid; gap:2px}
+.su-tx b{font-size:14.5px}
+.su-tx span{font-size:12.5px; color:var(--muted); line-height:1.4}
+.su.on .su-tx span{color:var(--orange-deep); font-weight:700}
+.sw{width:52px; height:30px; border-radius:15px; background:#CFDCCB; position:relative; flex:none; transition:background .3s}
+.sw i{position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.18); transition:transform .35s var(--spring)}
+.sw[aria-checked="true"]{background:var(--orange)}
+.sw[aria-checked="true"] i{transform:translateX(22px)}
+.sw:disabled{opacity:.5; cursor:not-allowed}
+.su-step{display:flex; align-items:center; justify-content:space-between; background:#fff; border-radius:20px; padding:8px 8px 8px 16px; margin:8px 0 0; font-size:13.5px; font-weight:700; color:var(--muted)}
+.su-step .stepper button:disabled{opacity:.35}
 /* search */
 .search-box{display:flex; align-items:center; gap:10px; background:#fff; border-radius:18px; height:54px; padding:0 6px 0 16px; border:2px solid transparent; transition:border-color .25s, box-shadow .25s}
 .search-box:focus-within{border-color:var(--pine); box-shadow:0 0 0 5px rgba(168,224,158,.45)}
@@ -2901,7 +2918,10 @@ const cartTotals = () => {
   // so the cart follows the same rule to show exactly the total the server will charge.
   const first = cloudOn() ? !st.myOrders.some(o => o.status !== 'cancelled') : !st.orders;
   const disc = first ? Math.round(sub * 0.1 / 100) * 100 : 0;
-  return { count, sub, ship, disc, total: sub - disc + ship };
+  // bonus stars: spent in steps of 10, 1 star = 1,000₮ off the goods (never the delivery). The server checks the same.
+  const starsMax = Math.max(0, Math.min(Math.floor(st.points / 10) * 10, Math.floor((sub - disc) / 10000) * 10));
+  const stars = Math.min(st.co.stars || 0, starsMax), starDisc = stars * 1000;
+  return { count, sub, ship, disc, stars, starsMax, starDisc, total: sub - disc - starDisc + ship };
 };
 const renderCartUI = (bump = true) => {
   const t = cartTotals();
@@ -2976,9 +2996,21 @@ const openCart = () => {
   }
   const rows = [...st.cart].map(([id, q]) => { const p = prodBy(id); return `<div class="cart-row" data-id="${id}"><div class="th">${pic(p)}</div><div class="info"><b>${p.n}</b><span>${fmt(p.price * q)}</span></div><div class="stepper sm"><button data-d="-1" aria-label="Хасах">${ICON.minus}</button><output>${q}</output><button data-d="1" aria-label="Нэмэх">${ICON.plus}</button></div></div>`; }).join('');
   const left = 50000 - t.sub;
+  // bonus stars: a switch (all usable stars) plus a stepper in tens when more than 10 can be used
+  const canStars = t.starsMax >= 10, onStars = t.stars > 0;
+  const starsUse = `<div class="su${onStars ? ' on' : ''}${canStars ? '' : ' off'}" id="starsUse">
+      <span class="su-ic">${ICON.star}</span>
+      <div class="su-tx"><b>Бонус од ашиглах</b><span>${canStars
+        ? (onStars ? `${t.stars} од · −${fmt(t.starDisc)}` : `Танд ${st.points} од байна · 10 од = 10,000₮`)
+        : (st.points >= 10 ? `Танд ${st.points} од байна · 10,000₮-өөс дээш бараанд ашиглана` : `Танд ${st.points} од байна · 10 од цуглуулбал ашиглана`)}</span></div>
+      <button type="button" class="sw" id="starsSw" role="switch" aria-checked="${onStars}" aria-label="Бонус од ашиглах"${canStars ? '' : ' disabled'}><i></i></button>
+    </div>
+    ${onStars && t.starsMax > 10 ? `<div class="su-step"><span>Ашиглах од</span><div class="stepper sm"><button type="button" data-s="-10" aria-label="10 од хасах"${t.stars <= 10 ? ' disabled' : ''}>${ICON.minus}</button><output>${t.stars}</output><button type="button" data-s="10" aria-label="10 од нэмэх"${t.stars >= t.starsMax ? ' disabled' : ''}>${ICON.plus}</button></div></div>` : ''}`;
   openSheet('cart', sheetHead('Миний сагс') + `<div id="rows">${rows}</div>
+    ${starsUse}
     <div class="sum"><div><span>Барааны дүн</span><span>${fmt(t.sub)}</span></div>
       ${t.disc ? `<div><span>Эхний захиалгын 10% хөнгөлөлт</span><span class="disc">−${fmt(t.disc)}</span></div>` : ''}
+      ${t.starDisc ? `<div><span>Бонус од (${t.stars} од)</span><span class="disc">−${fmt(t.starDisc)}</span></div>` : ''}
       <div><span>Хүргэлт</span><span class="${t.ship ? '' : 'free'}">${t.ship ? fmt(t.ship) : 'Үнэгүй'}</span></div>
       ${left > 0 ? `<small>Дахиад ${fmt(left)}-ийн бараа авбал Улаанбаатар хотод үнэгүй хүргэнэ.</small>` : ''}
       <div class="tot"><span>Төлөх дүн</span><span>${fmt(t.total)}</span></div></div>
@@ -3006,6 +3038,10 @@ const openCart = () => {
     st.cart.set(id, q); renderCartUI(); const y = body.scrollTop; openCart(); body.scrollTop = y;
     body.querySelectorAll(':scope > *').forEach(x => x.style.animation = 'none');
   });
+  // redraw the cart in place (keeps the scroll position and skips the entry animation)
+  const redraw = () => { const y = body.scrollTop; openCart(); body.scrollTop = y; body.querySelectorAll(':scope > *').forEach(x => x.style.animation = 'none'); };
+  $('#starsSw').onclick = () => { if (!canStars) return; st.co.stars = onStars ? 0 : t.starsMax; redraw(); };
+  body.querySelectorAll('[data-s]').forEach(b => b.onclick = () => { st.co.stars = Math.max(10, Math.min(t.starsMax, t.stars + +b.dataset.s)); redraw(); });
   $('#checkout').onclick = checkout;
 };
 
@@ -3040,6 +3076,9 @@ const loadMyOrders = async () => {
   if (!cloudOn()) return;
   const { data, error } = await sb.from('orders').select('id, number, total, status, payment_method, created_at, items').eq('user_id', st.user.id).order('created_at', { ascending:false }).limit(20);
   if (!error) { st.myOrders = data; save(); }
+  // star balance lives on the server (supabase/stars.sql); without that file the phone's own count stays
+  const s = await Promise.resolve(sb.rpc('my_stars')).catch(err => ({ error:err }));
+  if (!s.error && Number.isFinite(s.data)) { st.points = s.data; save(); if ($('#pts')) $('#pts').textContent = st.points; }
 };
 let ordChan = null;
 const startOrdersLive = () => {
@@ -3062,21 +3101,31 @@ const checkout = async () => {
   if (!cloudOn()) { toast('Захиалга өгөхийн тулд нэвтэрч, интернэтэд холбогдсон байх хэрэгтэй.'); return; }
   const b = $('#checkout'); b.disabled = true; b.innerHTML = 'Илгээж байна… <span class="spin" style="margin-left:10px"></span>';
   const items = [...st.cart].map(([id, qty]) => ({ id, qty }));
-  const res = await Promise.resolve(sb.rpc('place_order', { p_items:items, p_address:addr, p_phone:phone, p_payment:st.co.pay })).catch(err => ({ error:err }));
+  const useStars = cartTotals().stars;
+  const args = { p_items:items, p_address:addr, p_phone:phone, p_payment:st.co.pay };
+  if (useStars) args.p_stars = useStars; // only sent when used, so a server without stars.sql still takes plain orders
+  const res = await Promise.resolve(sb.rpc('place_order', args)).catch(err => ({ error:err }));
   if (res.error) {
     b.disabled = false; b.innerHTML = `Захиалах <span class="arr">${ICON.arrow}</span>`;
-    const gone = /unavailable/i.test(res.error.message || '');
-    toast(gone ? 'Сагсанд байгаа зарим бараа одоо худалдаанд байхгүй байна. Сагсаа шалгана уу.' : 'Захиалга илгээж чадсангүй. Дахин оролдоно уу.');
+    const m = res.error.message || '';
+    const gone = /unavailable/i.test(m);
+    const starsMsg = /not enough stars/i.test(m) ? 'Бонус од хүрэлцэхгүй байна. Одны тоо шинэчлэгдлээ.'
+      : /stars exceed/i.test(m) ? 'Бонус одны хөнгөлөлт барааны дүнгээс хэтэрч байна.'
+      : (useStars && /p_stars|function|schema cache/i.test(m)) ? 'Бонус од ашиглах боломж түр ажиллахгүй байна. Одгүйгээр захиалж болно.' : '';
+    toast(gone ? 'Сагсанд байгаа зарим бараа одоо худалдаанд байхгүй байна. Сагсаа шалгана уу.' : starsMsg || 'Захиалга илгээж чадсангүй. Дахин оролдоно уу.');
     if (gone) refreshCatalog();
+    if (starsMsg) { st.co.stars = 0; await loadMyOrders(); if (st.sheet === 'cart') openCart(); }
     return;
   }
-  const o = res.data, earned = Math.max(1, Math.floor(o.total / 10000));
-  st.points += earned; st.orders += 1; st.cart.clear(); st.user.phone = st.user.phone || phone; st.user.address = addr; // remembered for next time
+  const o = res.data, used = o.stars_used || 0, earned = o.stars_earned || Math.max(1, Math.floor(o.total / 10000));
+  st.points = Math.max(0, st.points - used + earned); st.co.stars = 0;
+  st.orders += 1; st.cart.clear(); st.user.phone = st.user.phone || phone; st.user.address = addr; // remembered for next time
   st.myOrders.unshift(o); save(); closeSheet(); renderCartUI(false);
   addNote({ type:'box', t:`#${o.number} захиалга илгээгдлээ`, b:`${fmt(o.total)}-ийн захиалгыг хүлээн авлаа. Удахгүй холбогдоно.`, action:'none' }, false);
   addNote({ type:'star', t:`+${earned} бонус од`, b:`Одоо танд ${st.points} од байна. 10 од = 10,000₮ хөнгөлөлт.`, action:'stars' }, false);
   $('#doneText').textContent = `${st.user.name}, таны #${o.number} дугаартай ${fmt(o.total)}-ийн захиалгыг хүлээн авлаа. ${o.phone} дугаарт залгаж хүргэнэ.`;
-  $('#doneAward').textContent = `+${earned} бонус од авлаа`;
+  $('#doneAward').textContent = used ? `${used} од ашиглаж ${fmt(o.stars_discount || used * 1000)} хэмнэлээ · +${earned} од авлаа` : `+${earned} бонус од авлаа`;
+  loadMyOrders(); // the server's star balance is the real one
   // bank transfer: the account details were shown in the cart; here only a short reminder
   if (o.payment_method === 'transfer') $('#doneText').textContent = `${st.user.name}, таны #${o.number} захиалгыг хүлээн авлаа. Төлбөр орсны дараа ${o.phone} дугаарт залгаж хүргэнэ.`;
   const c = $('#confetti'); const cols = ['#F26B12', '#A8E09E', '#FFF4E6', '#E7B53B', '#6EC6E8'];
