@@ -682,8 +682,9 @@ svg.photo.custom{overflow:hidden}
 .wi{height:36px; display:grid; place-items:center; scroll-snap-align:center; font-size:22px; font-weight:500; color:var(--ink); font-variant-numeric:tabular-nums; cursor:pointer; user-select:none; -webkit-user-select:none; backface-visibility:hidden}
 .wi.on{font-weight:700}
 .wi.off{color:#B4C6B1}
-.wheel.yr{width:82px} .wheel.mo{width:118px} .wheel.dy{width:60px}
-.wheel.mo .wi{font-size:20px}
+/* month wheel class is "mon": ".mo" is the my-orders row (display:flex), which laid the months out sideways */
+.wheel.yr{width:82px} .wheel.mon{width:118px} .wheel.dy{width:60px}
+.wheel.mon .wi{font-size:20px}
 .field.bad .tbtn{border-color:var(--danger); background:#FFF5F2}
 .wheels .colon{position:relative; z-index:1; font-size:22px; font-weight:700; color:var(--ink); padding-bottom:3px}
 .tfoot{display:flex; justify-content:space-between; padding:4px 0 0}
@@ -2241,7 +2242,7 @@ const dateFieldHTML = (key, fid, label, value, empty = '') => `<div class="field
   <button type="button" class="tbtn" id="${key}-btn" aria-expanded="false" aria-controls="${key}-wrap"><span class="tpill${value ? '' : ' empty'}" id="${key}-txt">${value ? prettyDate(value) : empty}</span><span class="chev">${ICON.chev}</span></button>
   <input type="hidden" id="${key}" value="${value || ''}"><div class="err">Өнөөдөр эсвэл өмнөх өдөр сонгоно уу.</div></div>`;
 const datePanelHTML = (key, left) => `<div class="twrap" id="${key}-wrap"><div><div class="tpanel">
-  <div class="wheels"><span class="wband"></span><div class="wheel yr" id="${key}-y" tabindex="0" role="spinbutton" aria-label="Он"></div><div class="wheel mo" id="${key}-m" tabindex="0" role="spinbutton" aria-label="Сар"></div><div class="wheel dy" id="${key}-d" tabindex="0" role="spinbutton" aria-label="Өдөр"></div></div>
+  <div class="wheels"><span class="wband"></span><div class="wheel yr" id="${key}-y" tabindex="0" role="spinbutton" aria-label="Он"></div><div class="wheel mon" id="${key}-m" tabindex="0" role="spinbutton" aria-label="Сар"></div><div class="wheel dy" id="${key}-d" tabindex="0" role="spinbutton" aria-label="Өдөр"></div></div>
   <div class="tfoot"><span class="tf-left">${left}</span><button type="button" data-done>Болсон</button></div></div></div></div>`;
 const dateWheels = (key, fid, start, { back = 30, empty = '' } = {}) => {
   const [ty] = parts(todayStr()), Y0 = ty - back;
