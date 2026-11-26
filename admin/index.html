@@ -99,6 +99,18 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
 .tag{font-size:11px; font-weight:700; background:var(--mint); color:var(--pine); border-radius:8px; padding:3px 8px}
 .tag.new{background:#FFE9DA; color:#C45110}
 .tag.hid{background:#FDE3DC; color:var(--danger)}
+/* featured placement (supabase/featured.sql) */
+.tag.feat{background:#FFF1D6; color:#A85208}
+.tag.soon{background:#FDE3DC; color:var(--danger)}
+.feat-box{display:grid; gap:8px; background:#FFF8EC; border-radius:14px; padding:12px}
+.feat-st{font-size:13px; font-weight:700; color:#A85208}
+.feat-st.off{color:var(--muted, #4F6E52); font-weight:600}
+.feat-q{display:flex; flex-wrap:wrap; gap:6px}
+.feat-q button{flex:none; font:inherit; font-size:12.5px; font-weight:700; border:0; border-radius:10px; padding:7px 11px; background:#fff; color:var(--pine); cursor:pointer; box-shadow:inset 0 0 0 1.5px #F3D3A8}
+.feat-q button:hover{background:#FFF1D6}
+.feat-q button.feat-x{color:var(--danger); box-shadow:inset 0 0 0 1.5px #F5C9BD}
+.featwarn{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 14px; padding:10px 14px; border-radius:14px; background:#FFF1D6; color:#7A3C05; font-size:13.5px; font-weight:600}
+.featwarn button{font:inherit; font-size:12.5px; font-weight:700; border:0; border-radius:10px; padding:5px 10px; background:#fff; color:#A85208; cursor:pointer}
 .item .eye{position:absolute; top:10px; right:10px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.92); display:grid; place-items:center; box-shadow:0 4px 12px rgba(0,0,0,.12); color:var(--pine)}
 .empty{grid-column:1/-1; text-align:center; padding:50px 10px; color:var(--muted)}
 .empty b{display:block; font-size:16px; color:var(--pine); margin-bottom:4px}
@@ -214,6 +226,7 @@ main{max-width:1200px; margin:0 auto; padding:20px 16px 80px}
       <button class="btn btn-ghost" id="notifOn" hidden>🔔 Мэдэгдэл асаах</button>
       <button class="btn btn-main" id="add">+ Нэмэх</button>
     </div>
+    <div class="featwarn" id="featWarn" hidden></div>
     <div class="grid" id="grid"></div>
   </main>
 </div>
@@ -333,6 +346,69 @@ const clinicName = id => (st.rows.clinics.find(c => c.id === id) || {}).name || 
 /* ═══════════ services (supabase/features.sql): roles, appointments, adoption, shelters, finders' messages ═══════════ */
 const ROLE = { admin:false, shelter:null, shelterName:'' };
 let HAS_SVC = false;
+
+/* ═══════════ featured placement (supabase/featured.sql): "Онцлох байршил" until an end date ═══════════
+   The admin picks the last day (or +1 week / +1 / +3 / +6 months); the app shows the place first with an
+   "Онцлох" label until then. At most 3 at a time per list. Ones ending within 5 days are listed on top. */
+let HAS_FEAT = false;
+const FEAT_TABS = ['products', 'clinics', 'vets', 'shelters'], FEAT_MAX = 3, FEAT_WARN = 5;
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const dotDate = s => String(s || '').replace(/-/g, '.');
+const featOn = r => !!r && !!r.featured_until && r.featured_until >= today();
+const featLeft = s => Math.round((new Date(s + 'T00:00:00') - new Date(today() + 'T00:00:00')) / 864e5) + 1;   // today counts
+const plusDays = (s, n) => { const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return ymd(d); };
+const plusMonths = (s, n) => { const d = new Date(s + 'T00:00:00'), day = d.getDate(); d.setMonth(d.getMonth() + n); if (d.getDate() !== day) d.setDate(0); return ymd(d); };
+const featStatus = v => v && v >= today() ? `⭐ Онцлох · ${dotDate(v)} хүртэл (${featLeft(v)} хоног)` : v ? `${dotDate(v)}-нд дууссан` : 'Онцлох биш';
+const setupFeatured = () => {
+  if (!HAS_FEAT || !ROLE.admin) return;               // shelter staff never see it (the database refuses them too)
+  FEAT_TABS.forEach(t => {
+    const s = S[t]; if (!s || s.fields.some(f => f.k === 'featured_until')) return;
+    const at = s.fields.findIndex(f => f.k === 'active');
+    s.fields.splice(at < 0 ? s.fields.length : at, 0, { k:'featured_until', label:'Онцлох байршил', type:'featured',
+      hint:`Дуусах өдрийн эцэс хүртэл апп дээр дээгүүр, "Онцлох" шошготой гарна. Нэг дор ${FEAT_MAX} хүртэл.` });
+  });
+};
+const featField = (f, v, wrap) => wrap(`<div class="feat-box"><div class="feat-st${v && v >= today() ? '' : ' off'}" id="featSt">${featStatus(v)}</div>
+  <input id="f_${f.k}" type="date" min="${today()}" value="${v && v >= today() ? esc(v) : ''}" aria-label="Онцлох байршил дуусах өдөр">
+  <div class="feat-q"><button type="button" data-fd="7">+1 долоо хоног</button><button type="button" data-fm="1">+1 сар</button><button type="button" data-fm="3">+3 сар</button><button type="button" data-fm="6">+6 сар</button><button type="button" class="feat-x" data-fx>Болиулах</button></div></div>`);
+// quick buttons add to the current end (or start today); "Болиулах" ends it
+const bindFeat = () => {
+  const el = $('#f_featured_until'); if (!el) return;
+  const show = () => { const s2 = $('#featSt'); s2.textContent = featStatus(el.value); s2.classList.toggle('off', !(el.value && el.value >= today())); el.closest('.fld').classList.remove('bad'); };
+  el.addEventListener('input', show);
+  el.closest('.fld').querySelector('.feat-q').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.fx !== undefined) el.value = '';
+    else { const base = el.value && el.value >= today() ? el.value : today(); el.value = b.dataset.fd ? plusDays(base, +b.dataset.fd) : plusMonths(base, +b.dataset.fm); }
+    show();
+  };
+};
+const readFeat = (f, el, d) => {
+  const v = el.value || null, err = m => { el.closest('.fld').querySelector('.err').textContent = m; return f.k; };
+  d[f.k] = v;
+  if (!v) return null;
+  if (v < today()) return err('Өнөөдөр эсвэл хойшхи өдөр сонгоно уу.');
+  const others = (st.rows[st.tab] || []).filter(r => featOn(r) && (!st.edit || r.id !== st.edit.id));
+  if (others.length >= FEAT_MAX) return err(`Нэг дор ${FEAT_MAX}-аас олон онцлох байж болохгүй. Одоо онцлох: ${others.map(r => r.name).join(', ')}.`);
+  return null;
+};
+const featTag = r => {
+  if (!HAS_FEAT || !ROLE.admin || !FEAT_TABS.includes(st.tab) || !featOn(r)) return '';
+  const left = featLeft(r.featured_until);
+  return `<div class="tags"><span class="tag feat">⭐ Онцлох · ${dotDate(r.featured_until)} хүртэл</span>${left <= FEAT_WARN ? `<span class="tag soon">⏰ ${left} хоног үлдсэн</span>` : ''}</div>`;
+};
+// placements ending within 5 days, on every tab: a tap opens the place so it can be extended after a call
+const renderFeatWarn = () => {
+  const box = $('#featWarn');
+  const soon = HAS_FEAT && ROLE.admin ? FEAT_TABS.flatMap(t => (st.rows[t] || []).filter(r => featOn(r) && featLeft(r.featured_until) <= FEAT_WARN).map(r => ({ t, r }))) : [];
+  box.hidden = !soon.length;
+  box.innerHTML = soon.length ? '⏰ Онцлох байршил удахгүй дуусна:' + soon.map(({ t, r }) => `<button type="button" data-fg="${t}" data-id="${esc(r.id)}">${esc(r.name)} · ${featLeft(r.featured_until)} хоног${r.phone ? ' · 📞 ' + esc(r.phone) : ''}</button>`).join('') : '';
+};
+$('#featWarn').onclick = e => {
+  const b = e.target.closest('[data-fg]'); if (!b) return;
+  goTab(b.dataset.fg);
+  const r = (st.rows[b.dataset.fg] || []).find(x => String(x.id) === b.dataset.id); if (r) openEditor(r);
+};
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const hm = t => String(t || '').slice(0, 5);
 // shelter staff see only their own shelter and its animals
@@ -411,6 +487,7 @@ const svcField = (f, v, wrap) => {
 };
 const readSvcField = (f, el, d) => {
   if (!el) return null;
+  if (f.type === 'featured') return readFeat(f, el, d);
   if (f.type === 'grams') { const v = el.value.replace(/\D/g, ''); d[f.k] = v ? parseInt(v, 10) : null; return v && (d[f.k] < 50 || d[f.k] > 100000) ? f.k : null; }
   if (f.type === 'int') d[f.k] = Math.min(240, Math.max(10, parseInt(el.value, 10) || f.def));
   if (f.type === 'time') d[f.k] = el.value || f.def;
@@ -547,7 +624,10 @@ const enter = async session => {
     ROLE.admin = !!ok;
   }
   if (!ROLE.admin && !ROLE.shelter) { await sb.auth.signOut(); showLogin('Энэ бүртгэлд админ эрх алга.'); return; }
-  setupSvc(); st.tab = ROLE.admin ? 'orders' : 'adoptions';
+  // featured.sql adds the end-date column; before it is run the setting stays hidden and saving works as before
+  const fp = await sb.from('products').select('featured_until').limit(1);
+  HAS_FEAT = !fp.error;
+  setupSvc(); setupFeatured(); st.tab = ROLE.admin ? 'orders' : 'adoptions';
   $('#who').textContent = session.user.email + (ROLE.admin ? '' : ' · ' + ROLE.shelterName);
   $('#login').hidden = true; $('#shell').hidden = false;
   await loadAll(); renderTabs(); render(); live();
@@ -676,6 +756,7 @@ const setOrderStatus = async (o, status, btn) => {
   toast(`#${o.number}: ${OS[status][0]}. Худалдан авагчид шууд мэдэгдлээ.`);
 };
 const render = () => {
+  renderFeatWarn();
   const ord = !!LIST_TABS[st.tab];
   $('#ostat').hidden = !ord; $('#show').hidden = ord; $('#add').hidden = ord || (st.tab === 'shelters' && !ROLE.admin); showNotifBtn();
   $('#grid').classList.toggle('orders', ord);
@@ -686,7 +767,7 @@ const render = () => {
   const rows = visibleRows(st.tab).filter(r => (st.show === 'all' || (st.show === 'on') === !!r.active) && (!st.q || s.text(r).toLowerCase().includes(st.q)));
   $('#grid').innerHTML = rows.length ? rows.map((r, i) => `<button class="item${r.active ? '' : ' off'}${s.round ? ' round' : ''}" data-id="${r.id}" style="--i:${i}">
       <span class="ph">${r.photo ? `<img src="${esc(imgSrc(r.photo))}" alt="" loading="lazy">` : `<span class="noimg">${s.icon}</span>`}</span>
-      <span class="bd">${s.card(r)}</span>
+      <span class="bd">${s.card(r)}${featTag(r)}</span>
       <span class="eye" data-eye title="${r.active ? 'Нуух' : 'Харуулах'}" role="button" aria-label="${r.active ? 'Апп дээр нуух' : 'Апп дээр харуулах'}">${r.active ? '👁' : '🚫'}</span></button>`).join('')
     : `<div class="empty"><b>${st.q ? 'Илэрц олдсонгүй' : `${s.title} алга`}</b>${st.q ? 'Өөр үгээр хайж үзнэ үү.' : `"+ ${s.one} нэмэх" дээр дарж эхлээрэй.`}</div>`;
 };
@@ -722,6 +803,7 @@ const field = f => {
     case 'photo': return wrap(`<div class="photo"><span class="pv" id="pv">${v ? `<img src="${esc(imgSrc(v))}" alt="">` : `<span class="noimg" style="font-size:34px;opacity:.5">${S[st.tab].icon}</span>`}</span>
         <span class="pa"><button type="button" class="btn btn-dark" id="pick">${v ? 'Зураг солих' : 'Зураг оруулах'}</button>${v ? '<button type="button" class="btn btn-ghost" id="unpick">Зураг устгах</button>' : ''}<span class="hint">JPG, PNG. Автоматаар жижигрүүлнэ. Тунгалаг арын PNG тунгалаг хэвээрээ үлдэнэ.</span></span></div>`);
     case 'grams': case 'int': case 'time': case 'kind': case 'shelter': case 'sex': case 'status': case 'staff': return svcField(f, v, wrap);
+    case 'featured': return featField(f, v, wrap);
     default: return wrap(`<input id="f_${f.k}" maxlength="${f.max || 200}" value="${esc(v)}" placeholder="${esc(f.ph || '')}">`);
   }
 };
@@ -744,6 +826,7 @@ const drawForm = () => {
   $('#pick') && ($('#pick').onclick = () => $('#file').click());
   $('#unpick') && ($('#unpick').onclick = () => { st.removePhoto = true; st.newPhoto = null; st.draft.photo = ''; drawForm(); });
   $('#form').oninput = e => e.target.closest('.fld')?.classList.remove('bad');
+  bindFeat();
 };
 const closeEditor = () => { $('#drawer').classList.remove('open'); $('#scrim').classList.remove('open'); st.edit = null; };
 $('#dx').onclick = closeEditor; $('#scrim').onclick = closeEditor;
@@ -832,7 +915,8 @@ $('#save').onclick = async () => {
     closeEditor(); renderTabs(); render();
     toast(old ? 'Хадгаллаа. Апп дээр шууд шинэчлэгдлээ.' : 'Нэмлээ. Апп дээр шууд гарлаа.');
   } catch (err) {
-    toast('Хадгалж чадсангүй: ' + (err.message || err), true);
+    const m = String(err.message || err);
+    toast(/featured limit/.test(m) ? `Нэг дор ${FEAT_MAX}-аас олон онцлох байж болохгүй.` : /featured: admins only/.test(m) ? 'Онцлох байршлыг зөвхөн админ тохируулна.' : 'Хадгалж чадсангүй: ' + m, true);
   } finally { b.disabled = false; b.textContent = 'Хадгалах'; }
 };
 $('#del').onclick = async () => {

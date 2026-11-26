@@ -68,6 +68,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--orange); outlin
 .aside ol{padding:0; margin:20px 0 0; list-style:none; display:grid; gap:10px; font-size:14px}
 .aside li{display:flex; gap:12px; align-items:center}
 .aside li b{width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.1); display:grid; place-items:center; font-size:13px; flex:none}
+.aside p strong{display:block; color:#fff; font-size:21px; font-weight:700; line-height:1.3; letter-spacing:-.01em}
 @media (min-width:960px){ .aside{display:block} }
 
 /* device */
@@ -392,6 +393,11 @@ svg.photo.custom{overflow:hidden}
 .card .add:hover{background:var(--pine); color:#fff}
 .card .add:active{transform:scale(.85) rotate(90deg)}
 .card .tag{position:absolute; top:12px; left:12px; font-size:10px; font-weight:800; letter-spacing:.06em; color:var(--orange); text-transform:uppercase}
+/* featured placement: an orange "★ Онцлох" pill and a thin orange outline (products, clinics, vets, shelters) */
+.card .tag.feat{top:10px; left:10px; color:#fff; background:var(--orange); border-radius:8px; padding:3px 7px; letter-spacing:.02em; text-transform:none; font-size:10.5px}
+.card.feat,.vt-card.feat,.ad-card.feat{outline:2px solid rgba(242,107,18,.45); outline-offset:-2px}
+.feat-pill{justify-self:start; display:inline-flex; align-items:center; width:max-content; font-size:10.5px; font-weight:800; color:#fff; background:var(--orange); border-radius:8px; padding:2px 7px; letter-spacing:.02em; font-style:normal}
+.ad-tx .feat-pill{margin-top:5px}
 
 /* bottom nav */
 .nav{position:absolute; left:50%; bottom:calc(18px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%); z-index:20; background:var(--pine); border-radius:32px; padding:7px; display:flex; gap:4px; box-shadow:0 14px 34px rgba(6,40,10,.35); transition:transform .5s var(--ease), opacity .4s}
@@ -1169,11 +1175,13 @@ svg.photo.custom{overflow:hidden}
 
 <aside class="aside">
   <span class="wordmark" aria-label="Zoomies">Z<span class="oo"><i></i><i></i></span>mies</span>
-  <p>Тэжээвэр амьтны хоол, хэрэгсэл зардаг гар утасны аппын интерактив прототип. Утсан дээр дарж туршаарай.</p>
+  <p><strong>Тэжээвэр амьтны тань арчилгаа нэг дор.</strong></p>
   <ol>
-    <li><b>1</b> Бүртгэл үүсгэх</li>
-    <li><b>2</b> Тэжээвэр амьтнаа дүрсээр сонгох</li>
-    <li><b>3</b> Танд тохирсон бүтээгдэхүүн, сагс, захиалга</li>
+    <li><b>1</b> Вакцин, хоол, эмийн хөтлөл, сануулга</li>
+    <li><b>2</b> Хоол, хэрэгсэл гэрт хүргэлттэй</li>
+    <li><b>3</b> Малын эмчид цаг захиалах</li>
+    <li><b>4</b> QR хүзүүвчээр төөрсөн амьтнаа олох</li>
+    <li><b>5</b> Асрамжийн газраас амьтан үрчлэх</li>
   </ol>
 </aside>
 
@@ -1539,7 +1547,8 @@ const toProducts = raw => (Array.isArray(raw) ? raw : []).map((x, i) => ({
   isNew: x.new === true || x.new === 'true',
   pack: Math.max(0, parseInt(x.pack_g ?? x.pack, 10) || 0),   // food bag size in grams (0 = not food)
   photo: String(x.photo || '').trim(),
-  art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null
+  art: Array.isArray(x.art) && ART[x.art[0]] ? x.art : null,
+  featured_until: /^\d{4}-\d{2}-\d{2}$/.test(String(x.featured_until || '')) ? String(x.featured_until) : ''   // "Онцлох" until this day
 })).filter(p => p.n && p.price > 0);
 // The catalog lives on the server and is edited in the admin panel; the last copy is kept on the phone
 // for offline use. products.json is only the fallback for a phone that has never reached the server.
@@ -1570,9 +1579,13 @@ const loadPetTypes = async () => {
 const loadProducts = async () => {
   if (sb) {
     try {
-      // pack_g (food bag size) comes with features.sql; before that, load without it
-      let { data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active, pack_g').order('sort').order('created_at');
-      if (error) ({ data, error } = await sb.from('products').select('id, name, description, price, pets, is_new, photo, art, active').order('sort').order('created_at'));
+      // pack_g (food bag size) comes with features.sql and featured_until with featured.sql; before those, load without them
+      const base = 'id, name, description, price, pets, is_new, photo, art, active';
+      let data, error;
+      for (const cols of [base + ', pack_g, featured_until', base + ', pack_g', base]) {
+        ({ data, error } = await sb.from('products').select(cols).order('sort').order('created_at'));
+        if (!error) break;
+      }
       if (!error && Array.isArray(data)) {
         PRODUCTS = toProducts(data.filter(x => x.active).map(x => ({ ...x, new:x.is_new })));
         try { localStorage.setItem(CAT_KEY, JSON.stringify({ products:PRODUCTS, at:Date.now() })); } catch (_) {}
@@ -2063,6 +2076,22 @@ const renderPetHome = () => {
   $('#petFacts').innerHTML = fact('Нас', ageText(p.birth)) + fact('Хүйс', p.sex) + fact('Үүлдэр', p.breed) + fact('Жин', p.weight ? `${p.weight} кг` : '');
   renderRecs(); renderFriends(); renderHealth(); renderMemo(); renderClinics(); renderFood(); renderAppts(); renderQR(); renderAdopt();
 };
+/* ---------- featured placement (admin panel → "Онцлох байршил", supabase/featured.sql) ----------
+   Until its end date (featured_until, the last day) a product, clinic, vet or shelter comes first with an
+   "Онцлох" label, then drops back by itself. When several are featured their order is shuffled once each time
+   the app opens, so each one gets the top spot in turn. */
+const featOn = r => !!r && /^\d{4}-\d{2}-\d{2}$/.test(r.featured_until || '') && r.featured_until >= todayStr();
+const FEAT_RANK = new Map();
+const featRank = id => { if (!FEAT_RANK.has(id)) FEAT_RANK.set(id, Math.random()); return FEAT_RANK.get(id); };
+// of(x) = what is featured: the item itself, or for an adoption animal its shelter (its animals stay together)
+const featFirst = (list, of = x => x) => {
+  const on = list.filter(x => featOn(of(x)));
+  if (!on.length) return list;
+  on.sort((a, b) => featRank(of(a).id) - featRank(of(b).id));
+  return [...on, ...list.filter(x => !featOn(of(x)))];
+};
+const featPill = '<span class="feat-pill">★ Онцлох</span>';
+
 /* ---------- vet clinics and vets (managed in the admin panel) ---------- */
 let CLINICS = [], VETS = [];
 const CLIN_KEY = 'zoomies.clinics.v1';
@@ -2087,8 +2116,8 @@ const clinicOf = v => CLINICS.find(c => c.id === v.clinic_id);
 const vtMatch = (text, q) => !q || text.toLowerCase().includes(q);
 const renderClinics = () => {
   const q = vt.q, L = $('#vtList');
-  const clinics = CLINICS.filter(c => vtMatch([c.name, c.district, c.address, c.phone, ...(c.services || []), ...VETS.filter(v => v.clinic_id === c.id).map(v => v.name)].join(' '), q));
-  const vets = VETS.filter(v => vtMatch([v.name, v.specialty, v.phone, (clinicOf(v) || {}).name].join(' '), q));
+  const clinics = featFirst(CLINICS.filter(c => vtMatch([c.name, c.district, c.address, c.phone, ...(c.services || []), ...VETS.filter(v => v.clinic_id === c.id).map(v => v.name)].join(' '), q)));
+  const vets = featFirst(VETS.filter(v => vtMatch([v.name, v.specialty, v.phone, (clinicOf(v) || {}).name].join(' '), q)));
   // counts on the switch, and its pill slides to the chosen side
   const seg = $('#vtSeg');
   seg.querySelector('[data-v="clinics"]').textContent = `Эмнэлэг${CLINICS.length ? ' · ' + clinics.length : ''}`;
@@ -2100,18 +2129,18 @@ const renderClinics = () => {
   const call = (phone, who) => phone ? `<a class="vt-call" href="${telHref(phone)}" aria-label="${esc(who)} руу залгах" data-stop>${ICON.phone}</a>` : '';
   const empty = (icon, title, text) => `<div class="vt-empty"><span aria-hidden="true">${icon}</span><b>${title}</b><p>${text}</p></div>`;
   if (vt.view === 'clinics') {
-    L.innerHTML = clinics.length ? clinics.map((c, i) => `<div class="vt-card" role="button" tabindex="0" data-cl="${c.id}" style="--i:${i}">
+    L.innerHTML = clinics.length ? clinics.map((c, i) => `<div class="vt-card${featOn(c) ? ' feat' : ''}" role="button" tabindex="0" data-cl="${c.id}" style="--i:${i}">
         <span class="vt-ph">${safeImg(c.photo) ? `<img src="${esc(c.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🏥</span>'}</span>
-        <span class="vt-tx"><b>${esc(c.name)}</b>
+        <span class="vt-tx">${featOn(c) ? featPill : ''}<b>${esc(c.name)}</b>
           ${c.district || c.address ? `<em>📍 ${esc([c.district, c.address].filter(Boolean).join(', '))}</em>` : ''}
           ${c.hours ? `<small>🕘 ${esc(c.hours)}</small>` : ''}
           <span class="vt-tags">${(c.services || []).slice(0, 3).map(s => `<i>${esc(s)}</i>`).join('')}<i class="n">${VETS.filter(v => v.clinic_id === c.id).length} эмч</i></span></span>
         ${call(c.phone, c.name)}</div>`).join('')
       : CLINICS.length ? empty('🔍', 'Илэрц олдсонгүй', 'Өөр үгээр хайж үзээрэй.') : empty('🏥', 'Удахгүй нэмэгдэнэ', 'Малын эмнэлгүүдийн мэдээлэл энд гарч ирнэ.');
   } else {
-    L.innerHTML = vets.length ? vets.map((v, i) => `<div class="vt-card vet-card" role="button" tabindex="0" data-vet="${v.id}" style="--i:${i}">
+    L.innerHTML = vets.length ? vets.map((v, i) => `<div class="vt-card vet-card${featOn(v) ? ' feat' : ''}" role="button" tabindex="0" data-vet="${v.id}" style="--i:${i}">
         <span class="vt-av">${safeImg(v.photo) ? `<img src="${esc(v.photo)}" alt="" loading="lazy">` : '<span aria-hidden="true">🩺</span>'}</span>
-        <span class="vt-tx"><b>${esc(v.name)}</b>${v.specialty ? `<em class="spec">${esc(v.specialty)}</em>` : ''}<small>${esc((clinicOf(v) || {}).name || 'Бие даасан эмч')}</small></span>
+        <span class="vt-tx">${featOn(v) ? featPill : ''}<b>${esc(v.name)}</b>${v.specialty ? `<em class="spec">${esc(v.specialty)}</em>` : ''}<small>${esc((clinicOf(v) || {}).name || 'Бие даасан эмч')}</small></span>
         ${call(v.phone, v.name)}</div>`).join('')
       : VETS.length ? empty('🔍', 'Илэрц олдсонгүй', 'Өөр үгээр хайж үзээрэй.') : empty('🩺', 'Удахгүй нэмэгдэнэ', 'Малын эмч нарын мэдээлэл энд гарч ирнэ.');
   }
@@ -2176,10 +2205,10 @@ const startCatalogLive = () => {
 // products for the current pet; re-drawn on its own when the catalog changes live
 const renderRecs = () => {
   const p = curPet(); if (!p) return;
-  const recs = PRODUCTS.filter(x => x.pets.includes(p.k));
+  const recs = featFirst(PRODUCTS.filter(x => x.pets.includes(p.k)));
   $('#recsTitle').textContent = `${p.name}-д зориулсан`;
-  $('#petRecs').innerHTML = recs.length ? recs.map((x, i) => `<article class="card" style="--i:${i}" data-id="${x.id}" tabindex="0" aria-label="${esc(x.n)}, ${fmt(x.price)}">
-    ${x.isNew ? '<span class="tag">Шинэ</span>' : ''}<button class="add" aria-label="${esc(x.n)} сагсанд нэмэх">${ICON.plus}</button>
+  $('#petRecs').innerHTML = recs.length ? recs.map((x, i) => `<article class="card${featOn(x) ? ' feat' : ''}" style="--i:${i}" data-id="${x.id}" tabindex="0" aria-label="${esc(x.n)}, ${fmt(x.price)}${featOn(x) ? ', онцлох' : ''}">
+    ${cardTag(x)}<button class="add" aria-label="${esc(x.n)} сагсанд нэмэх">${ICON.plus}</button>
     <div class="art">${pic(x)}</div><div class="nm">${esc(x.n)}</div><div class="pr">${fmt(x.price)}</div></article>`).join('')
     : `<p style="color:var(--muted);font-size:13px;margin:4px 4px 0">Одоогоор бараа алга.</p>`;
 };
@@ -3184,10 +3213,12 @@ const visibleProducts = () => {
   const mine = PRODUCTS.filter(p => p.pets.some(k => st.pets.has(k)));
   return mine.length ? mine : PRODUCTS;
 };
+// the corner label: "Онцлох" (paid placement) wins over "Шинэ"
+const cardTag = p => featOn(p) ? '<span class="tag feat">★ Онцлох</span>' : p.isNew ? '<span class="tag">Шинэ</span>' : '';
 const renderGrid = () => {
-  const list = visibleProducts();
-  $('#grid').innerHTML = list.map((p, i) => `<article class="card" style="--i:${i}" data-id="${p.id}" tabindex="0" aria-label="${p.n}, ${fmt(p.price)}">
-    ${p.isNew ? '<span class="tag">Шинэ</span>' : ''}
+  const list = featFirst(visibleProducts());
+  $('#grid').innerHTML = list.map((p, i) => `<article class="card${featOn(p) ? ' feat' : ''}" style="--i:${i}" data-id="${p.id}" tabindex="0" aria-label="${p.n}, ${fmt(p.price)}${featOn(p) ? ', онцлох' : ''}">
+    ${cardTag(p)}
     <button class="add" aria-label="${p.n} сагсанд нэмэх">${ICON.plus}</button>
     <div class="art">${pic(p)}</div><div class="nm">${p.n}</div><div class="pr">${fmt(p.price)}</div></article>`).join('');
   // odd count: let the last card span both columns so nothing sits alone
@@ -4034,11 +4065,12 @@ const renderAdopt = () => {
   if (svc.adFilter !== 'all' && !kinds.some(k => k.k === svc.adFilter)) svc.adFilter = 'all';
   $('#adChips').innerHTML = svc.adopt.length ? `<button class="chip all" data-f="all" aria-pressed="${svc.adFilter === 'all'}">Бүгд · ${svc.adopt.length}</button>` +
     kinds.map(p => `<button class="chip" data-f="${p.k}" aria-pressed="${svc.adFilter === p.k}">${p.svg}${esc(p.n)}</button>`).join('') : '';
-  const list = svc.adopt.filter(a => svc.adFilter === 'all' || a.kind === svc.adFilter);
+  // animals of a featured shelter come first (the shelter's placement, so the label sits on the shelter line)
+  const list = featFirst(svc.adopt.filter(a => svc.adFilter === 'all' || a.kind === svc.adFilter), a => shelterOf(a));
   G.innerHTML = list.length ? list.map((a, i) => {
     const mine = svc.myReqs.find(r => r.adoption_id === a.id && r.status !== 'declined');
-    return `<button class="ad-card" data-ad="${a.id}" style="--i:${i}"><span class="ad-ph">${adPic(a)}${a.status === 'reserved' ? '<i class="ad-res">Захиалгатай</i>' : ''}${mine ? '<i class="ad-mine">Хүсэлт илгээсэн</i>' : ''}</span>
-      <span class="ad-tx"><b>${esc(a.name)}</b><small>${[petBy(a.kind).n, a.sex, a.age].filter(Boolean).map(esc).join(' · ')}</small><em>🏠 ${esc(shelterOf(a).name || '')}</em></span></button>`;
+    return `<button class="ad-card${featOn(shelterOf(a)) ? ' feat' : ''}" data-ad="${a.id}" style="--i:${i}"><span class="ad-ph">${adPic(a)}${a.status === 'reserved' ? '<i class="ad-res">Захиалгатай</i>' : ''}${mine ? '<i class="ad-mine">Хүсэлт илгээсэн</i>' : ''}</span>
+      <span class="ad-tx"><b>${esc(a.name)}</b><small>${[petBy(a.kind).n, a.sex, a.age].filter(Boolean).map(esc).join(' · ')}</small><em>🏠 ${esc(shelterOf(a).name || '')}</em>${featOn(shelterOf(a)) ? featPill : ''}</span></button>`;
   }).join('') : `<div class="vt-empty"><span aria-hidden="true">🐾</span><b>Одоогоор үрчлүүлэх амьтан алга</b><p>Асрамжийн газрууд шинэ гэр хайж буй амьтдаа нэмэхэд энд гарч ирнэ.</p></div>`;
 };
 $('#adChips').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; svc.adFilter = b.dataset.f; renderAdopt(); });
