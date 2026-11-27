@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zoomies · Тэжээвэр амьтны апп</title>
+<meta name="description" content="Zoomies: тэжээвэр амьтныхаа эрүүл мэнд, хоол, малын эмчийн цаг, QR хүзүүвч, үрчлэлт, дэлгүүрийг нэг апп-аас. Үнэгүй.">
+<meta name="theme-color" content="#F6FBF4">
+<meta property="og:title" content="Zoomies · Тэжээвэр амьтны апп">
+<meta property="og:description" content="Тэжээвэр амьтныхаа бүх хэрэгцээг нэг апп-аас. Үнэгүй.">
+<meta property="og:image" content="assets/scr-home.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: one calm column of sections on near-white mint; the app's own greens and orange, phone shots as the visuals */
+:root{
+  --bg:#F6FBF4; --surface:#FFFFFF; --mint:#E7F7E3; --leaf:#A8E09E; --pine:#0F4C17; --forest:#0A3A0E;
+  --orange:#F26B12; --orange-deep:#D9560A; --ink:#0E2E12; --muted:#5A7360; --line:#DCEBD8;
+  --f-ui:"Montserrat", "Segoe UI", system-ui, sans-serif; --f-logo:"Fredoka", "Montserrat", system-ui, sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1); --r:28px; --max:1160px;
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--f-ui); font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+img{max-width:100%; display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange); outline-offset:3px; border-radius:8px}
+.wrap{max-width:var(--max); margin:0 auto; padding-left:max(20px, env(safe-area-inset-left)); padding-right:max(20px, env(safe-area-inset-right))}
+section{padding-block:96px}
+h1,h2,h3{margin:0; line-height:1.12; letter-spacing:-.025em; text-wrap:balance}
+p{margin:0}
+.eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--orange-deep)}
+.lead{font-size:18px; color:var(--muted); max-width:56ch}
+
+/* wordmark: the app's "Zoomies" with two eyes for the o's */
+.wordmark{font-family:var(--f-logo); font-weight:700; display:inline-flex; align-items:center; line-height:1; color:var(--pine); text-decoration:none; font-size:28px}
+.wordmark .oo{display:inline-flex; gap:.04em; margin:0 .02em; position:relative; top:.04em}
+.wordmark .oo i{width:.56em; height:.56em; border-radius:50%; background:#fff; box-shadow:inset 0 0 0 .075em currentColor; position:relative; display:block}
+.wordmark .oo i:first-child{top:.05em} .wordmark .oo i:last-child{top:-.06em}
+.wordmark .oo i::after{content:""; position:absolute; width:.24em; height:.24em; border-radius:50%; background:currentColor; left:.16em; top:.16em; animation:look 5s var(--ease) infinite}
+@keyframes look{0%,20%{transform:translate(0,0)}26%,44%{transform:translate(.09em,-.03em)}50%,68%{transform:translate(-.09em,.02em)}74%,100%{transform:translate(0,.07em)}}
+
+/* header */
+.top{position:sticky; top:0; z-index:50; background:rgba(246,251,244,.82); -webkit-backdrop-filter:blur(14px) saturate(1.3); backdrop-filter:blur(14px) saturate(1.3); border-bottom:1px solid transparent; transition:border-color .3s}
+.top.scrolled{border-bottom-color:var(--line)}
+.top .wrap{display:flex; align-items:center; gap:28px; height:72px}
+.top nav{display:flex; gap:26px; margin-left:auto}
+.top nav a{text-decoration:none; font-weight:600; font-size:14.5px; color:var(--muted); transition:color .2s}
+.top nav a:hover{color:var(--pine)}
+.pill{display:inline-flex; align-items:center; gap:8px; height:44px; padding:0 20px; border-radius:22px; background:var(--pine); color:#fff; font-weight:700; font-size:14.5px; text-decoration:none; transition:transform .3s var(--ease), background .2s}
+.pill:hover{background:var(--forest); transform:translateY(-1px)}
+@media (max-width:760px){ .top nav{display:none} .top .pill{margin-left:auto} }
+
+/* hero */
+.hero{padding-block:72px 96px}
+.hero .wrap{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center}
+.hero h1{font-size:clamp(40px, 5.6vw, 68px); font-weight:800; margin:18px 0 20px; color:var(--pine)}
+.hero h1 em{font-style:normal; color:var(--orange)}
+.stores{display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-top:34px}
+.badge{display:block; position:relative; border-radius:12px; transition:transform .3s var(--ease), opacity .3s}
+.badge img{height:54px; width:auto}
+.badge:hover{transform:translateY(-2px)}
+.badge.soon{cursor:default; opacity:.92}
+.badge.soon:hover{transform:none}
+.stores{row-gap:22px}
+.badge .tag{position:absolute; left:50%; top:-19px; transform:translateX(-50%); background:var(--orange); color:#fff; font-size:10.5px; font-weight:800; letter-spacing:.02em; border-radius:9px; padding:3px 8px; white-space:nowrap; box-shadow:0 4px 10px rgba(242,107,18,.3)}
+.weblink{display:inline-flex; align-items:center; gap:8px; height:54px; padding:0 22px; border-radius:14px; background:var(--surface); color:var(--pine); font-weight:700; text-decoration:none; box-shadow:inset 0 0 0 2px var(--line); transition:box-shadow .2s, transform .3s var(--ease)}
+.weblink:hover{box-shadow:inset 0 0 0 2px var(--pine); transform:translateY(-2px)}
+.weblink svg{transition:transform .3s var(--ease)} .weblink:hover svg{transform:translateX(3px)}
+.fine{font-size:13px; color:var(--muted); margin-top:14px}
+.stage{position:relative; display:grid; place-items:center; min-height:560px}
+.stage::before{content:""; position:absolute; width:min(460px, 92%); aspect-ratio:1; border-radius:50%; background:radial-gradient(circle at 40% 35%, #C9EEC2 0%, var(--mint) 55%, transparent 72%)}
+.phone{position:relative; width:280px; border-radius:46px; padding:38px 10px 10px; background:#0B1F0D; box-shadow:0 40px 80px rgba(10,58,14,.22), 0 0 0 1px rgba(255,255,255,.06) inset}
+.phone img{border-radius:8px 8px 37px 37px; width:100%; height:auto; aspect-ratio:390/844; object-fit:cover; object-position:top}
+.phone::after{content:""; position:absolute; left:50%; top:10px; transform:translateX(-50%); width:78px; height:22px; border-radius:12px; background:#050f06}
+.hero .phone{animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+.float-card{position:absolute; background:var(--surface); border-radius:18px; padding:12px 14px; display:flex; gap:10px; align-items:center; box-shadow:0 18px 40px rgba(10,58,14,.14); font-size:13px; line-height:1.35; max-width:250px}
+.float-card b{display:block; font-size:13.5px}
+.float-card span{color:var(--muted)}
+.float-card .ic{width:38px; height:38px; border-radius:12px; display:grid; place-items:center; flex:none}
+.fc1{left:-8px; top:22%; animation:float 6s ease-in-out infinite .6s}
+.fc2{right:-10px; bottom:18%; animation:float 6.5s ease-in-out infinite 1.4s}
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr; text-align:center}
+  .hero .lead{margin-inline:auto}
+  .stores{justify-content:center}
+  .stage{min-height:auto; padding-top:20px}
+  .fc1{left:0} .fc2{right:0}
+}
+@media (max-width:420px){ .float-card{display:none} .badge img{height:48px} .weblink{height:48px} }
+
+/* feature grid */
+.head{max-width:640px; margin-bottom:48px}
+.head h2{font-size:clamp(30px, 3.6vw, 44px); font-weight:800; color:var(--pine); margin:12px 0 14px}
+.grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px}
+.card{background:var(--surface); border-radius:var(--r); padding:28px; display:grid; gap:12px; align-content:start; transition:transform .4s var(--ease), box-shadow .4s}
+.card:hover{transform:translateY(-4px); box-shadow:0 20px 40px rgba(10,58,14,.08)}
+.card .ic{width:52px; height:52px; border-radius:16px; background:var(--mint); color:var(--pine); display:grid; place-items:center}
+.card h3{font-size:19px; font-weight:700}
+.card p{color:var(--muted); font-size:15px}
+@media (max-width:900px){ .grid{grid-template-columns:1fr 1fr} }
+@media (max-width:600px){ .grid{grid-template-columns:1fr} section{padding-block:72px} }
+
+/* showcases */
+.show{padding-block:48px}
+.show .wrap{display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center}
+.show.flip .text{order:2}
+.show .panel{background:var(--mint); border-radius:40px; display:grid; place-items:center; padding:56px 24px; position:relative; overflow:hidden}
+.show .panel.dark{background:var(--pine)}
+.show .panel.warm{background:#FFF1E2}
+.show h2{font-size:clamp(28px, 3.2vw, 40px); font-weight:800; color:var(--pine); margin:12px 0 16px}
+.ticks{list-style:none; padding:0; margin:22px 0 0; display:grid; gap:12px}
+.ticks li{display:flex; gap:12px; align-items:flex-start; font-size:15.5px}
+.ticks li::before{content:""; flex:none; width:22px; height:22px; margin-top:2px; border-radius:50%; background:var(--leaf) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230F4C17' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-8.5'/%3E%3C/svg%3E") center/14px no-repeat}
+@media (max-width:900px){ .show .wrap{grid-template-columns:1fr; gap:36px} .show.flip .text{order:0} }
+
+/* steps */
+.steps{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; counter-reset:s}
+.step{border-radius:var(--r); padding:28px; background:var(--surface); position:relative}
+.step b{display:block; font-size:18px; margin:18px 0 6px}
+.step p{color:var(--muted); font-size:15px}
+.step::before{counter-increment:s; content:counter(s); width:42px; height:42px; border-radius:50%; background:var(--orange); color:#fff; display:grid; place-items:center; font-weight:800; font-size:17px}
+@media (max-width:760px){ .steps{grid-template-columns:1fr} }
+
+/* download band */
+.dl{padding-block:24px 96px}
+.dl .box{background:var(--pine); color:#fff; border-radius:44px; padding:64px 56px; display:grid; grid-template-columns:1.3fr .7fr; gap:40px; align-items:center; position:relative; overflow:hidden}
+.dl .box::before{content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px; border-radius:50%; background:rgba(168,224,158,.12)}
+.dl h2{font-size:clamp(30px, 3.8vw, 48px); font-weight:800}
+.dl .lead{color:#C6E8BF; margin-top:14px}
+.dl .weblink{background:rgba(255,255,255,.1); color:#fff; box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+.dl .weblink:hover{box-shadow:inset 0 0 0 2px #fff}
+.dl .badge img{box-shadow:0 0 0 1px rgba(255,255,255,.25); border-radius:12px}
+.qr{justify-self:end; background:#fff; color:var(--ink); border-radius:28px; padding:20px; display:grid; gap:10px; justify-items:center; text-align:center; position:relative}
+.qr svg,.qr img{width:170px; height:170px}
+.qr small{font-size:12.5px; color:var(--muted); max-width:20ch; line-height:1.4}
+.install{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:28px}
+.install div{background:rgba(255,255,255,.08); border-radius:18px; padding:14px 16px; font-size:13.5px; color:#DDF3D8; line-height:1.5}
+.install b{color:#fff; display:block; margin-bottom:2px}
+@media (max-width:900px){ .dl .box{grid-template-columns:1fr; padding:44px 24px; text-align:center} .dl .stores{justify-content:center} .qr{display:none} .install{grid-template-columns:1fr; text-align:left} }
+
+/* faq */
+.faq{max-width:760px}
+details{background:var(--surface); border-radius:20px; padding:4px 22px; margin-bottom:10px}
+summary{cursor:pointer; list-style:none; font-weight:700; font-size:16.5px; padding:16px 0; display:flex; justify-content:space-between; gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+"; font-size:22px; line-height:1; color:var(--orange); transition:transform .3s var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted); padding-bottom:18px; font-size:15px}
+
+/* footer */
+footer{border-top:1px solid var(--line); padding-block:36px 48px}
+footer .wrap{display:flex; flex-wrap:wrap; gap:20px 32px; align-items:center}
+footer nav{display:flex; flex-wrap:wrap; gap:22px; margin-left:auto}
+footer a{text-decoration:none; color:var(--muted); font-weight:600; font-size:14px}
+footer a:hover{color:var(--pine)}
+footer small{color:var(--muted); font-size:13px; width:100%}
+
+/* reveal on scroll (only once the script runs; without it everything is simply visible) */
+.js .rv{opacity:0; transform:translateY(24px); transition:opacity .8s var(--ease), transform .8s var(--ease)}
+.js .rv.in{opacity:1; transform:none}
+@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} .js .rv{opacity:1; transform:none} html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+
+<header class="top" id="top">
+  <div class="wrap">
+    <a class="wordmark" href="#" aria-label="Zoomies">Z<span class="oo" aria-hidden="true"><i></i><i></i></span>mies</a>
+    <nav aria-label="Үндсэн">
+      <a href="#features">Боломжууд</a>
+      <a href="#how">Хэрхэн ажилладаг</a>
+      <a href="#faq">Түгээмэл асуулт</a>
+    </nav>
+    <a class="pill" href="#download">Татах</a>
+  </div>
+</header>
+
+<main>
+  <!-- hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">🐾 Тэжээвэр амьтны эздэд</span>
+        <h1>Тэжээвэр амьтныхаа бүх хэрэгцээ <em>нэг апп-д</em></h1>
+        <p class="lead">Эрүүл мэндийн хөтлөл, хоолны сануулга, малын эмчийн цаг, QR хүзүүвч, дэлгүүр. Zoomies өдөр тутмын арчилгааг хялбар болгоно.</p>
+        <div class="stores" data-stores></div>
+        <p class="fine">Үнэгүй · iPhone, Android, компьютер дээр ажиллана</p>
+      </div>
+      <div class="stage">
+        <div class="phone"><img src="assets/scr-home.jpg" alt="Zoomies апп: тэжээвэр амьтны профайл" width="390" height="844" fetchpriority="high"></div>
+        <div class="float-card fc1"><span class="ic" style="background:#FFF1E2">🍖</span><span><b>Баавгайн хоол 3 хоногт дуусна</b><span>Нэг товчоор дахин захиалах</span></span></div>
+        <div class="float-card fc2"><span class="ic" style="background:#DDF3D8">✅</span><span><b>Цаг баталгаажлаа</b><span>Энх Мал эмнэлэг · 10:30</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- features -->
+  <section id="features" style="padding-top:24px">
+    <div class="wrap">
+      <div class="head rv">
+        <span class="eyebrow">Боломжууд</span>
+        <h2>Нэг апп. Тэжээвэр амьтны бүх зүйл.</h2>
+        <p class="lead">Олон апп, тэмдэглэл, утасны дугаар хайх шаардлагагүй. Хэрэгтэй бүхэн нэг дор.</p>
+      </div>
+      <div class="grid">
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span><h3>Амьтны профайл ба эрүүл мэнд</h3><p>Хооллолт, салхилуулалт, эм тариа, вакциныг өдөр бүр бүртгэж, графикаар хянана.</p></article>
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11h17a8.5 7 0 0 1-17 0z"/><path d="M8 7.5c0-1 1-1 1-2M12 7.5c0-1 1-1 1-2M16 7.5c0-1 1-1 1-2"/></svg></span><h3>Хоол дуусахаас өмнө сануулна</h3><p>Уутны хэмжээ, өдрийн хэрэглээнээс тооцож, дуусахаас өмнө мэдэгдэнэ. Нэг товчоор дахин захиална.</p></article>
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg></span><h3>Малын эмчид онлайн цаг</h3><p>Эмнэлэг, эмч, сул цагаа сонгоод захиална. Баталгаажмагц мэдэгдэл ирнэ.</p></article>
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2.5v2.5H14zM17.5 17.5H20V20h-2.5z"/></svg></span><h3>QR хүзүүвч</h3><p>Олсон хүн QR-ыг уншуулаад эзэнд нь шууд мэдэгдэнэ. Таны хаяг, имэйл хэзээ ч харагдахгүй.</p></article>
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg></span><h3>Үрчлэлт</h3><p>Асрамжийн газруудын шинэ гэр хайж буй амьтдыг хараад, үрчлэх хүсэлтээ илгээнэ.</p></article>
+        <article class="card rv"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"/><path d="M5.5 11.5V20h13v-8.5"/></svg></span><h3>Дэлгүүр ба бонус од</h3><p>Таны амьтанд тохирсон хоол, хэрэгсэл. Захиалга бүрт од цуглуулж, хөнгөлөлт эдэлнэ.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- showcases -->
+  <section class="show">
+    <div class="wrap">
+      <div class="text rv">
+        <span class="eyebrow">Хоолны нөөц</span>
+        <h2>Хоол хэзээ дуусахыг Zoomies мэднэ</h2>
+        <p class="lead">Уутаа нээсэн өдөр, хэмжээг нь оруулахад өдөр бүрийн хооллолтоос хэдэн хоног хүрэхийг тооцоолно.</p>
+        <ul class="ticks"><li>Дуусахаас 5 хоногийн өмнө сануулга</li><li>Нэг товчоор ижил хоолоо сагсанд нэмэх</li><li>Хүргэлтийн хаяг автоматаар бөглөгдөнө</li></ul>
+      </div>
+      <div class="panel warm rv"><div class="phone"><img src="assets/scr-food.jpg" alt="Хоолны нөөц ба дахин захиалах товч" width="390" height="844" loading="lazy"></div></div>
+    </div>
+  </section>
+  <section class="show flip">
+    <div class="wrap">
+      <div class="text rv">
+        <span class="eyebrow">Эмчийн цаг</span>
+        <h2>Эмчийн цагаа хэдхэн товшилтоор</h2>
+        <p class="lead">Залгаж, хүлээх шаардлагагүй. Эмнэлгийн сул цагийг харж, тохирохоо сонгоно.</p>
+        <ul class="ticks"><li>Эмнэлэг, эмч, өдөр, цагаа сонгоно</li><li>Баталгаажихад утсанд мэдэгдэл ирнэ</li><li>Маргаашийн цагийг өглөө сануулна</li></ul>
+      </div>
+      <div class="panel rv"><div class="phone"><img src="assets/scr-booking.jpg" alt="Малын эмчид цаг захиалах" width="390" height="844" loading="lazy"></div></div>
+    </div>
+  </section>
+  <section class="show">
+    <div class="wrap">
+      <div class="text rv">
+        <span class="eyebrow">QR хүзүүвч</span>
+        <h2>Төөрвөл олдоно</h2>
+        <p class="lead">Амьтан бүрт өөрийн QR код. Хэвлээд хүзүүвчинд нь зүүхэд л хангалттай.</p>
+        <ul class="ticks"><li>Олсон хүн апп суулгалгүйгээр уншуулна</li><li>Мессеж, байршил шууд танд ирнэ</li><li>"Төөрсөн" горимд улаан анхааруулга гарна</li></ul>
+      </div>
+      <div class="panel dark rv"><div class="phone"><img src="assets/scr-qr.jpg" alt="QR хүзүүвч" width="390" height="844" loading="lazy"></div></div>
+    </div>
+  </section>
+  <section class="show flip">
+    <div class="wrap">
+      <div class="text rv">
+        <span class="eyebrow">Үрчлэлт</span>
+        <h2>Шинэ гэр хайж буй найзууд</h2>
+        <p class="lead">Асрамжийн газрууд үрчлүүлэх амьтдаа өөрсдөө нэмдэг. Та хараад, нэг товчоор хүсэлт илгээнэ.</p>
+        <ul class="ticks"><li>Вакцин, ариутгал, зан төлөвийн мэдээлэл</li><li>Асрамжийн газрын утас, байршил</li><li>Хүсэлтийн хариу апп-д ирнэ</li></ul>
+      </div>
+      <div class="panel warm rv"><div class="phone"><img src="assets/scr-adopt.jpg" alt="Үрчлэлт" width="390" height="844" loading="lazy"></div></div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section id="how">
+    <div class="wrap">
+      <div class="head rv"><span class="eyebrow">Хэрхэн ажилладаг</span><h2>Гуравхан алхам</h2></div>
+      <div class="steps">
+        <div class="step rv"><b>Апп-аа татах</b><p>Утсандаа Zoomies-ийг суулгаад имэйлээрээ бүртгүүлнэ.</p></div>
+        <div class="step rv"><b>Амьтнаа нэмэх</b><p>Нэр, төрөл, зургаа оруулахад амьтан бүрт профайл үүснэ.</p></div>
+        <div class="step rv"><b>Тайван арчлах</b><p>Сануулга, цаг, захиалга бүгд нэг дор. Бусдыг нь Zoomies санана.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- download -->
+  <section class="dl" id="download">
+    <div class="wrap">
+      <div class="box rv">
+        <div>
+          <h2>Zoomies-ийг одоо татаарай</h2>
+          <p class="lead">Үнэгүй. Хэдхэн секундэд бүртгүүлээд эхний захиалгадаа 10% хөнгөлөлт аваарай.</p>
+          <div class="stores" data-stores></div>
+          <div class="install">
+            <div><b>iPhone</b>Safari-аар апп-ыг нээгээд Share → "Add to Home Screen"</div>
+            <div><b>Android</b>Chrome-оор нээгээд "Install app" эсвэл ⋮ → "Add to Home screen"</div>
+          </div>
+        </div>
+        <div class="qr" id="qr"><small>Утасныхаа камераар уншуулж нээнэ үү</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section id="faq" style="padding-top:24px">
+    <div class="wrap faq">
+      <div class="head rv"><span class="eyebrow">Түгээмэл асуулт</span><h2>Асуулт байна уу?</h2></div>
+      <details class="rv"><summary>Zoomies үнэгүй юу?</summary><p>Тийм. Апп-ыг татах, ашиглах үнэгүй. Дэлгүүрээс худалдан авалт хийсэн үедээ л бараагаа төлнө.</p></details>
+      <details class="rv"><summary>Ямар утсанд ажилладаг вэ?</summary><p>iPhone, Android утас болон компьютерийн хөтөч дээр ажиллана. Нүүр дэлгэцэд суулгаж, жинхэнэ апп шиг ашиглана.</p></details>
+      <details class="rv"><summary>Миний мэдээлэл хэр найдвартай вэ?</summary><p>Таны амьтны профайл, эрүүл мэндийн хөтлөл, тэмдэглэлийг зөвхөн та харна. QR хүзүүвч уншуулсан хүнд таны хаяг, имэйл харагдахгүй, утасны дугаар зөвхөн таны зөвшөөрлөөр харагдана. Дэлгэрэнгүйг <a href="../privacy.html">нууцлалын бодлогоос</a> уншина уу.</p></details>
+      <details class="rv"><summary>Асрамжийн газар үрчлэлтэд хэрхэн нэгдэх вэ?</summary><p><a href="mailto:zoomiesapp55@gmail.com">zoomiesapp55@gmail.com</a> хаягаар бидэнтэй холбогдоорой. Танай газарт тусгай нэвтрэх эрх нээж өгнө.</p></details>
+      <details class="rv"><summary>Малын эмнэлэг цаг захиалгад хэрхэн нэгдэх вэ?</summary><p>Мөн <a href="mailto:zoomiesapp55@gmail.com">zoomiesapp55@gmail.com</a> хаягаар холбогдоно уу. Эмнэлгийн мэдээлэл, ажлын цагийг тань оруулж өгнө.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="wordmark" href="#" aria-label="Zoomies" style="font-size:24px">Z<span class="oo" aria-hidden="true"><i></i><i></i></span>mies</a>
+    <nav aria-label="Доод цэс">
+      <a href="../">Вэб апп нээх</a>
+      <a href="../privacy.html">Нууцлалын бодлого</a>
+      <a href="mailto:zoomiesapp55@gmail.com">Холбоо барих</a>
+    </nav>
+    <small>© 2026 Zoomies. Тэжээвэр амьтдын төлөө ❤️</small>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" integrity="sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1" crossorigin="anonymous"></script>
+<script>
+(() => {
+  /* Store links: fill these in once the app is published in the stores. Until then the badge shows "Тун удахгүй"
+     and is not a link, so nobody is sent to a page that does not exist. */
+  const STORE = { play:'', appstore:'' };
+  const APP = new URL('../', location.href).href; // the web app (installable from the browser)
+  const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const badge = (url, img, name) => url
+    ? `<a class="badge" href="${url}" target="_blank" rel="noopener"><img src="assets/${img}" alt="${name}" width="185" height="54"></a>`
+    : `<span class="badge soon" role="img" aria-label="${name}, тун удахгүй"><img src="assets/${img}" alt="" width="185" height="54"><span class="tag">Тун удахгүй</span></span>`;
+  document.querySelectorAll('[data-stores]').forEach(el => {
+    el.innerHTML = badge(STORE.appstore, 'badge-app-store.png', 'App Store-оос татах') + badge(STORE.play, 'badge-google-play.png', 'Google Play-ээс татах')
+      + `<a class="weblink" href="${APP}">Вэбээр нээх ${arrow}</a>`;
+  });
+  // QR to the app for visitors on a computer
+  try { const q = qrcode(0, 'M'); q.addData(APP); q.make(); document.getElementById('qr').insertAdjacentHTML('afterbegin', q.createSvgTag({ cellSize:4, margin:0, scalable:true, alt:'Zoomies апп-ын QR код' })); } catch (_) { document.getElementById('qr').remove(); }
+  // header line once the page scrolls; sections fade in as they arrive
+  const top = document.getElementById('top');
+  addEventListener('scroll', () => top.classList.toggle('scrolled', scrollY > 8), { passive:true });
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin:'0px 0px -8% 0px' }) : null;
+  document.querySelectorAll('.rv').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 70 + 'ms'; io ? io.observe(el) : el.classList.add('in'); });
+})();
+</script>
+</body>
+</html>

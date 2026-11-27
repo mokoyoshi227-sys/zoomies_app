@@ -1,5 +1,5 @@
 // Zoomies service worker: app shell works offline; fonts are cached the first time they load.
-const CACHE = 'zoomies-v10';
+const CACHE = 'zoomies-v11';
 
 // push notifications (sent by the "push" Edge Function): show them, and open the app at the right tab on tap
 self.addEventListener('push', e => {
@@ -12,7 +12,7 @@ self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type:'window', includeUncontrolled:true }).then(list => {
-    const open = list.find(c => c.url.startsWith(self.registration.scope) && !c.url.includes('/admin/'));
+    const open = list.find(c => c.url.startsWith(self.registration.scope) && !c.url.includes('/admin/') && !c.url.includes('/site/'));
     if (open) { open.postMessage({ type:'open', url }); return open.focus(); }
     return self.clients.openWindow(url);
   }));
@@ -39,7 +39,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   // the admin panel is never cached: always the live page, and it must never replace the app's offline copy
-  if (url.origin === location.origin && url.pathname.includes('/admin/')) return;
+  // the website (site/) is a separate page too: never cached as the app, never served from the app's copy
+  if (url.origin === location.origin && (url.pathname.includes('/admin/') || url.pathname.includes('/site/'))) return;
   // also: the pinned Supabase library and pet / catalog photos on Supabase (they never change at the same address).
   // Supabase API and login calls (/rest, /auth, private files) are never cached.
   const cacheable = url.origin === location.origin || url.host === 'fonts.googleapis.com' || url.host === 'fonts.gstatic.com'
